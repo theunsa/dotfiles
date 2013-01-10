@@ -216,7 +216,6 @@ inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " CtrlP options
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
-let g:ctrlp_custom_ignore = {
 	\ 'dir':  '\v[\/]\.(git|hg|svn)$',
 	\ 'file': '\v\.(exe|so|dll)$',
 	\ 'link': 'SOME_BAD_SYMBOLIC_LINKS',

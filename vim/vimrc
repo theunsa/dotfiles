@@ -184,6 +184,13 @@ if has("gui_running")
     " Remove menu bar
     set guioptions-=m
     set lines =999 columns=100
+    if has("unix")
+        let s:uname = system("uname")
+        if s:uname == "Darwin\n"
+            " Do Mac stuff here
+            set guifont=Menlo:h12
+        endif
+    endif
 
     " Remove toolbar
     set guioptions-=T
@@ -209,7 +216,7 @@ inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 " ==========================================================
 " Javascript
 " ==========================================================
-au BufRead *.js set makeprg=jslint\ %
+
 
 " Use tab to scroll through autocomplete menus
 "autocmd VimEnter * imap <expr> <Tab> pumvisible() ? "<C-N>" : "<Tab>"

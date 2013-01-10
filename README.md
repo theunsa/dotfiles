@@ -20,6 +20,7 @@ Followed the instructions at http://sontek.net/blog/detail/turning-vim-into-a-mo
 * Added submodule vcscommit 
 
 Submodules were added as follows:
+
 	git submodule add http://github.com/tpope/vim-fugitive.git vim/bundle/fugitive
 	git submodule add https://github.com/msanders/snipmate.vim.git vim/bundle/snipmate
 	git submodule add https://github.com/tpope/vim-surround.git vim/bundle/surround

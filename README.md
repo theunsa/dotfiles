@@ -1,5 +1,13 @@
 My personal dotfiles for linux home folder.
 
+dependencies
+------------
+ctags
+python
+    * pep8
+    * pyflakes
+    * rope
+
 install
 -------
 Get the dotfiles with:
@@ -39,7 +47,13 @@ Submodules were added as follows:
 	git submodule add https://github.com/sontek/rope-vim.git vim/bundle/ropevim
 	git submodule add https://github.com/kien/ctrlp.vim.git vim/bundle/ctrlp.vim
 	git submodule add https://github.com/vim-scripts/vcscommand.vim.git vim/bundle/vcscommand.vim
+	git submodule add https://github.com/majutsushi/tagbar vim/bundle/tagbar
+	git submodule add https://github.com/joonty/vdebug.git vim/bundle/vdebug
 	git submodule init
 	git submodule update
 	git submodule foreach git submodule init
 	git submodule foreach git submodule update
+
+
+TODO:
+Struggling with ropevim; going the exuberant ctags route; http://runtime-era.blogspot.com/2012/05/exuberant-ctags-in-osx-107.html

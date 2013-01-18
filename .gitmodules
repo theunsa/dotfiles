@@ -52,3 +52,9 @@
 [submodule "vim/bundle/vcscommand.vim"]
 	path = vim/bundle/vcscommand.vim
 	url = https://github.com/vim-scripts/vcscommand.vim.git
+[submodule "vim/bundle/tagbar"]
+	path = vim/bundle/tagbar
+	url = https://github.com/majutsushi/tagbar
+[submodule "vim/bundle/vdebug"]
+	path = vim/bundle/vdebug
+	url = https://github.com/joonty/vdebug.git

@@ -41,6 +41,13 @@ nmap <silent><Leader>tn <Esc>:Pytest next<CR>
 nmap <silent><Leader>tp <Esc>:Pytest previous<CR>
 nmap <silent><Leader>te <Esc>:Pytest error<CR>
 
+" Maps for resizing a window split
+" TA: Review this
+nmap <C-W><Up> <C-W>+
+nmap <C-W><Down> <C-W>-
+nmap <C-W><Left> <C-W><
+nmap <C-W><Right> <C-W>>
+
 " Run django tests
 map <leader>dt :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>
 
@@ -218,6 +225,10 @@ set incsearch               " Incrementally search while typing a /regex
 """" Display
 if has("gui_running")
     colorscheme wombat
+    " Wombat colorscheme cursor does not have enough contrast for me
+    :highlight Cursor guifg=black guibg=white
+    " Wombat red color of colorcolumn too intense
+    :highlight ColorColumn guibg=#222222
     " Remove menu bar
     set guioptions-=m
     set lines =999 columns=999

@@ -5,14 +5,15 @@
 " ==========================================================
 " Shortcuts
 " ==========================================================
-set nocompatible     	" Don't be compatible with vi
+set nocompatible        " Don't be compatible with vi
 let mapleader=","       " change the leader to be a comma vs slash
 
-" Some Vundle configuration
-filetype off		" Required by Vundle
-set rtp+=~/.vim/bundle/vundle
+" Configure Vundle
+filetype off            " Required by Vundle
+set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
-Bundle 'gmarik/vundle'	" Let Vundle manage Vundle (required!)
+" Let Vundle manage Vundle (required!)
+Bundle 'gmarik/vundle'
 
 " ==========================================================
 " My Bundles 
@@ -130,13 +131,6 @@ map <leader>j :RopeGotoDefinition<CR>
 
 " Rename whatever the cursor is on (including references to it)
 map <leader>r :RopeRename<CR>
-" ==========================================================
-" Pathogen - Allows us to organize our vim plugins
-" ==========================================================
-" Load pathogen with docs for all plugins
-filetype off
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
 
 " ==========================================================
 " Basic Settings

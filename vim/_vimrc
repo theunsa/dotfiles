@@ -5,8 +5,21 @@
 " ==========================================================
 " Shortcuts
 " ==========================================================
-set nocompatible              " Don't be compatible with vi
-let mapleader=","             " change the leader to be a comma vs slash
+set nocompatible     	" Don't be compatible with vi
+let mapleader=","       " change the leader to be a comma vs slash
+
+" Some Vundle configuration
+filetype off		" Required by Vundle
+set rtp+=~/.vim/bundle/vundle
+call vundle#rc()
+Bundle 'gmarik/vundle'	" Let Vundle manage Vundle (required!)
+
+" ==========================================================
+" My Bundles 
+" ==========================================================
+Bundle 'ervandew/snipmate.vim'
+
+
 
 " Seriously, guys. It's not like :W is bound to anything anyway.
 command! W :w
@@ -41,12 +54,13 @@ nmap <silent><Leader>tn <Esc>:Pytest next<CR>
 nmap <silent><Leader>tp <Esc>:Pytest previous<CR>
 nmap <silent><Leader>te <Esc>:Pytest error<CR>
 
+" Automatically remove trailing whitespace chars everytime :w command is issued
+
 " Maps for resizing a window split
-" TA: Review this
-nmap <C-W><Up> <C-W>+
-nmap <C-W><Down> <C-W>-
-nmap <C-W><Left> <C-W><
-nmap <C-W><Right> <C-W>>
+nmap <C-W><Up> 10<C-W>+
+nmap <C-W><Down> 10<C-W>-
+nmap <C-W><Left> 10<C-W><
+nmap <C-W><Right> 10<C-W>>
 
 " Run django tests
 map <leader>dt :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>
@@ -175,8 +189,7 @@ set showmatch               " Briefly jump to a paren once it's balanced
 set nowrap                  " don't wrap text
 set linebreak               " don't wrap textin the middle of a word
 set autoindent              " always set autoindenting on
-set smartindent             " use smart indent if there is no indent file
-set tabstop=4               " <tab> inserts 4 spaces 
+set tabstop=4               " <tab> inserts 4 spaces
 set shiftwidth=4            " but an indent level is 2 spaces wide.
 set softtabstop=4           " <BS> over an autoindent deletes both spaces.
 set expandtab               " Use spaces, not tabs, for autoindent/tab key.
@@ -184,9 +197,11 @@ set shiftround              " rounds indent to a multiple of shiftwidth
 set matchpairs+=<:>         " show matching <> (html mainly) as well
 set foldmethod=indent       " allow us to fold on indents
 set foldlevel=99            " don't fold by default
+set textwidth=90           " automatically start new line after textwidth chars
 
-" don't outdent hashes
-inoremap # #
+set smartindent             " use smart indent if there is no indent file
+" don't outdent hashes (caused by smartindent usage)
+inoremap # x<BS>#
 
 " close preview window automatically when we move around
 autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
@@ -218,7 +233,7 @@ set list
 """ Searching and Patterns
 set ignorecase              " Default to using case insensitive searches,
 set smartcase               " unless uppercase letters are used in the regex.
-set smarttab                " Handle tabs more intelligently 
+set smarttab                " Handle tabs more intelligently
 set hlsearch                " Highlight searches by default.
 set incsearch               " Incrementally search while typing a /regex
 
@@ -290,6 +305,7 @@ autocmd FileType html,xhtml,xml,css setlocal expandtab shiftwidth=2 tabstop=2 so
 " Python
 "au BufRead *.py compiler nose
 au FileType python set omnifunc=pythoncomplete#Complete
+let g:SuperTabDefaultCompletion = "context"
 au FileType python setlocal expandtab shiftwidth=4 tabstop=8 softtabstop=4 smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 au FileType coffee setlocal expandtab shiftwidth=4 tabstop=8 softtabstop=4 smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 au BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
@@ -317,4 +333,4 @@ if filereadable($VIRTUAL_ENV . '/.vimrc')
     source $VIRTUAL_ENV/.vimrc
 endif
 
-set colorcolumn=80
+set colorcolumn=90

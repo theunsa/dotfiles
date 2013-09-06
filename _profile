@@ -1,0 +1,28 @@
+# Theuns Alberts - Current MacBookPro .profile #
+
+export PS1="\u@\h:\w$ "
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+# enable color support of ls and also add handy aliases
+export CLICOLOR=1
+export LSCOLORS=GxFxCxDxBxegedabagaced
+
+# always use MacVim
+export EDITOR="mvim -v"
+export VISUAL="mvim -v"
+# - the above does not seem to work (so quick fix)
+alias vi='mvim -v'
+alias v='mvim'
+
+# some more ls aliases
+alias ls='ls -alF'
+#alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Setting PATH for Python 2.7
+# The orginal version is saved in .profile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
+export PATH
+alias ctags='/usr/local/bin/ctags'

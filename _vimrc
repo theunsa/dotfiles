@@ -2,12 +2,11 @@
 " .vimrc of Theuns Alberts
 " ==========================================================
 
-" ==========================================================
-" Shortcuts
-" ==========================================================
 set nocompatible        " Don't be compatible with vi
-let mapleader=","       " change the leader to be a comma vs slash
 
+" ==========================================================
+" Vundle
+" ==========================================================
 " Configure Vundle
 filetype off            " Required by Vundle
 set rtp+=~/.vim/bundle/vundle/
@@ -16,9 +15,30 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 
 " ==========================================================
-" My Bundles 
+" My Bundles
 " ==========================================================
 Bundle 'ervandew/snipmate.vim'
+Bundle 'tpope/vim-surround'
+Bundle 'ervandew/supertab'
+Bundle 'sontek/minibufexpl.vim'
+Bundle 'mileszs/ack.vim'
+Bundle 'sjl/gundo.vim'
+Bundle 'vim-scripts/TaskList.vim'
+Bundle 'vim-scripts/The-NERD-tree'
+Bundle 'vim-scripts/vcscommand.vim'
+Bundle 'sontek/rope-vim'
+Bundle 'kien/ctrlp.vim'
+Bundle 'majutsushi/tagbar'
+Bundle 'davidhalter/jedi-vim'
+
+" ==========================================================
+" ??Shortcuts
+" ==========================================================
+let mapleader=","       " change the leader to be a comma vs slash
+
+" Set directories for backup and swap files
+set backupdir=~/.vim/session/bak
+set dir=~/.vim/session/swp
 
 
 
@@ -218,7 +238,7 @@ set report=0                " : commands always print changed line count.
 set shortmess+=a            " Use [+]/[RO]/[w] for modified/readonly/written.
 set ruler                   " Show some info, even without statuslines.
 set laststatus=2            " Always show statusline, even if only 1 window.
-set statusline=[%l,%v\ %P%M]\ %f\ %r%h%w\ (%{&ff})\ %{fugitive#statusline()}
+" set statusline=[%l,%v\ %P%M]\ %f\ %r%h%w\ (%{&ff})\ %{fugitive#statusline()}
 
 " displays tabs with :set list & displays when a line runs off-screen
 set listchars=tab:>-,trail:-,precedes:<,extends:> ",eof:$

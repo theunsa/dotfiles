@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 function link_file {
     source="${PWD}/$1"
     target="${HOME}/${1/_/.}"
@@ -38,5 +38,10 @@ else
     done
 fi
 
-git submodule update --init --recursive
-git submodule foreach --recursive git pull origin master
+# Install the Vundle bundles
+uname_str=`uname`
+if [[ "$uname_str" == "Darwin" ]]; then
+    mvim +BundleInstall +qall
+else
+    vi +BundleInstall +qall
+fi

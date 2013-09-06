@@ -2,8 +2,8 @@ My personal dotfiles for linux home folder.
 
 dependencies
 ------------
-ctags
-python
+* ctags
+* python
     * pep8
     * pyflakes
     * rope
@@ -30,4 +30,4 @@ Followed the instructions at http://sontek.net/blog/detail/turning-vim-into-a-mo
 * Using Vundle instead of pathogen
 * Used CtrlP instead of command-t (no Rake dependency needed)
 
-(See README in _vim folder for more info)
+  (See README in _vim folder for more info)

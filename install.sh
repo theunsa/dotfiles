@@ -1,15 +1,42 @@
 #!/usr/bin/env bash
+function link_file {
+    source="${PWD}/$1"
+    target="${HOME}/${1/_/.}"
 
-# Link the dotfiles vim folder
-rm -rf ~/.vim ~/.vimrc
-ln -s `pwd`/vim ~/.vim
-ln -s ~/.vim/vimrc ~/.vimrc
+    if [ -e "${target}" ] && [ ! -L "${target}" ]; then
+        mv $target $target.bak
+    fi
 
-# Update and get the submodules
+    ln -sf ${source} ${target}
+}
+
+function unlink_file {
+    source="${PWD}/$1"
+    target="${HOME}/${1/_/.}"
+
+    if [ -e "${target}.bak" ] && [ -L "${target}" ]; then
+        unlink ${target}
+        mv $target.bak $target
+    fi
+}
+
+if [ "$1" = "vim" ]; then
+    for i in _vim*
+    do
+       link_file $i
+    done
+elif [ "$1" = "restore" ]; then
+    for i in _*
+    do
+        unlink_file $i
+    done
+    exit
+else
+    for i in _*
+    do
+        link_file $i
+    done
+fi
+
 git submodule update --init --recursive
 git submodule foreach --recursive git pull origin master
-
-# Setup command-t for vim
-#TA: Commenting this out for now (trying CtrlP as an alternative)
-#cd .vim/bundle/command-t
-#rake make

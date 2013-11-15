@@ -25,4 +25,5 @@ alias l='ls -CF'
 # The orginal version is saved in .profile.pysave
 PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
 export PATH
+
 alias ctags='/usr/local/bin/ctags'

@@ -26,10 +26,22 @@ Bundle 'sjl/gundo.vim'
 Bundle 'vim-scripts/TaskList.vim'
 Bundle 'vim-scripts/The-NERD-tree'
 Bundle 'vim-scripts/vcscommand.vim'
-Bundle 'sontek/rope-vim'
+Bundle 'vim-scripts/Conque-Shell'
+" Bundle 'sontek/rope-vim'
 Bundle 'kien/ctrlp.vim'
 Bundle 'majutsushi/tagbar'
-Bundle 'davidhalter/jedi-vim'
+" Bundle 'davidhalter/jedi-vim'
+Bundle 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+Bundle 'xolox/vim-misc'
+Bundle 'xolox/vim-session'
+
+" ==========================================================
+" Bundle plugin settings
+" ==========================================================
+" powerline
+"let g:Powerline_symbols = 'fancy'
+" vim-session
+:let g:session_autosave = 'no'
 
 " ==========================================================
 " ??Shortcuts
@@ -39,8 +51,6 @@ let mapleader=","       " change the leader to be a comma vs slash
 " Set directories for backup and swap files
 set backupdir=~/.vim/session/bak
 set dir=~/.vim/session/swp
-
-
 
 " Seriously, guys. It's not like :W is bound to anything anyway.
 command! W :w
@@ -63,6 +73,7 @@ cmap W! w !sudo tee % >/dev/null
 
 " Toggle the tasklist
 map <leader>td <Plug>TaskList
+let g:tlTokenList = ["TODO", "TBD", "FIXME", "XXX"]
 
 " Run pep8
 let g:pep8_map='<leader>8'
@@ -110,7 +121,7 @@ imap <C-W> <C-O><C-W>
 map <leader>t :TagbarToggle<CR>
 
 " Open NerdTree
-map <leader>n :NERDTreeToggle<CR>
+nnoremap <leader>n :NERDTreeToggle<CR>
 
 " Run command-t file search
 " TA: Replaced with CtrlP to avoid Rake dependency
@@ -136,21 +147,18 @@ let g:ctrlp_custom_ignore = {
   \ 'link': 'some_bad_symbolic_links',
   \ }
 
-" Ack searching
-nmap <leader>a <Esc>:Ack!
-
 " Load the Gundo window
 map <leader>g :GundoToggle<CR>
 
 " Load ropevim
 " TA: Struggling to get ropevim working (sticking with ctags for now)
-" source ~/.vim/bundle/ropevim/ftplugin/python/ropevim.vim
+" source ~/.vim/bundle/rope-vim/ftplugin/python/ropevim.vim
 
 " Jump to the definition of whatever the cursor is on
-map <leader>j :RopeGotoDefinition<CR>
+"jmap <leader>j :RopeGotoDefinition<CR>
 
 " Rename whatever the cursor is on (including references to it)
-map <leader>r :RopeRename<CR>
+"map <leader>r :RopeRename<CR>
 
 " ==========================================================
 " Basic Settings
@@ -177,14 +185,17 @@ set wildignore+=eggs/**
 set wildignore+=*.egg-info/**
 set wildignore+=*/pip-cache/**
 
-"TA: set grepprg=ack         " replace the default grep program with ack
+
+" Ack searching
+set grepprg=ack               " replace the default grep program with ack
+nmap <leader>a <Esc>:Ack!
 
 " Set working directory
 nnoremap <leader>. :lcd %:p:h<CR>
 
 " Disable the colorcolumn when switching modes.  Make sure this is the
 " first autocmd for the filetype here
-"autocmd FileType * setlocal colorcolumn=0
+" autocmd FileType * setlocal colorcolumn=0
 
 """ Insert completion
 " don't select first item, follow typing in autocomplete
@@ -212,7 +223,6 @@ set matchpairs+=<:>         " show matching <> (html mainly) as well
 set foldmethod=indent       " allow us to fold on indents
 set foldlevel=99            " don't fold by default
 set textwidth=90           " automatically start new line after textwidth chars
-
 set smartindent             " use smart indent if there is no indent file
 " don't outdent hashes (caused by smartindent usage)
 inoremap # x<BS>#
@@ -265,7 +275,12 @@ if has("gui_running")
         let s:uname = system("uname")
         if s:uname == "Darwin\n"
             " Do Mac stuff here
-            set guifont=Menlo:h12
+            " set guifont=Menlo:h12
+            " set guifont=Source\ Code\ Pro\ Light:h13
+            "
+            " Downloaded the powerline font from:
+            " https://github.com/Lokaltog/powerline-fonts/blob/master/SourceCodePro/Sauce%20Code%20Powerline%20Regular.otf
+            set guifont=Source\ Code\ Pro\ for\ Powerline:h14
         endif
     endif
 
@@ -282,6 +297,7 @@ else
         colorscheme torte
     endif
 endif
+set colorcolumn=90
 
 " Paste from clipboard
 map <leader>p "+p
@@ -298,10 +314,15 @@ nnoremap <leader>S :%s/\s\+$//<cr>:let @/=''<CR>
 " Select the item in the list with enter
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
+" Cycle between buffers
+nmap <leader>b :b#<CR>
+
+" Jump to previous buffer and delete the current buffer
+nmap <leader>bd :bp<CR>:bd#<CR>
+
 " ==========================================================
 " Javascript
 " ==========================================================
-
 
 " Use tab to scroll through autocomplete menus
 "autocmd VimEnter * imap <expr> <Tab> pumvisible() ? "<C-N>" : "<Tab>"
@@ -326,8 +347,6 @@ au BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\
 " Don't let pyflakes use the quickfix window
 let g:pyflakes_use_quickfix = 0
 
-
-
 " Add the virtualenv's site-packages to vim path
 if has('python')
 py << EOF
@@ -347,4 +366,3 @@ if filereadable($VIRTUAL_ENV . '/.vimrc')
     source $VIRTUAL_ENV/.vimrc
 endif
 
-set colorcolumn=90

@@ -34,6 +34,7 @@ Bundle 'majutsushi/tagbar'
 Bundle 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 Bundle 'xolox/vim-misc'
 Bundle 'xolox/vim-session'
+"TODO: Check out klen/python-mode
 
 " ==========================================================
 " Bundle plugin settings
@@ -137,6 +138,8 @@ let g:ctrlp_use_caching = 1
 let g:ctrlp_clear_cache_on_exit = 0
 " Set the directory to store the cache files
 let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
+" Disable startup popop for load of previous session
+let g:session_autoload = 'no'
 " Some key mappings
 nnoremap <leader>f :CtrlP<CR>
 nnoremap <leader>F :CtrlPCurWD<CR>
@@ -280,7 +283,7 @@ if has("gui_running")
             "
             " Downloaded the powerline font from:
             " https://github.com/Lokaltog/powerline-fonts/blob/master/SourceCodePro/Sauce%20Code%20Powerline%20Regular.otf
-            set guifont=Source\ Code\ Pro\ for\ Powerline:h14
+            set guifont=Source\ Code\ Pro\ for\ Powerline:h13
         endif
     endif
 
@@ -291,10 +294,10 @@ else
         let s:uname = system("uname")
         if s:uname == "Darwin\n"
             " Do Mac stuff here
-            colorscheme wombat
+            colorscheme desert
         endif
     else
-        colorscheme torte
+        colorscheme desert
     endif
 endif
 set colorcolumn=90

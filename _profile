@@ -1,5 +1,7 @@
 # Theuns Alberts - Current MacBookPro .profile #
 
+set -o vi
+
 export PS1="\u@\h:\w$ "
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8

@@ -1,3 +1,5 @@
 [user]
 	email = theunsa@gmail.com
 	name = Theuns Alberts
+[push]
+	default = simple

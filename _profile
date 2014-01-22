@@ -1,4 +1,13 @@
-# Theuns Alberts - Current MacBookPro .profile #
+# Theuns Alberts - Current .profile #
+
+# get platform
+platform='unknown'
+unamestr=`uname`
+if [ $unamestr == "Linux" ]; then
+    platform='linux'
+elif [ $unamestr == "Darwin" ]; then
+    platform='osx'
+fi
 
 set -o vi
 
@@ -10,12 +19,14 @@ export LANG=en_US.UTF-8
 export CLICOLOR=1
 export LSCOLORS=GxFxCxDxBxegedabagaced
 
-# always use MacVim
-export EDITOR="mvim -v"
-export VISUAL="mvim -v"
-# - the above does not seem to work (so quick fix)
-alias vi='mvim -v'
-alias v='mvim'
+if [ $platform == "osx" ]; then
+    # always use MacVim
+    export EDITOR="mvim -v"
+    export VISUAL="mvim -v"
+    # - the above does not seem to work (so quick fix)
+    alias vi='mvim -v'
+    alias v='mvim'
+fi
 
 # some more ls aliases
 alias ls='ls -alF'

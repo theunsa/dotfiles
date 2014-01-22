@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 function link_file {
     source="${PWD}/$1"
     target="${HOME}/${1/_/.}"
@@ -38,10 +38,24 @@ else
     done
 fi
 
-# Install the Vundle bundles
+echo "Set up Vundle..."
+VUNDLE_INSTALL_DIR=_vim/bundle/vundle
+if [ -d "$VUNDLE_INSTALL_DIR" ]; then
+    pushd $VUNDLE_INSTALL_DIR
+    git pull
+    popd
+else
+    git clone https://github.com/gmarik/vundle.git $VUNDLE_INSTALL_DIR
+fi
+
+echo "Install Vundle bundles..."
 uname_str=`uname`
 if [[ "$uname_str" == "Darwin" ]]; then
     mvim +BundleInstall +qall
 else
     vi +BundleInstall +qall
 fi
+
+echo "Create backup and swap session folders..."
+mkdir -p _vim/session/bak
+mkdir -p _vim/session/swp

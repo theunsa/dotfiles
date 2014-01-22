@@ -17,30 +17,43 @@ Bundle 'gmarik/vundle'
 " ==========================================================
 " My Bundles
 " ==========================================================
+
+" Code snippets
 Bundle 'ervandew/snipmate.vim'
+" Brackets
 Bundle 'tpope/vim-surround'
+" Insert completion
 Bundle 'ervandew/supertab'
+" Mini buffers list
 Bundle 'sontek/minibufexpl.vim'
+" Ack search
 Bundle 'mileszs/ack.vim'
+" Undo history
 Bundle 'sjl/gundo.vim'
+" List of tasks
 Bundle 'vim-scripts/TaskList.vim'
+" File navigation
 Bundle 'vim-scripts/The-NERD-tree'
+" VCS support
 Bundle 'vim-scripts/vcscommand.vim'
-Bundle 'vim-scripts/Conque-Shell'
-" Bundle 'sontek/rope-vim'
+" Full path fuzzy file etc finder
 Bundle 'kien/ctrlp.vim'
+" Sidebar with tags of file
 Bundle 'majutsushi/tagbar'
-" Bundle 'davidhalter/jedi-vim'
+" Statusline
 Bundle 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 Bundle 'xolox/vim-misc'
+" Manage vim sessions
 Bundle 'xolox/vim-session'
 "TODO: Check out klen/python-mode
+" Bundle 'sontek/rope-vim'
+" Bundle 'davidhalter/jedi-vim'
 
 " ==========================================================
 " Bundle plugin settings
 " ==========================================================
 " powerline
-"let g:Powerline_symbols = 'fancy'
+let g:Powerline_symbols = 'fancy'
 " vim-session
 :let g:session_autosave = 'no'
 
@@ -295,12 +308,18 @@ else
         if s:uname == "Darwin\n"
             " Do Mac stuff here
             colorscheme desert
+        else
+            " Do Linux stuff here
+            colorscheme desert
         endif
     else
         colorscheme desert
     endif
 endif
-set colorcolumn=90
+
+if exists("&colorcolumn")
+    set colorcolumn=90
+endif
 
 " Paste from clipboard
 map <leader>p "+p

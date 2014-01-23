@@ -55,7 +55,3 @@ if [[ "$uname_str" == "Darwin" ]]; then
 else
     vi +BundleInstall +qall
 fi
-
-echo "Create backup and swap session folders..."
-mkdir -p _vim/session/bak
-mkdir -p _vim/session/swp

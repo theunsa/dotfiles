@@ -1,0 +1,2 @@
+# Make all readline based applications use vi style keybindings
+set editing-mode vi

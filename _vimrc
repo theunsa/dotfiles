@@ -62,10 +62,6 @@ let g:Powerline_symbols = 'fancy'
 " ==========================================================
 let mapleader=","       " change the leader to be a comma vs slash
 
-" Set directories for backup and swap files
-set backupdir=~/.vim/session/bak
-set dir=~/.vim/session/swp
-
 " Seriously, guys. It's not like :W is bound to anything anyway.
 command! W :w
 
@@ -201,6 +197,10 @@ set wildignore+=eggs/**
 set wildignore+=*.egg-info/**
 set wildignore+=*/pip-cache/**
 
+" Disable backup and swap files
+" (I save a lot and there is always version control and Gundo helps too)
+set nobackup
+set noswapfile
 
 " Ack searching
 set grepprg=ack               " replace the default grep program with ack

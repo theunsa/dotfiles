@@ -292,6 +292,7 @@ if has("gui_running")
         if s:uname == "Darwin\n"
             " Do Mac stuff here
             " set guifont=Menlo:h12
+            " set guifont=Ubuntu\ Mono:h14
             " set guifont=Source\ Code\ Pro\ Light:h13
             "
             " Downloaded the powerline font from:

@@ -1,14 +1,168 @@
-" ==========================================================
-" .vimrc of Theuns Alberts
-" ==========================================================
+" ============================================================================
+" Theuns Alberts .vimrc
+" ============================================================================
+" Based on .vimrc files from various sources:
+" - https://github.com/mbrochh/vim-as-a-python-ide
+" - http://nvie.com/posts/how-i-boosted-my-vim/
+" - https://github.com/mitsuhiko/dotfiles
+" - http://sontek.net/blog/detail/turning-vim-into-a-modern-python-ide
+" ============================================================================
 
-set nocompatible        " Don't be compatible with vi
+" This must be first, because it changes other options as side effect
+set nocompatible
+
+" Automatic reloading of .vimrc
+autocmd! bufwritepost ~/.vimrc source %
+" au BufWritePost .vimrc so ~/.vimrc
+
+" Better copy & paste
+" When you want to paste large blocks of code into vim, press F2 before you
+" paste. At the bottom you should see ``-- INSERT (paste) --``.
+set pastetoggle=<F2>
+
+" Rebind <Leader> key
+let mapleader = ","
+
+" Auto change into the directory of the file of the buffer 
+set autochdir
+
+" Set terminal title to reflect name of current buffer
+set title
+
+" Bind nohl
+" Removes highlight of your last search
+" ``<C>`` stands for ``CTRL`` and therefore ``<C-n>`` stands for ``CTRL+n``
+"" noremap <C-n> :nohl<cr>
+"" vnoremap <C-n> :nohl<cr>
+"" inoremap <C-n> :nohl<cr>
+
+
+" Quicksave command
+nnoremap <cr> <esc>:w<cr>
+
+" Quick quit command
+"" noremap <Leader>e :quit<cr>  " Quit current window
+"" noremap <Leader>E :qa!<cr>   " Quit all windows
+
+
+" bind Ctrl+<movement> keys to move around the windows, instead of using Ctrl+w + <movement>
+" Every unnecessary keystroke that can be saved is good for your health :)
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+map <C-h> <C-w>h
+
+
+" easier moving between tabs
+"" map <Leader>n <esc>:tabprevious<cr>
+"" map <Leader>m <esc>:tabnext<cr>
+map <Leader>p <esc>:bp<cr>
+map <Leader>n <esc>:bn<cr>
+
+" Cursor jumps to next row when long lines are wrapped
+nnoremap j gj
+nnoremap k gk
+
+" map sort function to a key
+"" vnoremap <Leader>s :sort<cr>
+
+
+" easier moving of code blocks
+" Try to go into visual mode (v), thenselect several lines of code here and
+" then press ``>`` several times.
+vnoremap < <gv  " better indentation
+vnoremap > >gv  " better indentation
+
+
+" Show whitespace
+" MUST be inserted BEFORE the colorscheme command
+"" autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+"" au InsertLeave * match ExtraWhitespace /\s\+$/
+
+
+" Color scheme
+" mkdir -p ~/.vim/colors && cd ~/.vim/colors
+" wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
+set t_Co=256
+color wombat256mod
+
+
+" Enable syntax highlighting
+" You need to reload this file for the change to apply
+filetype off
+filetype plugin indent on
+syntax on
+
+
+" Showing line numbers and length
+set number  " show line numbers
+set tw=79   " width of document (used by gd)
+set wrap  " wrap long lines on load
+set colorcolumn=80
+highlight ColorColumn ctermbg=233
+
+
+" Remember more commands and search history
+set history=500
+set undolevels=500
+
+" Don't beep
+set visualbell
+set noerrorbells
+
+
+" Real programmers don't use TABs but spaces
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set shiftround
+set expandtab
+
+
+" Make search case insensitive
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+
+" Disable stupid backup and swap files - they trigger too many events
+" for file system watchers
+set nobackup
+set nowritebackup
+set noswapfile
+
+" Use Q for formatting the current paragraph (or selection)
+vmap Q gq
+nmap Q gqap
+
+
+" Setup Pathogen to manage your plugins
+" mkdir -p ~/.vim/autoload ~/.vim/bundle
+" curl -so ~/.vim/autoload/pathogen.vim https://raw.github.com/tpope/vim-pathogen/HEAD/autoload/pathogen.vim
+" Now you can install any plugin into a .vim/bundle/plugin-name/ folder
+"" call pathogen#infect()
+
+
+" ============================================================================
+" Python IDE Setup
+" ============================================================================
+
+
+"" inoremap <silent><C-j> <C-R>=OmniPopup('j')<cr>
+"" inoremap <silent><C-k> <C-R>=OmniPopup('k')<cr>
+
+
+" Python folding
+" mkdir -p ~/.vim/ftplugin
+" wget -O ~/.vim/ftplugin/python_editing.vim http://www.vim.org/scripts/download_script.php?src_id=5492
+"" set nofoldenable
 
 " ==========================================================
 " Vundle
 " ==========================================================
 " Configure Vundle
-filetype off            " Required by Vundle
+filetype off " Required by Vundle
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 " Let Vundle manage Vundle (required!)
@@ -17,375 +171,98 @@ Bundle 'gmarik/vundle'
 " ==========================================================
 " My Bundles
 " ==========================================================
+" Jedi Vim
+Bundle 'davidhalter/jedi-vim'
+autocmd FileType python setlocal completeopt-=preview "disable docstring popup
+let g:jedi#usages_command = "<leader>z"
+let g:jedi#popup_on_dot = 0
+let g:jedi#popup_select_first = 0
+" Better navigating through omnicomplete option list
+" See http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
+set completeopt=longest,menuone
+function! OmniPopup(action)
+    if pumvisible()
+        if a:action == 'j'
+            return "\<C-N>"
+        elseif a:action == 'k'
+            return "\<C-P>"
+        endif
+    endif
+    return a:action
+endfunction
 
-" Code snippets
-Bundle 'ervandew/snipmate.vim'
-" Brackets
-Bundle 'tpope/vim-surround'
-" Insert completion
-Bundle 'ervandew/supertab'
-" Mini buffers list
-Bundle 'sontek/minibufexpl.vim'
-" Ack search
-Bundle 'mileszs/ack.vim'
-" Undo history
-Bundle 'sjl/gundo.vim'
-" List of tasks
-Bundle 'vim-scripts/TaskList.vim'
-" File navigation
-Bundle 'vim-scripts/The-NERD-tree'
-" VCS support
-Bundle 'vim-scripts/vcscommand.vim'
-" Full path fuzzy file etc finder
-Bundle 'kien/ctrlp.vim'
-" Sidebar with tags of file
-Bundle 'majutsushi/tagbar'
-" Statusline
+" Powerline
 Bundle 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
-Bundle 'xolox/vim-misc'
-" Manage vim sessions
-Bundle 'xolox/vim-session'
-"TODO: Check out klen/python-mode
-" Bundle 'sontek/rope-vim'
-" Bundle 'davidhalter/jedi-vim'
+set laststatus=2 " Always display the statusline in all windows
+set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
+" Fix terminal timeout when pressing escape (i.e. getting rid of delay after ESC
+" is pressed to leave insert mode in the terminal)
+if ! has('gui_running')
+    set ttimeoutlen=10
+    augroup FastEscape
+        autocmd!
+        au InsertEnter * set timeoutlen=0
+        au InsertLeave * set timeoutlen=1000
+    augroup END
+endif
 
-" ==========================================================
-" Bundle plugin settings
-" ==========================================================
-" powerline
-let g:Powerline_symbols = 'fancy'
-" vim-session
-:let g:session_autosave = 'no'
-
-" ==========================================================
-" ??Shortcuts
-" ==========================================================
-let mapleader=","       " change the leader to be a comma vs slash
-
-" Seriously, guys. It's not like :W is bound to anything anyway.
-command! W :w
-
-fu! SplitScroll()
-    :wincmd v
-    :wincmd w
-    execute "normal! \<C-d>"
-    :set scrollbind
-    :wincmd w
-    :set scrollbind
-endfu
-
-nmap <leader>sb :call SplitScroll()<CR>
-
-"<CR><C-w>l<C-f>:set scrollbind<CR>
-
-" sudo write this
-cmap W! w !sudo tee % >/dev/null
-
-" Toggle the tasklist
-map <leader>td <Plug>TaskList
-let g:tlTokenList = ["TODO", "TBD", "FIXME", "XXX"]
-
-" Run pep8
-let g:pep8_map='<leader>8'
-
-" run py.test's
-nmap <silent><Leader>tf <Esc>:Pytest file<CR>
-nmap <silent><Leader>tc <Esc>:Pytest class<CR>
-nmap <silent><Leader>tm <Esc>:Pytest method<CR>
-nmap <silent><Leader>tn <Esc>:Pytest next<CR>
-nmap <silent><Leader>tp <Esc>:Pytest previous<CR>
-nmap <silent><Leader>te <Esc>:Pytest error<CR>
-
-" Automatically remove trailing whitespace chars everytime :w command is issued
-
-" Maps for resizing a window split
-nmap <C-W><Up> 10<C-W>+
-nmap <C-W><Down> 10<C-W>-
-nmap <C-W><Left> 10<C-W><
-nmap <C-W><Right> 10<C-W>>
-
-" Run django tests
-map <leader>dt :set makeprg=python\ manage.py\ test\|:call MakeGreen()<CR>
-
-" Reload Vimrc
-map <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
-
-" open/close the quickfix window
-nmap <leader>c :copen<CR>
-nmap <leader>cc :cclose<CR>
-
-" for when we forget to use sudo to open/edit a file
-cmap w!! w !sudo tee % >/dev/null
-
-" ctrl-jklm  changes to that split
-map <c-j> <c-w>j
-map <c-k> <c-w>k
-map <c-l> <c-w>l
-map <c-h> <c-w>h
-
-" and lets make these all work in insert mode too ( <C-O> makes next cmd
-"  happen as if in command mode )
-imap <C-W> <C-O><C-W>
-
-" Open TagBar
-map <leader>t :TagbarToggle<CR>
-
-" Open NerdTree
-nnoremap <leader>n :NERDTreeToggle<CR>
-
-" Run command-t file search
-" TA: Replaced with CtrlP to avoid Rake dependency
-"map <leader>f :CommandT<CR>
-" CtrlP configuration:
-" Set this to 1 to set searching by filename (as opposed to full path) as the
-" default
-let g:ctrlp_by_filename = 1
-" Enable per-session caching:
-let g:ctrlp_use_caching = 1
-" Set this to 0 to enable cross-session caching by not deleting the cache files
-" upon exiting Vim
-let g:ctrlp_clear_cache_on_exit = 0
-" Set the directory to store the cache files
-let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
-" Disable startup popop for load of previous session
-let g:session_autoload = 'no'
-" Some key mappings
-nnoremap <leader>f :CtrlP<CR>
-nnoremap <leader>F :CtrlPCurWD<CR>
-" CtrlP ignore options
+" Ctrl-P fuzzy file finder
+Bundle 'kien/ctrlp.vim.git'
+nnoremap <leader>f :CtrlP<cr>
+nnoremap <leader>F :CtrlPCurWD<cr>
+let g:ctrlp_max_height = 30
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
   \ 'file': '\v\.(exe|so|dll)$',
   \ 'link': 'some_bad_symbolic_links',
   \ }
 
-" Load the Gundo window
-map <leader>g :GundoToggle<CR>
+" Code snippets
+Bundle 'ervandew/snipmate.vim'
 
-" Load ropevim
-" TA: Struggling to get ropevim working (sticking with ctags for now)
-" source ~/.vim/bundle/rope-vim/ftplugin/python/ropevim.vim
+" Brackets
+Bundle 'tpope/vim-surround'
 
-" Jump to the definition of whatever the cursor is on
-"jmap <leader>j :RopeGotoDefinition<CR>
+" Insert completion
+" Bundle 'ervandew/supertab'
 
-" Rename whatever the cursor is on (including references to it)
-"map <leader>r :RopeRename<CR>
+" Mini buffers list
+Bundle 'sontek/minibufexpl.vim'
 
-" ==========================================================
-" Basic Settings
-" ==========================================================
-syntax on                     " syntax highlighing
-filetype on                   " try to detect filetypes
-filetype plugin indent on     " enable loading indent file for filetype
-set number                    " Display line numbers
-set numberwidth=1             " using only 1 column (and 1 space) while possible
-set background=dark           " We are using dark background in vim
-set title                     " show title in console title bar
-set wildmenu                  " Menu completion in command mode on <Tab>
-set wildmode=full             " <Tab> cycles between all matching choices.
-set hidden                    " Hide buffers instead of closing them
+" Ack search
+Bundle 'mileszs/ack.vim'
+set grepprg=ack " replace the default grep program with ack
+nmap <leader>a <Esc>:Ack!
 
-" don't bell or blink
-set noerrorbells
-set vb t_vb=
+" Undo history
+Bundle 'sjl/gundo.vim'
+
+" List of tasks
+" Bundle 'vim-scripts/TaskList.vim'
+
+" Sidebar with tags of file
+Bundle 'majutsushi/tagbar'
+map <leader>t :TagbarToggle<cr>
+
+" File navigation
+Bundle 'vim-scripts/The-NERD-tree'
+nnoremap <leader>n :NERDTreeToggle<cr>
+
+" Vim and tmux together in harmony
+Bundle 'christoomey/vim-tmux-navigator'
+
+" Emmet like (HTML editing) support for vim
+Bundle "mattn/emmet-vim"
+
+" Hide matches on <leader>space
+nnoremap <leader><space> :nohlsearch<cr>
+set hidden " Hide buffers instead of closing them
 
 " Ignore these files when completing
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.tar.gz " MacOSX/Linux
+set wildignore+=*_build/*
+set wildignore+=*/coverage/*
 set wildignore+=*.o,*.obj,.git,*.pyc
-set wildignore+=*.so,*.swp,*.zip,*.tar.gz
 set wildignore+=eggs/**
 set wildignore+=*.egg-info/**
 set wildignore+=*/pip-cache/**
-
-" Disable backup and swap files
-" (I save a lot and there is always version control and Gundo helps too)
-set nobackup
-set noswapfile
-
-" Ack searching
-set grepprg=ack               " replace the default grep program with ack
-nmap <leader>a <Esc>:Ack!
-
-" Set working directory
-nnoremap <leader>. :lcd %:p:h<CR>
-
-" Disable the colorcolumn when switching modes.  Make sure this is the
-" first autocmd for the filetype here
-" autocmd FileType * setlocal colorcolumn=0
-
-""" Insert completion
-" don't select first item, follow typing in autocomplete
-set completeopt=menuone,longest,preview
-set pumheight=6             " Keep a small completion window
-
-
-""" Moving Around/Editing
-set cursorline              " have a line indicate the cursor location
-set ruler                   " show the cursor position all the time
-set nostartofline           " Avoid moving cursor to BOL when jumping around
-set virtualedit=block       " Let cursor move past the last char in <C-v> mode
-set scrolloff=3             " Keep 3 context lines above and below the cursor
-set backspace=2             " Allow backspacing over autoindent, EOL, and BOL
-set showmatch               " Briefly jump to a paren once it's balanced
-set nowrap                  " don't wrap text
-set linebreak               " don't wrap textin the middle of a word
-set autoindent              " always set autoindenting on
-set tabstop=4               " <tab> inserts 4 spaces
-set shiftwidth=4            " but an indent level is 2 spaces wide.
-set softtabstop=4           " <BS> over an autoindent deletes both spaces.
-set expandtab               " Use spaces, not tabs, for autoindent/tab key.
-set shiftround              " rounds indent to a multiple of shiftwidth
-set matchpairs+=<:>         " show matching <> (html mainly) as well
-set foldmethod=indent       " allow us to fold on indents
-set foldlevel=99            " don't fold by default
-set textwidth=90           " automatically start new line after textwidth chars
-set smartindent             " use smart indent if there is no indent file
-" don't outdent hashes (caused by smartindent usage)
-inoremap # x<BS>#
-
-" close preview window automatically when we move around
-autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-
-"""" Reading/Writing
-set noautowrite             " Never write a file unless I request it.
-set noautowriteall          " NEVER.
-set noautoread              " Don't automatically re-read changed files.
-set modeline                " Allow vim options to be embedded in files;
-set modelines=5             " they must be within the first or last 5 lines.
-set ffs=unix,dos,mac        " Try recognizing dos, unix, and mac line endings.
-
-"""" Messages, Info, Status
-set ls=2                    " allways show status line
-set vb t_vb=                " Disable all bells.  I hate ringing/flashing.
-set confirm                 " Y-N-C prompt if closing with unsaved changes.
-set showcmd                 " Show incomplete normal mode commands as I type.
-set report=0                " : commands always print changed line count.
-set shortmess+=a            " Use [+]/[RO]/[w] for modified/readonly/written.
-set ruler                   " Show some info, even without statuslines.
-set laststatus=2            " Always show statusline, even if only 1 window.
-" set statusline=[%l,%v\ %P%M]\ %f\ %r%h%w\ (%{&ff})\ %{fugitive#statusline()}
-
-" displays tabs with :set list & displays when a line runs off-screen
-set listchars=tab:>-,trail:-,precedes:<,extends:> ",eof:$
-set list
-
-""" Searching and Patterns
-set ignorecase              " Default to using case insensitive searches,
-set smartcase               " unless uppercase letters are used in the regex.
-set smarttab                " Handle tabs more intelligently
-set hlsearch                " Highlight searches by default.
-set incsearch               " Incrementally search while typing a /regex
-
-"""" Display
-if has("gui_running")
-    colorscheme wombat
-    " Wombat colorscheme cursor does not have enough contrast for me
-    :highlight Cursor guifg=black guibg=white
-    " Wombat red color of colorcolumn too intense
-    :highlight ColorColumn guibg=#222222
-    " Remove menu bar
-    set guioptions-=m
-    set lines =999 columns=999
-    if has("unix")
-        let s:uname = system("uname")
-        if s:uname == "Darwin\n"
-            " Do Mac stuff here
-            " set guifont=Menlo:h12
-            " set guifont=Ubuntu\ Mono:h14
-            " set guifont=Source\ Code\ Pro\ Light:h13
-            "
-            " Downloaded the powerline font from:
-            " https://github.com/Lokaltog/powerline-fonts/blob/master/SourceCodePro/Sauce%20Code%20Powerline%20Regular.otf
-            set guifont=Source\ Code\ Pro\ for\ Powerline:h13
-        endif
-    endif
-
-    " Remove toolbar
-    set guioptions-=T
-else
-    if has("unix")
-        let s:uname = system("uname")
-        if s:uname == "Darwin\n"
-            " Do Mac stuff here
-            colorscheme desert
-        else
-            " Do Linux stuff here
-            colorscheme desert
-        endif
-    else
-        colorscheme desert
-    endif
-endif
-
-if exists("&colorcolumn")
-    set colorcolumn=90
-endif
-
-" Paste from clipboard
-map <leader>p "+p
-
-" Quit window on <leader>q
-nnoremap <leader>q :q<CR>
-
-" hide matches on <leader>space
-nnoremap <leader><space> :nohlsearch<cr>
-
-" Remove trailing whitespace on <leader>S
-nnoremap <leader>S :%s/\s\+$//<cr>:let @/=''<CR>
-
-" Select the item in the list with enter
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" Cycle between buffers
-nmap <leader>b :b#<CR>
-
-" Jump to previous buffer and delete the current buffer
-nmap <leader>bd :bp<CR>:bd#<CR>
-
-" ==========================================================
-" Javascript
-" ==========================================================
-
-" Use tab to scroll through autocomplete menus
-"autocmd VimEnter * imap <expr> <Tab> pumvisible() ? "<C-N>" : "<Tab>"
-"autocmd VimEnter * imap <expr> <S-Tab> pumvisible() ? "<C-P>" : "<S-Tab>"
-
-let g:acp_completeoptPreview=1
-
-" ===========================================================
-" FileType specific changes
-" ============================================================
-" Mako/HTML
-autocmd BufNewFile,BufRead *.mako,*.mak,*.jinja2 setlocal ft=html
-autocmd FileType html,xhtml,xml,css setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
-
-" Python
-"au BufRead *.py compiler nose
-au FileType python set omnifunc=pythoncomplete#Complete
-let g:SuperTabDefaultCompletion = "context"
-au FileType python setlocal expandtab shiftwidth=4 tabstop=8 softtabstop=4 smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-au FileType coffee setlocal expandtab shiftwidth=4 tabstop=8 softtabstop=4 smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-au BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
-" Don't let pyflakes use the quickfix window
-let g:pyflakes_use_quickfix = 0
-
-" Add the virtualenv's site-packages to vim path
-if has('python')
-py << EOF
-import os.path
-import sys
-import vim
-if 'VIRTUAL_ENV' in os.environ:
-    project_base_dir = os.environ['VIRTUAL_ENV']
-    sys.path.insert(0, project_base_dir)
-    activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-    execfile(activate_this, dict(__file__=activate_this))
-EOF
-endif
-
-" Load up virtualenv's vimrc if it exists
-if filereadable($VIRTUAL_ENV . '/.vimrc')
-    source $VIRTUAL_ENV/.vimrc
-endif
-

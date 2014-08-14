@@ -21,9 +21,8 @@ export LSCOLORS=GxFxCxDxBxegedabagaced
 
 if [ $platform == "osx" ]; then
     # always use MacVim
-    export EDITOR="mvim -v"
-    export VISUAL="mvim -v"
-    # - the above does not seem to work (so quick fix)
+    export EDITOR=vim
+    alias vim='mvim -v'
     alias vi='mvim -v'
     alias v='mvim'
 fi

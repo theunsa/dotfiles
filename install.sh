@@ -39,19 +39,19 @@ else
 fi
 
 echo "Set up Vundle..."
-VUNDLE_INSTALL_DIR=_vim/bundle/vundle
+VUNDLE_INSTALL_DIR=_vim/bundle/Vundle.vim
 if [ -d "$VUNDLE_INSTALL_DIR" ]; then
     pushd $VUNDLE_INSTALL_DIR
     git pull
     popd
 else
-    git clone https://github.com/gmarik/vundle.git $VUNDLE_INSTALL_DIR
+    git clone https://github.com/gmarik/Vundle.vim.git $VUNDLE_INSTALL_DIR
 fi
 
 echo "Install Vundle bundles..."
 uname_str=`uname`
 if [[ "$uname_str" == "Darwin" ]]; then
-    mvim +BundleInstall +qall
+    mvim +PluginInstall +qall
 else
-    vi +BundleInstall +qall
+    vi +PluginInstall +qall
 fi

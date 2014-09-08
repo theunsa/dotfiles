@@ -11,10 +11,6 @@
 " This must be first, because it changes other options as side effect
 set nocompatible
 
-" Automatic reloading of .vimrc
-autocmd! bufwritepost ~/.vimrc source %
-" au BufWritePost .vimrc so ~/.vimrc
-
 " Better copy & paste
 " When you want to paste large blocks of code into vim, press F2 before you
 " paste. At the bottom you should see ``-- INSERT (paste) --``.
@@ -36,6 +32,21 @@ set title
 "" vnoremap <C-n> :nohl<cr>
 "" inoremap <C-n> :nohl<cr>
 
+" bind Ctrl+<movement> keys to move around the windows, instead of using Ctrl+w + <movement>
+" Every unnecessary keystroke that can be saved is good for your health :)
+map <C-J> <C-W>j<C-W>_
+map <C-K> <C-W>k<C-W>_
+map <C-L> <C-W>l<C-W>_
+map <C-H> <C-W>h<C-W>_
+
+" Open new split panes to right and bottom, which feels more natural than Vim’s
+" default
+set splitbelow
+set splitright
+
+" Making it so ; works like : for commands. Saves typing and
+" eliminates :W style typos due to lazy holding shift.
+nnoremap ; :
 
 " Quicksave command
 nnoremap <cr> <esc>:w<cr>
@@ -43,15 +54,6 @@ nnoremap <cr> <esc>:w<cr>
 " Quick quit command
 "" noremap <Leader>e :quit<cr>  " Quit current window
 "" noremap <Leader>E :qa!<cr>   " Quit all windows
-
-
-" bind Ctrl+<movement> keys to move around the windows, instead of using Ctrl+w + <movement>
-" Every unnecessary keystroke that can be saved is good for your health :)
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
-map <C-h> <C-w>h
-
 
 " easier moving between tabs
 "" map <Leader>n <esc>:tabprevious<cr>
@@ -62,6 +64,13 @@ map <Leader>n <esc>:bn<cr>
 " Cursor jumps to next row when long lines are wrapped
 nnoremap j gj
 nnoremap k gk
+
+" Stupid shift key fixes
+cmap W w                        
+cmap WQ wq
+cmap wQ wq
+cmap Q q
+cmap Tabe tabe
 
 " map sort function to a key
 "" vnoremap <Leader>s :sort<cr>
@@ -88,9 +97,6 @@ color wombat256mod
 
 
 " Enable syntax highlighting
-" You need to reload this file for the change to apply
-filetype off
-filetype plugin indent on
 syntax on
 
 
@@ -138,12 +144,8 @@ set noswapfile
 vmap Q gq
 nmap Q gqap
 
-
-" Setup Pathogen to manage your plugins
-" mkdir -p ~/.vim/autoload ~/.vim/bundle
-" curl -so ~/.vim/autoload/pathogen.vim https://raw.github.com/tpope/vim-pathogen/HEAD/autoload/pathogen.vim
-" Now you can install any plugin into a .vim/bundle/plugin-name/ folder
-"" call pathogen#infect()
+" Enable mouse scrolling
+set mouse=a
 
 
 " ============================================================================
@@ -165,36 +167,36 @@ nmap Q gqap
 " ==========================================================
 " Configure Vundle
 filetype off " Required by Vundle
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 " Let Vundle manage Vundle (required!)
-Bundle 'gmarik/vundle'
+Plugin 'gmarik/Vundle.vim'
 
 " ==========================================================
-" My Bundles
+" My Vundle Plugins
 " ==========================================================
 " Jedi Vim
-Bundle 'davidhalter/jedi-vim'
-autocmd FileType python setlocal completeopt-=preview "disable docstring popup
-let g:jedi#usages_command = "<leader>z"
-let g:jedi#popup_on_dot = 0
-let g:jedi#popup_select_first = 0
-" Better navigating through omnicomplete option list
-" See http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
-set completeopt=longest,menuone
-function! OmniPopup(action)
-    if pumvisible()
-        if a:action == 'j'
-            return "\<C-N>"
-        elseif a:action == 'k'
-            return "\<C-P>"
-        endif
-    endif
-    return a:action
-endfunction
+"Plugin 'davidhalter/jedi-vim'
+"autocmd FileType python setlocal completeopt-=preview "disable docstring popup
+"let g:jedi#usages_command = "<leader>z"
+"let g:jedi#popup_on_dot = 0
+"let g:jedi#popup_select_first = 0
+"" Better navigating through omnicomplete option list
+"" See http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
+"set completeopt=longest,menuone
+"function! OmniPopup(action)
+"    if pumvisible()
+"        if a:action == 'j'
+"            return "\<C-N>"
+"        elseif a:action == 'k'
+"            return "\<C-P>"
+"        endif
+"    endif
+"    return a:action
+"endfunction
 
 " Powerline
-Bundle 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 set laststatus=2 " Always display the statusline in all windows
 set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
 " Fix terminal timeout when pressing escape (i.e. getting rid of delay after ESC
@@ -209,9 +211,10 @@ if ! has('gui_running')
 endif
 
 " Ctrl-P fuzzy file finder
-Bundle 'kien/ctrlp.vim.git'
-nnoremap <leader>f :CtrlP<cr>
-nnoremap <leader>F :CtrlPCurWD<cr>
+Plugin 'kien/ctrlp.vim.git'
+" TA: These are overriding easymotion (try to do without them for a while)
+" nnoremap <leader>f :CtrlP<cr>
+" nnoremap <leader>F :CtrlPCurWD<cr>
 let g:ctrlp_max_height = 30
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
@@ -219,42 +222,84 @@ let g:ctrlp_custom_ignore = {
   \ 'link': 'some_bad_symbolic_links',
   \ }
 
+" Git tools
+Plugin 'tpope/vim-fugitive'
+
+" Easy motion
+Plugin 'Lokaltog/vim-easymotion'
+map <Leader> <Plug>(easymotion-prefix)
+
+"TComment
+Plugin 'tomtom/tcomment_vim'
+
 " Code snippets
-Bundle 'ervandew/snipmate.vim'
+" Track the engine.
+Plugin 'SirVer/ultisnips'
+" Snippets are separated from the engine.
+Plugin 'honza/vim-snippets'
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+" Let :UltiSnipsEdit split the window.
+let g:UltiSnipsEditSplit="vertical"
+"set runtimepath+=~/.vim/bundle/vim-snippets/UltiSnips
+
 
 " Brackets
-Bundle 'tpope/vim-surround'
+Plugin 'tpope/vim-surround'
 
 " Insert completion
-" Bundle 'ervandew/supertab'
+Plugin 'ervandew/supertab'
 
 " Mini buffers list
-Bundle 'sontek/minibufexpl.vim'
+Plugin 'sontek/minibufexpl.vim'
 
 " Ack search
-Bundle 'mileszs/ack.vim'
+Plugin 'mileszs/ack.vim'
 set grepprg=ack " replace the default grep program with ack
 nmap <leader>a <Esc>:Ack!
 
 " Undo history
-Bundle 'sjl/gundo.vim'
+Plugin 'sjl/gundo.vim'
 
 " List of tasks
-" Bundle 'vim-scripts/TaskList.vim'
+" Plugin 'vim-scripts/TaskList.vim'
 
 " Sidebar with tags of file
-Bundle 'majutsushi/tagbar'
+Plugin 'majutsushi/tagbar'
 map <leader>t :TagbarToggle<cr>
 
 " File navigation
-Bundle 'vim-scripts/The-NERD-tree'
+Plugin 'vim-scripts/The-NERD-tree'
 nnoremap <leader>n :NERDTreeToggle<cr>
 
 " Vim and tmux together in harmony
-Bundle 'christoomey/vim-tmux-navigator'
+Plugin 'christoomey/vim-tmux-navigator'
+
+" Code completion
+Plugin 'Valloric/YouCompleteMe'
 
 " Emmet like (HTML editing) support for vim
-Bundle "mattn/emmet-vim"
+Plugin 'mattn/emmet-vim'
+
+" Formatting for js
+Plugin 'pangloss/vim-javascript'
+
+" JSHint
+" (Needs jshint: npm install -g jshint)
+Plugin 'walm/jshint.vim'
+
+" Python-mode for python development
+"TA-Temp disable:Plugin 'klen/python-mode'
+"set nofoldenable
+
+" ==========================================================
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" ==========================================================
+
 
 " Hide matches on <leader>space
 nnoremap <leader><space> :nohlsearch<cr>
@@ -268,3 +313,7 @@ set wildignore+=*.o,*.obj,.git,*.pyc
 set wildignore+=eggs/**
 set wildignore+=*.egg-info/**
 set wildignore+=*/pip-cache/**
+
+
+" TA:Theme to look at later
+" https://github.com/d11wtq/tomorrow-theme-vim

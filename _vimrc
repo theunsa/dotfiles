@@ -25,14 +25,8 @@ set autochdir
 " Set terminal title to reflect name of current buffer
 set title
 
-" Bind nohl
-" Removes highlight of your last search
-" ``<C>`` stands for ``CTRL`` and therefore ``<C-n>`` stands for ``CTRL+n``
-"" noremap <C-n> :nohl<cr>
-"" vnoremap <C-n> :nohl<cr>
-"" inoremap <C-n> :nohl<cr>
-
-" bind Ctrl+<movement> keys to move around the windows, instead of using Ctrl+w + <movement>
+" bind Ctrl+<movement> keys to move around the windows, instead of using
+" Ctrl+w + <movement>.
 " Every unnecessary keystroke that can be saved is good for your health :)
 map <C-J> <C-W>j<C-W>_
 map <C-K> <C-W>k<C-W>_
@@ -55,9 +49,7 @@ nnoremap <cr> <esc>:w<cr>
 "" noremap <Leader>e :quit<cr>  " Quit current window
 "" noremap <Leader>E :qa!<cr>   " Quit all windows
 
-" easier moving between tabs
-"" map <Leader>n <esc>:tabprevious<cr>
-"" map <Leader>m <esc>:tabnext<cr>
+" Easier moving between buffers 
 map <Leader>p <esc>:bp<cr>
 map <Leader>n <esc>:bn<cr>
 
@@ -72,33 +64,26 @@ cmap wQ wq
 cmap Q q
 cmap Tabe tabe
 
-" map sort function to a key
-"" vnoremap <Leader>s :sort<cr>
-
-
-" easier moving of code blocks
+" Easier indentation of code blocks
 " Try to go into visual mode (v), thenselect several lines of code here and
 " then press ``>`` several times.
-vnoremap < <gv  " better indentation
-vnoremap > >gv  " better indentation
-
+vnoremap < <gv
+vnoremap > >gv
 
 " Show whitespace
 " MUST be inserted BEFORE the colorscheme command
-"" autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-"" au InsertLeave * match ExtraWhitespace /\s\+$/
-
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+au InsertLeave * match ExtraWhitespace /\s\+$/
 
 " Color scheme
+" TODO: Add this to install script
 " mkdir -p ~/.vim/colors && cd ~/.vim/colors
 " wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
 set t_Co=256
 color wombat256mod
 
-
 " Enable syntax highlighting
 syntax on
-
 
 " Showing line numbers and length
 set number  " show line numbers
@@ -109,7 +94,6 @@ if version >= 703
 endif
 highlight ColorColumn ctermbg=233
 
-
 " Remember more commands and search history
 set history=500
 set undolevels=500
@@ -118,21 +102,18 @@ set undolevels=500
 set visualbell
 set noerrorbells
 
-
-" Real programmers don't use TABs but spaces
+" Always use spaces (NEVER use tabs)
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
 set shiftround
 set expandtab
 
-
 " Make search case insensitive
 set hlsearch
 set incsearch
 set ignorecase
 set smartcase
-
 
 " Disable stupid backup and swap files - they trigger too many events
 " for file system watchers
@@ -147,17 +128,12 @@ nmap Q gqap
 " Enable mouse scrolling
 set mouse=a
 
-
 " ============================================================================
 " Python IDE Setup
 " ============================================================================
 
-
-"" inoremap <silent><C-j> <C-R>=OmniPopup('j')<cr>
-"" inoremap <silent><C-k> <C-R>=OmniPopup('k')<cr>
-
-
 " Python folding
+" TODO: review this and add to install script if folding is useful
 " mkdir -p ~/.vim/ftplugin
 " wget -O ~/.vim/ftplugin/python_editing.vim http://www.vim.org/scripts/download_script.php?src_id=5492
 "" set nofoldenable
@@ -175,25 +151,6 @@ Plugin 'gmarik/Vundle.vim'
 " ==========================================================
 " My Vundle Plugins
 " ==========================================================
-" Jedi Vim
-"Plugin 'davidhalter/jedi-vim'
-"autocmd FileType python setlocal completeopt-=preview "disable docstring popup
-"let g:jedi#usages_command = "<leader>z"
-"let g:jedi#popup_on_dot = 0
-"let g:jedi#popup_select_first = 0
-"" Better navigating through omnicomplete option list
-"" See http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
-"set completeopt=longest,menuone
-"function! OmniPopup(action)
-"    if pumvisible()
-"        if a:action == 'j'
-"            return "\<C-N>"
-"        elseif a:action == 'k'
-"            return "\<C-P>"
-"        endif
-"    endif
-"    return a:action
-"endfunction
 
 " Powerline
 Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
@@ -210,11 +167,11 @@ if ! has('gui_running')
     augroup END
 endif
 
+" Code completion
+Plugin 'Valloric/YouCompleteMe'
+
 " Ctrl-P fuzzy file finder
 Plugin 'kien/ctrlp.vim.git'
-" TA: These are overriding easymotion (try to do without them for a while)
-" nnoremap <leader>f :CtrlP<cr>
-" nnoremap <leader>F :CtrlPCurWD<cr>
 let g:ctrlp_max_height = 30
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
@@ -229,7 +186,8 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'Lokaltog/vim-easymotion'
 map <Leader> <Plug>(easymotion-prefix)
 
-"TComment
+" TComment for easy add and remove of comments
+" Default shortcut is 'gc'
 Plugin 'tomtom/tcomment_vim'
 
 " Code snippets
@@ -245,15 +203,11 @@ let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 let g:UltiSnipsEditSplit="vertical"
 "set runtimepath+=~/.vim/bundle/vim-snippets/UltiSnips
 
-
 " Brackets
 Plugin 'tpope/vim-surround'
 
-" Insert completion
-Plugin 'ervandew/supertab'
-
 " Mini buffers list
-Plugin 'sontek/minibufexpl.vim'
+Plugin 'fholgado/minibufexpl.vim'
 
 " Ack search
 Plugin 'mileszs/ack.vim'
@@ -264,6 +218,7 @@ nmap <leader>a <Esc>:Ack!
 Plugin 'sjl/gundo.vim'
 
 " List of tasks
+" TODO: Review this
 " Plugin 'vim-scripts/TaskList.vim'
 
 " Sidebar with tags of file
@@ -277,9 +232,6 @@ nnoremap <leader>n :NERDTreeToggle<cr>
 " Vim and tmux together in harmony
 Plugin 'christoomey/vim-tmux-navigator'
 
-" Code completion
-Plugin 'Valloric/YouCompleteMe'
-
 " Emmet like (HTML editing) support for vim
 Plugin 'mattn/emmet-vim'
 
@@ -287,12 +239,9 @@ Plugin 'mattn/emmet-vim'
 Plugin 'pangloss/vim-javascript'
 
 " JSHint
+" TODO: review this
 " (Needs jshint: npm install -g jshint)
 Plugin 'walm/jshint.vim'
-
-" Python-mode for python development
-"TA-Temp disable:Plugin 'klen/python-mode'
-"set nofoldenable
 
 " ==========================================================
 " All of your Plugins must be added before the following line
@@ -315,5 +264,5 @@ set wildignore+=*.egg-info/**
 set wildignore+=*/pip-cache/**
 
 
-" TA:Theme to look at later
+" TODO: Theme to look at later
 " https://github.com/d11wtq/tomorrow-theme-vim

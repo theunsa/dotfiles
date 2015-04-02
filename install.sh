@@ -31,10 +31,13 @@ if [ "$1" = "--unlink" ]; then
         unlink_file $i
     done
     exit
-elif [ "$1" = "--recompile-ycm" ]; then
+elif [ "$1" = "--compile-ycm" ]; then
     # See: https://github.com/Valloric/YouCompleteMe/README.md
     echo "Recompiling YouCompleteMe plugin..."
     pushd _vim/bundle/YouCompleteMe
+    git fetch
+    git reset --hard HEAD^
+    git submodule update --init --recursive
     ./install.sh --clang-completer
     popd
     exit

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+UNAME_STR=`uname`
+VUNDLE_INSTALL_DIR=_vim/bundle/Vundle.vim
+
 function link_file {
     source="${PWD}/$1"
     target="${HOME}/${1/_/.}"
@@ -20,38 +24,36 @@ function unlink_file {
     fi
 }
 
-if [ "$1" = "vim" ]; then
-    for i in _vim*
-    do
-       link_file $i
-    done
-elif [ "$1" = "restore" ]; then
+if [ "$1" = "--unlink" ]; then
+    echo "Unlinking _* files..."
     for i in _*
     do
         unlink_file $i
     done
     exit
+elif [ "$1" = "--recompile-ycm" ]; then
+    # See: https://github.com/Valloric/YouCompleteMe/README.md
+    echo "Recompiling YouCompleteMe plugin..."
+    pushd _vim/bundle/YouCompleteMe
+    ./install.sh --clang-completer
+    popd
+    exit
 else
+    echo "Linking _* files..."
     for i in _*
     do
         link_file $i
     done
 fi
 
-echo "Set up Vundle..."
-VUNDLE_INSTALL_DIR=_vim/bundle/Vundle.vim
-if [ -d "$VUNDLE_INSTALL_DIR" ]; then
-    pushd $VUNDLE_INSTALL_DIR
-    git pull
-    popd
-else
+if [ ! -d "$VUNDLE_INSTALL_DIR" ]; then
+    echo "Installing Vundle..."
     git clone https://github.com/gmarik/Vundle.vim.git $VUNDLE_INSTALL_DIR
 fi
 
-echo "Install Vundle bundles..."
-uname_str=`uname`
-if [[ "$uname_str" == "Darwin" ]]; then
-    mvim +PluginInstall +qall
+echo "Install/Update Vundle bundles..."
+if [[ "$UNAME_STR" == "Darwin" ]]; then
+    mvim -v +PluginInstall! +qall
 else
-    vi +PluginInstall +qall
+    vi +PluginInstall! +qall
 fi

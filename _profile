@@ -27,19 +27,20 @@ if [ $platform == "osx" ]; then
     alias v='mvim'
 fi
 
-# Setting PATH for Python 2.7
-# The orginal version is saved in .profile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
-export PATH
+# TODO: consider removing this ... if not used anymore
+# alias ctags='/usr/local/bin/ctags'
 
-alias ctags='/usr/local/bin/ctags'
+# Setting PATH for Python 2.7 in osx
+if [ $platform == "osx" ]; then
+    PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
+    #PATH="/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/bin/:${PATH}"
+    export PATH
+fi
 
-# Setting PATH for Python 2.7
-# The orginal version is saved in .profile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
-export PATH
-
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
+# Add the Heroku Toolbelt
+HEROKU_DIR = "/usr/local/heroku"
+if [ -d $HEROKU_DIR ] then; 
+    export PATH="/usr/local/heroku/bin:$PATH"
+fi
 
 export TERM="xterm-256color"

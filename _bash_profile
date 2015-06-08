@@ -1,0 +1,101 @@
+# Theuns Alberts .bash_profile
+
+export EDITOR=vim
+
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+
+export TERM=xterm-color
+export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
+export CLICOLOR=1
+if [ `uname` == "Darwin" ]; then
+  #export LSCOLORS=ExGxFxDxCxHxHxCbCeEbEb
+  export LSCOLORS=exgxfxdxcxhxhxcbceebeb
+  export LC_CTYPE=en_US.utf-8
+  export LC_ALL=en_US.utf-8
+  alias ls='ls -lF'
+  alias la='ls -alF'
+else
+  alias ls='ls --color=auto'
+fi
+
+DEFAULT_COLOR="[00m"
+GRAY_COLOR="[37m"
+PINK_COLOR="[35m"
+GREEN_COLOR="[32m"
+ORANGE_COLOR="[33m"
+RED_COLOR="[31m"
+if [ `id -u` == '0' ]; then
+  USER_COLOR=$RED_COLOR
+else
+  USER_COLOR=$PINK_COLOR
+fi
+
+BASH_lastcommandfailed() {
+  code=$?
+  if [ $code != 0 ]; then
+    echo -n $'\033[31m [exited '
+    echo -n $code
+    echo -n $']\033[37m'
+  fi
+}
+
+BASH_backgroundjobs() {
+  jobs|python -c 'if 1:
+    import sys
+    items = ["\033[36m%s\033[37m" % x.split()[2]
+             for x in sys.stdin.read().splitlines()]
+    if items:
+      if len(items) > 2:
+        string = "%s, and %s" % (", ".join(items[:-1]), items[-1])
+      else:
+        string = ", ".join(items)
+      print("\033[37m running %s" % string)
+  '
+}
+
+BASH_workonvirtualenv() {
+  if [ x$VIRTUAL_ENV != x ]; then
+    if [[ $VIRTUAL_ENV == *venvs/* ]]; then
+      ENV_NAME=`basename "${VIRTUAL_ENV}"`
+    else
+      folder=`dirname "${VIRTUAL_ENV}"`
+      ENV_NAME=`basename "$folder"`
+    fi
+    echo -n $' \033[37mworkon \033[31m'
+    echo -n $ENV_NAME
+    echo -n $'\033[00m'
+  fi
+}
+
+export BASEPROMPT='\n\e${USER_COLOR}\u \
+\e${GRAY_COLOR}at \e${ORANGE_COLOR}\h \
+\e${GRAY_COLOR}in \e${GREEN_COLOR}\w\
+`BASH_lastcommandfailed`\
+\e${GRAY_COLOR}\
+`BASH_backgroundjobs`\
+`BASH_workonvirtualenv`\
+\e${DEFAULT_COLOR}'
+export PS1="\[\033[G\]${BASEPROMPT}
+$ "
+# don't let virtualenv show prompts by itself
+VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# Some aliases
+alias vim='mvim -v'
+alias vi='mvim -v'
+
+# virtualenvwrapper
+if [ `id -u` != '0' ]; then
+  export VIRTUALENV_DISTRIBUTE=1
+  if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
+    export WORKON_HOME=$HOME/venvs
+    export PROJECT_HOME=$HOME/devel
+    source /usr/local/bin/virtualenvwrapper.sh
+  fi
+fi
+
+# The next line updates PATH for the Google Cloud SDK.
+#source /Users/theuns/google-cloud-sdk/path.bash.inc
+
+# The next line enables bash completion for gcloud.
+#source /Users/theuns/google-cloud-sdk/completion.bash.inc

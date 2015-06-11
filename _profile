@@ -11,13 +11,8 @@ fi
 
 # set -o vi
 
-export PS1="\u@\h:\w$ "
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
-
-# enable color support of ls and also add handy aliases
-export CLICOLOR=1
-export LSCOLORS=GxFxCxDxBxegedabagaced
 
 if [ $platform == "osx" ]; then
     # always use MacVim

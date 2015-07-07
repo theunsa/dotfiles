@@ -169,6 +169,10 @@ endif
 
 " Code completion
 Plugin 'Valloric/YouCompleteMe'
+let g:ycm_autoclose_preview_window_after_completion=1
+nnoremap <leader>G :YcmCompleter GoTo<CR>
+nnoremap <leader>g :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
 
 " Ctrl-P fuzzy file finder
 Plugin 'kien/ctrlp.vim.git'
@@ -223,7 +227,8 @@ Plugin 'sjl/gundo.vim'
 
 " Sidebar with tags of file
 Plugin 'majutsushi/tagbar'
-map <leader>t :TagbarToggle<cr>
+nnoremap <leader>t :TagbarToggle<cr>
+let g:tagbar_map_togglesort=0
 
 " File navigation
 Plugin 'vim-scripts/The-NERD-tree'

@@ -249,6 +249,21 @@ Plugin 'pangloss/vim-javascript'
 " (Needs jshint: npm install -g jshint)
 Plugin 'walm/jshint.vim'
 
+" Syntax checking
+" Plugin 'scrooloose/syntastic.git'
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+"
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" TA: Syntastic is bit of an overkill for now while I'm mostly coding in Python
+
+" Flake8 syntax checking
+Plugin 'nvie/vim-flake8'
+
 " ==========================================================
 " All of your Plugins must be added before the following line
 call vundle#end()            " required

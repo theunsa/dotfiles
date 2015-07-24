@@ -49,16 +49,17 @@ nnoremap <cr> <esc>:w<cr>
 "" noremap <Leader>e :quit<cr>  " Quit current window
 "" noremap <Leader>E :qa!<cr>   " Quit all windows
 
-" Easier moving between buffers 
+" Easier moving between buffers
 map <Leader>p <esc>:bp<cr>
 map <Leader>n <esc>:bn<cr>
+map <Leader># <esc>:b#<cr>
 
 " Cursor jumps to next row when long lines are wrapped
 nnoremap j gj
 nnoremap k gk
 
 " Stupid shift key fixes
-cmap W w                        
+cmap W w
 cmap WQ wq
 cmap wQ wq
 cmap Q q

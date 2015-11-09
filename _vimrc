@@ -153,20 +153,34 @@ Plugin 'gmarik/Vundle.vim'
 " My Vundle Plugins
 " ==========================================================
 
-" Powerline
-Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+" " Powerline
+" Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+" set laststatus=2 " Always display the statusline in all windows
+" set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
+" " Fix terminal timeout when pressing escape (i.e. getting rid of delay after ESC
+" " is pressed to leave insert mode in the terminal)
+" if ! has('gui_running')
+"     set ttimeoutlen=10
+"     augroup FastEscape
+"         autocmd!
+"         au InsertEnter * set timeoutlen=0
+"         au InsertLeave * set timeoutlen=1000
+"     augroup END
+" endif
+
+" Airline (testing out to replace Powerline ... no Python dep)
+Plugin 'bling/vim-airline'
 set laststatus=2 " Always display the statusline in all windows
 set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
-" Fix terminal timeout when pressing escape (i.e. getting rid of delay after ESC
-" is pressed to leave insert mode in the terminal)
-if ! has('gui_running')
-    set ttimeoutlen=10
-    augroup FastEscape
-        autocmd!
-        au InsertEnter * set timeoutlen=0
-        au InsertLeave * set timeoutlen=1000
-    augroup END
-endif
+let g:airline_theme='wombat'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#exclude_preview = 1
+
+" GitGutter - A Vim plugin which shows a git diff in the gutter (sign column) and
+" stages/reverts hunks.
+Plugin 'airblade/vim-gitgutter'
 
 " Code completion
 Plugin 'Valloric/YouCompleteMe'
@@ -178,6 +192,9 @@ nnoremap <leader>d :YcmCompleter GoToDeclaration<CR>
 " Ctrl-P fuzzy file finder
 Plugin 'kien/ctrlp.vim.git'
 let g:ctrlp_max_height = 30
+let g:ctrlp_use_caching = 1
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_cache_dir = '~/.vim/ctrlp-cache'
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)$',
   \ 'file': '\v\.(exe|so|dll)$',
@@ -211,8 +228,9 @@ let g:UltiSnipsEditSplit="vertical"
 " Brackets
 Plugin 'tpope/vim-surround'
 
-" Mini buffers list
-Plugin 'fholgado/minibufexpl.vim'
+" " Mini buffers list
+" Plugin 'fholgado/minibufexpl.vim'
+" (Airline might replace this ... testing it out ... 9 Nov 2015)
 
 " Ack search
 Plugin 'mileszs/ack.vim'
@@ -228,8 +246,11 @@ Plugin 'sjl/gundo.vim'
 
 " Sidebar with tags of file
 Plugin 'majutsushi/tagbar'
-nnoremap <leader>t :TagbarToggle<cr>
-let g:tagbar_map_togglesort=0
+noremap <F12> :TagbarToggle<CR>
+inoremap <F12> <ESC> :TagbarToggle<CR>
+" noremap <leader>t :TagbarToggle<cr>
+" inoremap <leader>t :TagbarToggle<cr>
+" let g:tagbar_map_togglesort=0
 
 " File navigation
 Plugin 'vim-scripts/The-NERD-tree'

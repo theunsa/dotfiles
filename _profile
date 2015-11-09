@@ -20,6 +20,7 @@ if [ $platform == "osx" ]; then
     alias vim='mvim -v'
     alias vi='mvim -v'
     alias v='mvim'
+    alias a='atom'
 fi
 
 # TODO: consider removing this ... if not used anymore

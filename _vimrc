@@ -176,7 +176,6 @@ let g:airline_theme='wombat'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_buffers = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#tabline#exclude_preview = 1
 
 " GitGutter - A Vim plugin which shows a git diff in the gutter (sign column) and
 " stages/reverts hunks.

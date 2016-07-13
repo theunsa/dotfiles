@@ -9,3 +9,8 @@
 	required = true
 [merge]
 	tool = kdiff3
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit

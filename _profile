@@ -23,9 +23,6 @@ if [ $platform == "osx" ]; then
     alias a='atom'
 fi
 
-# TODO: consider removing this ... if not used anymore
-# alias ctags='/usr/local/bin/ctags'
-
 # Setting PATH for Python 2.7 in osx
 if [ $platform == "osx" ]; then
     PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"

@@ -80,8 +80,8 @@ au InsertLeave * match ExtraWhitespace /\s\+$/
 " TODO: Add this to install script
 " mkdir -p ~/.vim/colors && cd ~/.vim/colors
 " wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
-set t_Co=256
-color wombat256mod
+"set t_Co=256
+"color wombat256mod
 
 " Enable syntax highlighting
 syntax on
@@ -153,29 +153,15 @@ Plugin 'gmarik/Vundle.vim'
 " My Vundle Plugins
 " ==========================================================
 
-" " Powerline
-" Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
-" set laststatus=2 " Always display the statusline in all windows
-" set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
-" " Fix terminal timeout when pressing escape (i.e. getting rid of delay after ESC
-" " is pressed to leave insert mode in the terminal)
-" if ! has('gui_running')
-"     set ttimeoutlen=10
-"     augroup FastEscape
-"         autocmd!
-"         au InsertEnter * set timeoutlen=0
-"         au InsertLeave * set timeoutlen=1000
-"     augroup END
-" endif
-
-" Airline (testing out to replace Powerline ... no Python dep)
+" Airline
 Plugin 'bling/vim-airline'
 set laststatus=2 " Always display the statusline in all windows
 set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
-let g:airline_theme='wombat'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_buffers = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
+Plugin 'vim-airline/vim-airline-themes'
+let g:airline_theme='wombat'
 
 " GitGutter - A Vim plugin which shows a git diff in the gutter (sign column) and
 " stages/reverts hunks.

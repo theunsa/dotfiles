@@ -41,6 +41,13 @@ elif [ "$1" = "--ycm" ]; then
     ./install.sh --clang-completer
     popd
     exit
+elif [ "$1" = "--wombat" ]; then
+    # Install the wombat theme
+    mkdir -p ~/.vim/colors
+    pushd ~/.vim/colors
+    wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
+    popd
+    exit
 else
     echo "Linking _* files..."
     for i in _*
@@ -60,3 +67,4 @@ if [[ "$UNAME_STR" == "Darwin" ]]; then
 else
     vi +PluginInstall! +qall
 fi
+

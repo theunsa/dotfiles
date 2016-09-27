@@ -19,7 +19,7 @@ set pastetoggle=<F2>
 " Rebind <Leader> key
 let mapleader = ","
 
-" Auto change into the directory of the file of the buffer 
+" Auto change into the directory of the file of the buffer
 set autochdir
 
 " Set terminal title to reflect name of current buffer
@@ -155,7 +155,7 @@ Plugin 'gmarik/Vundle.vim'
 
 " Airline
 Plugin 'bling/vim-airline'
-set laststatus=2 " Always display the statusline in all windows
+" set laststatus=2 " Always display the statusline in all windows
 set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_buffers = 1

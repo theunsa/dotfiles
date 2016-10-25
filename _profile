@@ -28,6 +28,8 @@ if [ $platform == "osx" ]; then
     PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
     #PATH="/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/bin/:${PATH}"
     export PATH
+else
+    export GOPATH=/home/theuns/gows
 fi
 
 # Add the Heroku Toolbelt
@@ -37,6 +39,7 @@ if [ -d $HEROKU_DIR ]; then
 fi
 
 export TERM="xterm-256color"
+
 
 # Useful notes:
 # ------------

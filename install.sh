@@ -56,9 +56,17 @@ else
     done
 fi
 
+# Check to make sure vi is not 'Small version without GUI'
+vi_version=`vi --version | grep "Small version without GUI"`
+if [[ ! -z $vi_version ]]; then
+   echo "ERROR! Wrong vi version. Current is small version without GUI"
+   echo "- probably need to install vim-gui-common, vim-runtime"
+   exit 9
+fi
+
 if [ ! -d "$VUNDLE_INSTALL_DIR" ]; then
     echo "Installing Vundle..."
-    git clone https://github.com/gmarik/Vundle.vim.git $VUNDLE_INSTALL_DIR
+    git clone https://github.com/gmarik/Vundle.vim.git $VUNDLE_INSTALL_DIR || echo "ERROR! Failed to install Vundle!" || exit 10
 fi
 
 echo "Install/Update Vundle bundles..."
@@ -67,4 +75,3 @@ if [[ "$UNAME_STR" == "Darwin" ]]; then
 else
     vi +PluginInstall! +qall
 fi
-

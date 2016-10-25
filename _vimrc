@@ -11,6 +11,16 @@
 " This must be first, because it changes other options as side effect
 set nocompatible
 
+" ==========================================================
+" Vundle
+" ==========================================================
+" Configure Vundle
+filetype off " Required by Vundle
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" Let Vundle manage Vundle (required!)
+Plugin 'gmarik/Vundle.vim'
+
 " Better copy & paste
 " When you want to paste large blocks of code into vim, press F2 before you
 " paste. At the bottom you should see ``-- INSERT (paste) --``.
@@ -80,8 +90,12 @@ au InsertLeave * match ExtraWhitespace /\s\+$/
 " TODO: Add this to install script
 " mkdir -p ~/.vim/colors && cd ~/.vim/colors
 " wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
-"set t_Co=256
-"color wombat256mod
+set t_Co=256
+color wombat256mod
+" TA: To play with sometime ... solarized-theme
+" set background=dark
+" colorscheme solarized
+" let g:solarized_termcolors=256
 
 " Enable syntax highlighting
 syntax on
@@ -140,22 +154,15 @@ set mouse=a
 "" set nofoldenable
 
 " ==========================================================
-" Vundle
-" ==========================================================
-" Configure Vundle
-filetype off " Required by Vundle
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" Let Vundle manage Vundle (required!)
-Plugin 'gmarik/Vundle.vim'
-
-" ==========================================================
 " My Vundle Plugins
 " ==========================================================
 
+" Solarized theme
+Plugin 'altercation/solarized'
+
 " Airline
 Plugin 'bling/vim-airline'
-" set laststatus=2 " Always display the statusline in all windows
+set laststatus=2 " Always display the statusline in all windows
 set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_buffers = 1

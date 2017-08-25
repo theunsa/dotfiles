@@ -75,3 +75,11 @@ if [[ "$UNAME_STR" == "Darwin" ]]; then
 else
     vi +PluginInstall! +qall
 fi
+
+
+## TODO:
+## install zsh
+## install oh-my-zsh
+## install pip
+## pip install virtualenvwrapper
+## apt-get install build-essential linux-headers-generic linux-headers-`uname -r`

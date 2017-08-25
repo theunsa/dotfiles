@@ -1,3 +1,12 @@
+# Always run tmux session with panes
+if [ "$TMUX" = "" ]
+then
+    tmux new-session -s "ta" -d
+    tmux split-window -h
+    tmux split-window -v
+    tmux attach-session -d -t ta
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -95,17 +104,21 @@ source $ZSH/oh-my-zsh.sh
 # ----------------
 
 # PATH
-export PATH="/usr/local/share/python:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-export EDITOR='vim'
+export GOROOT="/usr/local/go"
 export GOPATH="$HOME/gows"
+
+export PATH="/usr/local/share/python:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/snap/bin:$GOROOT/bin:$GOPATH/bin"
+export EDITOR='code'
+alias vi='code'
+alias vim='code'
 PLATFORM=`uname`
-if [[ $PLATFORM == "Darwin" ]]; then
-    # always use MacVim
-    alias vim='mvim -v'
-    alias vi='mvim -v'
-    alias v='mvim'
-    alias a='atom'
-fi
+#if [[ $PLATFORM == "Darwin" ]]; then
+#    # always use MacVim
+#    alias vim='mvim -v'
+#    alias vi='mvim -v'
+#    alias v='mvim'
+#    alias a='atom'
+#fi
 # export PYTHONPATH=$PYTHONPATH
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -137,3 +150,8 @@ alias zshconfig="vi ~/.zshrc"
 # tmuxinator completion
 source ~/dotfiles/tmuxinator.zsh
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Android
+export ANDROID_HOME=/home/theuns/Android/Sdk

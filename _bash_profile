@@ -144,3 +144,5 @@ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shel
 
 # Add go to path 
 export PATH=$PATH:"/usr/local/go/bin"
+
+export GPGKEY=6703D729

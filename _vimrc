@@ -16,10 +16,10 @@ set nocompatible
 " ==========================================================
 " Configure Vundle
 filetype off " Required by Vundle
-set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=$HOME/dotfiles/_vim/bundle/Vundle.vim
 call vundle#begin()
 " Let Vundle manage Vundle (required!)
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 
 " Better copy & paste
 " When you want to paste large blocks of code into vim, press F2 before you

@@ -89,7 +89,8 @@ au InsertLeave * match ExtraWhitespace /\s\+$/
 " Color scheme
 " TODO: Add this to install script
 " mkdir -p ~/.vim/colors && cd ~/.vim/colors
-" wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
+" wget -O wombat256mod.vim https://github.com/vim-scripts/Wombat/blob/master/colors/wombat.vim
+
 set t_Co=256
 color wombat256mod
 " TA: To play with sometime ... solarized-theme

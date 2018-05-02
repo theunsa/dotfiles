@@ -40,6 +40,9 @@ fi
 
 export TERM="xterm-256color"
 
+alias yaml2json="python -c 'import sys, json, yaml;
+json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)'"
+
 
 # Useful notes:
 # ------------

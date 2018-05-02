@@ -1,19 +1,3 @@
-# Always run tmux session with panes
-if [ "$TMUX" = "" ]
-then
-    #export TMUX="ta"
-    #tmux new-session -s $TMUX -d
-    #tmux split-window -h
-    #tmux split-window -v
-    #tmux attach-session -d -t $TMUX
-    tmux new-session -d
-    #tmux split-window -h
-    #tmux split-window -v
-    tmux attach-session -d
-#else
-#    tmux attach-session -d -t $TMUX
-fi
-
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -129,9 +113,9 @@ PLATFORM=`uname`
 # export PYTHONPATH=$PYTHONPATH
 # export MANPATH="/usr/local/man:$MANPATH"
 
-# Use vim on the cmd line
-bindkey -v
-bindkey -M viins 'jk' vi-cmd-mode
+# # Use vim on the cmd line
+# bindkey -v
+# bindkey -M viins 'jk' vi-cmd-mode
 
 # Virtual Environment
 export WORKON_HOME=$HOME/.virtualenvs

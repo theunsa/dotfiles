@@ -1,35 +1,50 @@
 # Theuns Alberts - Current .profile #
 
-# get platform
-platform='unknown'
-unamestr=`uname`
-if [ $unamestr == "Linux" ]; then
-    platform='linux'
-elif [ $unamestr == "Darwin" ]; then
-    platform='osx'
-fi
 
-# set -o vi
+# Note:
+# https://serverfault.com/questions/261802/what-are-the-functional-differences-between-profile-bash-profile-and-bashrc/261807#261807?s=09284295acb94e30b83ca2d1f87b5e5f
+#
+# .profile
+#   .profile is for things that are not specifically related to Bash, like environment variables PATH and friends, and should be available anytime.
+#   For example, .profile should also be loaded when starting a graphical desktop session.
+# 
+# .bashrc
+#   .bashrc is for the configuring the interactive Bash usage, like Bash aliases, setting your favorite editor, setting the Bash prompt, etc.
+
+# Other notes:
+#
+# $ git config --global user.name "Theuns Alberts"
+# $ git config --global user.email theunsa@gmail.com
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-if [ $platform == "osx" ]; then
-    # always use MacVim
-    export EDITOR=vim
-    alias vim='mvim -v'
-    alias vi='mvim -v'
-    alias v='mvim'
-    alias a='atom'
+export TERM="xterm-256color"
+
+export GOPATH="$HOME/gows"
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
+export EDITOR="vim"
+
+export ANDROID_HOME=/usr/local/share/android-sdk
+export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/tools
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    export PLATFORM="linux"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    export PLATFORM="osx"
+else
+    export PLATFORM="unknown"
+fi
+
+if [ -d $HEROKU_DIR ]; then 
+    export PATH="/usr/local/opt/node@10/bin"
 fi
 
 # Setting PATH for Python 2.7 in osx
-if [ $platform == "osx" ]; then
-    PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
-    #PATH="/usr/local/Cellar/python/2.7.9/Frameworks/Python.framework/Versions/2.7/bin/:${PATH}"
-    export PATH
-else
-    export GOPATH=/home/theuns/gows
+if [[ "$PLATFORM" == "osx" ]]; then
+    export PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:$PATH"
 fi
 
 # Add the Heroku Toolbelt
@@ -37,11 +52,3 @@ HEROKU_DIR="/usr/local/heroku"
 if [ -d $HEROKU_DIR ]; then 
     export PATH="/usr/local/heroku/bin:$PATH"
 fi
-
-export TERM="xterm-256color"
-
-
-# Useful notes:
-# ------------
-# $ git config --global user.name "Theuns Alberts"
-# $ git config --global user.email theunsa@gmail.com

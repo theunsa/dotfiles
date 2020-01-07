@@ -1,8 +1,0 @@
-# Theuns Alberts .bash_profile
-
-if [ $PLATFORM == "Darwin" ]; then
-  # Enable brew git completion and fancy prompt
-  if [ -d $(brew --prefix)/etc/bash_completion.d ]; then
-    . $(brew --prefix)/etc/bash_completion.d/git-completion.bash
-  fi
-fi

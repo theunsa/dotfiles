@@ -71,6 +71,35 @@ source $ZSH/oh-my-zsh.sh
 
 ##### End from zshrc template #####
 
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+export TERM="xterm-256color"
+
+export GOPATH="$HOME/gows"
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+
+export EDITOR="vim"
+
+export ANDROID_HOME=/usr/local/share/android-sdk
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/tools"
+
+if [ -d "/usr/local/opt/node@10" ]; then 
+    export PATH="$PATH:/usr/local/opt/node@10/bin"
+fi
+
+# Setting PATH for Python 2.7 in osx
+if [[ "$PLATFORM" == "osx" ]]; then
+    export PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:$PATH"
+fi
+
+# Add the Heroku Toolbelt
+HEROKU_DIR="/usr/local/heroku"
+if [ -d $HEROKU_DIR ]; then 
+    export PATH="/usr/local/heroku/bin:$PATH"
+fi
+
 
 # Enable brew bash and git completion
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
@@ -110,6 +139,14 @@ if [ -f /Users/theuns/.tnsrc ]; then
     source /Users/theuns/.tnsrc 
 fi
 
+#if [[ "$OSTYPE" == "linux-gnu" ]]; then
+#    export PLATFORM="linux"
+#elif [[ "$OSTYPE" == "darwin"* ]]; then
+#    export PLATFORM="osx"
+#else
+#    export PLATFORM="unknown"
+#fi
+
 # Aliases
 #alias cppcompile='c++ -std=c++11 -stdlib=libc++'
 
@@ -124,3 +161,10 @@ fi
 #    tmux split-window -v
 #    tmux attach-session -d -t ta
 #fi
+#
+
+# Other notes:
+#
+# $ git config --global user.name "Theuns Alberts"
+# $ git config --global user.email theunsa@gmail.com
+#

@@ -1,0 +1,5 @@
+[user]
+	name = Theuns Alberts
+	email = theunsa@gmail.com
+[core]
+	editor = nvim

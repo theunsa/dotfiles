@@ -1,5 +1,12 @@
+# Just to be save
+keys.*
+*.key
+
+# Unencrypted secrets
+secrets.env
+aws.env
+*.env
+
+# OS / editor junk (optional)
 .DS_Store
-_vim/_vim
-_vim/bundle
-_vim/sessions
-_vim/ctrlp-cache
+*.swp

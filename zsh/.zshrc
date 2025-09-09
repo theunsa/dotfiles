@@ -91,3 +91,6 @@ if [ -f "$SECRETS_ENC" ]; then
 fi
 
 
+
+# Load secrets from dotfiles-secrets
+if [ -f "/Users/theuns/dotfiles-secrets/secrets.env" ]; then export $(grep -v '^#' "/Users/theuns/dotfiles-secrets/secrets.env" | xargs); fi

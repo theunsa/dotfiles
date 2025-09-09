@@ -55,7 +55,9 @@ decrypt_secrets() {
 encrypt_secrets() {
   if [[ -f "$SECRETS_ENV" ]]; then
     info "Encrypting secrets.env..."
+    pushd $DOTFILES_SECRETS
     sops --encrypt --input-type dotenv --output-type dotenv "$SECRETS_ENV" >"$SECRETS_ENC"
+    popd
     ok "Secrets encrypted at $SECRETS_ENC"
   else
     warn "No $SECRETS_ENV found to encrypt."
@@ -90,7 +92,7 @@ git_commit_push() {
 }
 
 # --- Main ---
-COMMAND="${1:-install}"
+COMMAND="${1:--help}"
 
 case "$COMMAND" in
 install)

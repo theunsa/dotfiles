@@ -5,11 +5,6 @@ return {
     name = "catppuccin",
     priority = 1000,
     opts = function(_, opts)
-      -- TA:applying this fix until issue resolved: https://github.com/LazyVim/LazyVim/issues/6355#issuecomment-3212986215
-      local module = require("catppuccin.groups.integrations.bufferline")
-      if module then
-        module.get = module.get_theme
-      end
       opts.integrations = {
         aerial = true,
         alpha = true,

@@ -61,8 +61,8 @@ export PATH="$PATH:$BUN_INSTALL/bin"
 export PATH="$PATH:$HOME/.turso"
 
 # Claude Code
-alias claude-noyolo="$HOME/.claude/local/claude"
-alias claude="$HOME/.claude/local/claude --dangerously-skip-permissions"
+alias claude-noyolo="~/.claude/local/claude"
+alias claude="~/.claude/local/claude --dangerously-skip-permissions"
 
 . "$HOME/.local/bin/env"
 export PATH="$HOME/.local/bin:$PATH"
@@ -94,3 +94,4 @@ fi
 
 # Load secrets from dotfiles-secrets
 if [ -f "/Users/theuns/dotfiles-secrets/secrets.env" ]; then export $(grep -v '^#' "/Users/theuns/dotfiles-secrets/secrets.env" | xargs); fi
+export TERM=xterm-256color

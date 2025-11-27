@@ -1,6 +1,6 @@
 shell-integration = zsh
 font-family = JetBrains Mono
-theme = catppuccin-mocha
+theme = Catppuccin Mocha
 mouse-hide-while-typing = true
 scrollback-limit = 1000000
 font-size = 14
@@ -26,3 +26,4 @@ keybind = ctrl+n=new_window
 keybind = super+r=reload_config
 
 window-save-state = always
+keybind = shift+enter=text:\x1b\r

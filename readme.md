@@ -96,11 +96,24 @@ passage git pull
 
 ## What Gets Installed
 
+Bootstrap automatically installs all required tools:
+
+**Core Tools:**
+- **neovim** - Text editor
+- **tmux** - Terminal multiplexer
+- **zsh** - Shell
+- **starship** - Prompt
+- **ghostty** - Terminal emulator (macOS)
+
+**CLI Utilities:**
+- **eza** - Modern ls replacement
+- **zoxide** - Smart cd
+- **nvm** - Node version manager
+
+**Secrets Management:**
+- **age** - Encryption
+- **passage** - Password manager
 - **stow** - Symlink manager
-- **age** - Encryption tool
-- **passage** - Password manager (Age-based)
-- **gnu-getopt** - Required by passage (macOS)
-- **tree** - Directory visualization (macOS)
 
 All configs linked to `$HOME` via stow.
 

@@ -83,6 +83,72 @@ install_passage() {
   ok "passage installed to $LOCAL_BIN"
 }
 
+install_tools() {
+  info "Installing essential tools..."
+
+  if is_macos; then
+    # Check if Homebrew is installed
+    if ! command -v brew >/dev/null 2>&1; then
+      warn "Homebrew not found. Install it from https://brew.sh"
+      exit 1
+    fi
+
+    # Install tools via Homebrew
+    local tools=(neovim tmux zsh starship eza zoxide nvm)
+    for tool in "${tools[@]}"; do
+      if ! brew list "$tool" &>/dev/null; then
+        info "Installing $tool..."
+        brew install "$tool"
+      fi
+    done
+
+    # Ghostty (if available via Homebrew cask)
+    if ! brew list --cask ghostty &>/dev/null 2>&1; then
+      info "Installing ghostty..."
+      brew install --cask ghostty 2>/dev/null || warn "ghostty not available via Homebrew, install manually from https://ghostty.org"
+    fi
+
+  elif command -v apt >/dev/null 2>&1; then
+    # Debian/Ubuntu
+    sudo apt update
+    sudo apt install -y neovim tmux zsh
+
+    # Starship
+    if ! command -v starship >/dev/null 2>&1; then
+      info "Installing starship..."
+      curl -sS https://starship.rs/install.sh | sh -s -- -y
+    fi
+
+    # eza (modern ls)
+    if ! command -v eza >/dev/null 2>&1; then
+      info "Installing eza..."
+      sudo apt install -y gpg
+      sudo mkdir -p /etc/apt/keyrings
+      wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+      sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+      sudo apt update
+      sudo apt install -y eza
+    fi
+
+    # zoxide
+    if ! command -v zoxide >/dev/null 2>&1; then
+      info "Installing zoxide..."
+      curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+    fi
+
+    warn "ghostty and nvm should be installed manually on Linux"
+
+  elif command -v pacman >/dev/null 2>&1; then
+    # Arch Linux
+    sudo pacman -S --noconfirm neovim tmux zsh starship eza zoxide
+
+    warn "ghostty and nvm should be installed manually on Arch"
+  fi
+
+  ok "Essential tools installed."
+}
+
 setup_age_key() {
   if [[ -f "$AGE_KEY_FILE" ]]; then
     info "Age key already exists at $AGE_KEY_FILE"
@@ -180,7 +246,8 @@ install)
     exit 1
   fi
 
-  # Install dependencies
+  # Install all tools
+  install_tools
   install_stow
   install_age
   install_passage

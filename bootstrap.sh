@@ -144,13 +144,28 @@ git_commit_push() {
   local msg=$2
   cd "$dir"
 
+  # Commit any uncommitted changes
   if [[ -n "$(git status --porcelain)" ]]; then
     git add -A
     git commit -m "$msg" || true
-    git push
-    ok "Pushed changes in $(basename "$dir")"
+  fi
+
+  # Push if there are unpushed commits
+  local branch
+  branch=$(git rev-parse --abbrev-ref HEAD)
+  if git rev-parse "@{u}" >/dev/null 2>&1; then
+    # Remote tracking branch exists, check if ahead
+    if [[ -n "$(git log @{u}..HEAD)" ]]; then
+      info "Pushing $(basename "$dir")..."
+      git push
+      ok "Pushed $(basename "$dir")"
+    else
+      info "$(basename "$dir") already up to date"
+    fi
   else
-    info "No changes in $(basename "$dir")"
+    # No remote tracking branch, try to push
+    info "Pushing $(basename "$dir") (setting upstream)..."
+    git push -u origin "$branch" 2>/dev/null && ok "Pushed $(basename "$dir")" || warn "No remote configured for $(basename "$dir")"
   fi
 }
 

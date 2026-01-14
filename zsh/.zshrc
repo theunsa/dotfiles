@@ -12,7 +12,8 @@ setopt HIST_IGNORE_SPACE
 alias p="pnpm"
 alias v="nvim"
 alias vi="nvim"
-alias ll="ls -la"
+alias ls="eza"
+alias ll="eza -la"
 
 export EDITOR='nvim'
 export PLATFORM=`uname`
@@ -46,10 +47,6 @@ export PATH=$PATH:"$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform
 # NODE_PATH
 export NODE_PATH=$(npm root -g)
 
-# Init tmuxifier
-export PATH=$PATH:"$HOME/.tmux/plugins/tmuxifier/bin"
-eval "$(tmuxifier init -)"
-
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
@@ -60,38 +57,32 @@ export PATH="$PATH:$BUN_INSTALL/bin"
 # Turso
 export PATH="$PATH:$HOME/.turso"
 
+# Init zoxide
+eval "$(zoxide init zsh)"
+
 # Claude Code
-alias claude-noyolo="~/.claude/local/claude"
-alias claude="~/.claude/local/claude --dangerously-skip-permissions"
+# alias claude-noyolo="~/.claude/local/claude"
+# alias claude="~/.claude/local/claude --dangerously-skip-permissions"
+alias claude="~/.claude/local/claude"
+
+# Stop Zsh from complaining if ?? doesn't match a file
+setopt nonomatch
+??() {
+  claude -p "$*"
+}
 
 . "$HOME/.local/bin/env"
 export PATH="$HOME/.local/bin:$PATH"
 
-# Auto-load secrets from dotfiles-secrets
-SECRETS_REPO="$HOME/dotfiles-secrets"
-SECRETS_FILE="$SECRETS_REPO/secrets.env"
-SECRETS_ENC="$SECRETS_REPO/secrets.env.enc"
-export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/keys.txt"
+# Passage (Age-based password manager)
+export PASSAGE_IDENTITIES_FILE="$HOME/.config/age/keys.txt"
+export PASSAGE_DIR="$HOME/.passage/store"
 
-if [ -f "$SECRETS_ENC" ]; then
-  # If decrypted file missing, try to decrypt it
-  if [ ! -f "$SECRETS_FILE" ]; then
-    if command -v sops >/dev/null 2>&1; then
-      echo "[*] Decrypting secrets.env..."
-      sops --input-type dotenv --output-type dotenv --decrypt "$SECRETS_ENC" > "$SECRETS_FILE"
-    else
-      echo "[!] sops not installed, cannot decrypt secrets"
-    fi
-  fi
-
-  # Export variables
-  if [ -f "$SECRETS_FILE" ]; then
-    export $(grep -v '^#' "$SECRETS_FILE" | xargs)
-  fi
-fi
-
-
-
-# Load secrets from dotfiles-secrets
-if [ -f "/Users/theuns/dotfiles-secrets/secrets.env" ]; then export $(grep -v '^#' "/Users/theuns/dotfiles-secrets/secrets.env" | xargs); fi
+# Auto-load common API keys from passage (uncomment after migration)
+# if command -v passage >/dev/null 2>&1; then
+#   export OPENAI_API_KEY=$(passage show api-keys/openai 2>/dev/null)
+#   export ANTHROPIC_API_KEY=$(passage show api-keys/anthropic 2>/dev/null)
+#   export GITHUB_TOKEN=$(passage show api-keys/github-token 2>/dev/null)
+# fi
 export TERM=xterm-256color
+

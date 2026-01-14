@@ -1,120 +1,121 @@
 # My Dotfiles
 
-This repository contains my personal configuration for `zsh`, `tmux`, `nvim`, and other tools. It is designed to be **portable**, easy to install, and secure with **encrypted secrets** using [SOPS + Age](https://github.com/ProtonMail/go-crypto/tree/master/age).
+Personal configuration for `zsh`, `tmux`, `nvim`, and other tools. Designed for portability with encrypted secrets using [passage](https://github.com/FiloSottile/passage) (Age-based password manager).
 
 ---
 
-## Repository Structure
+## Quick Start
 
-```
-dotfiles/
-├── bootstrap.sh         # Bootstrap script
-├── git/                 # Git configuration (.gitconfig, .gitignore_global)
-├── nvim/                # Neovim configuration (~/.config/nvim)
-├── tmux/                # Tmux configuration (~/.tmux.conf)
-├── zsh/                 # Zsh configuration (~/.zshrc, plugins)
-├── etc... 
-```
-
-Secrets are stored separately in a **private** repository:
-
-```
-dotfiles-secrets/
-├── secrets.env          # Local unencrypted environment variables (ignored in git)
-├── secrets.env.enc      # Encrypted secrets (committed to git)
-```
-
----
-
-## Bootstrap Script
-
-The `bootstrap.sh` script handles installation, updates, and secure pushes. It ensures:
-
-* `stow` links your dotfiles into your `$HOME`.
-* `dotfiles-secrets` is cloned and decrypted (if you have the Age key).
-* `.zshrc` loads your secrets automatically.
-* Encryption of secrets before pushing.
-
-### Commands
-
-#### Install on a new machine
+### New Machine Setup
 
 ```bash
-git clone git@github.com:you/dotfiles.git ~/dotfiles
-bash ~/dotfiles/bootstrap.sh install
-```
+# 1. Install git (if needed)
+# macOS: xcode-select --install
+# Linux: sudo apt install git
 
-* Installs `stow` if needed.
-* Links all dotfiles.
-* Clones `dotfiles-secrets` and decrypts secrets.
-* Ensures your shell loads secrets automatically.
+# 2. Clone and bootstrap
+git clone git@github.com:youruser/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./bootstrap.sh install
+
+# 3. Reload shell
+exec zsh
+
+# 4. Clone your secrets (if you have them backed up)
+rm -rf ~/.passage/store
+git clone git@github.com:youruser/passage-store.git ~/.passage/store
+
+# 5. Test
+passage show api-keys/openai
+```
 
 ---
 
-#### Update dotfiles
+## Daily Workflow
 
 ```bash
-bash ~/dotfiles/bootstrap.sh update
-```
+# Pull latest configs and secrets
+./bootstrap.sh update
 
-* Pulls latest changes from both repositories.
-* Restows directories into `$HOME`.
-* Decrypts secrets if keys are available.
+# ... make changes to configs or secrets ...
+
+# Push everything
+./bootstrap.sh push
+```
 
 ---
 
-#### Push changes
+## Working with Secrets
+
+Secrets are managed with `passage` and stored in `~/.passage/store/` (encrypted git private repo).
 
 ```bash
-bash ~/dotfiles/bootstrap.sh push
+# Add a secret
+passage insert api-keys/openai
+
+# View a secret
+passage show api-keys/openai
+
+# Edit a secret (opens in nvim)
+passage edit api-keys/openai
+
+# Copy to clipboard (auto-clears after 45s)
+passage -c api-keys/github-token
+
+# Sync secrets
+passage git push
+passage git pull
 ```
 
-* Encrypts secrets before committing.
-* Commits and pushes **dotfiles** and **dotfiles-secrets**.
-* Ensures unencrypted secrets are never pushed.
+### Organized Structure
 
----
-
-## Notes on Secrets
-
-* Keep your **Age private key** safe outside the repository.
-* Only encrypted files (`*.env.enc`) are committed.
-* Example secrets file: `dotfiles-secrets/secrets.env`
-
-```env
-# secrets.env
-OPENAI_API_KEY=sk-xxxx
-GITHUB_TOKEN=ghp_xxxx
+```
+~/.passage/store/
+├── api-keys/
+│   ├── openai.age
+│   ├── anthropic.age
+│   └── github-token.age
+├── projects/
+│   └── myproject/
+│       └── env.age
+└── servers/
+    └── ssh-keys.age
 ```
 
-* `bootstrap.sh` automatically decrypts this into your `$HOME` environment.
+---
+
+## Bootstrap Commands
+
+| Command | Description |
+|---------|-------------|
+| `./bootstrap.sh install` | Install tools, link dotfiles, setup passage |
+| `./bootstrap.sh update` | Pull dotfiles + secrets, re-link configs |
+| `./bootstrap.sh push` | Push dotfiles + secrets to GitHub |
 
 ---
 
-## Notes on Stow
+## What Gets Installed
 
-* Each directory inside `dotfiles/` is a **package** for `stow`.
-* The bootstrap script automatically stows all directories, ignoring top-level files like `bootstrap.sh`.
+- **stow** - Symlink manager
+- **age** - Encryption tool
+- **passage** - Password manager (Age-based)
+- **gnu-getopt** - Required by passage (macOS)
+- **tree** - Directory visualization (macOS)
 
----
-
-## Usage
-
-* Edit your dotfiles in `~/dotfiles/<package>/`.
-* Add new notes, configurations, or scripts.
-* Use `bootstrap.sh push` to sync securely across machines.
+All configs linked to `$HOME` via stow.
 
 ---
 
-## Recommended Workflow
+## Backup of Age Key
 
-1. Clone `dotfiles` on a new machine.
-2. Run `bootstrap.sh install`.
-3. Edit configs as needed.
-4. Commit and push changes with `bootstrap.sh push`.
-5. On other machines, run `bootstrap.sh update` to pull and link everything.
+Age key (`~/.config/age/keys.txt`) is critical. Without it, no secrets can be decrypted.
+Mine backed up in macOS Keychain.
 
 ---
 
-This setup allows **full portability**, **secure secrets**, and **easy management** of dotfiles across multiple machines.
+## Platform Support
+
+- macOS (Homebrew)
+- Debian/Ubuntu (apt)
+- Arch Linux (pacman)
 

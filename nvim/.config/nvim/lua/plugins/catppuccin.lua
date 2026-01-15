@@ -5,6 +5,17 @@ return {
     name = "catppuccin",
     priority = 1000,
     opts = function(_, opts)
+      -- 1. Check for Ghostty's unique resource directory
+      -- 2. Or check if the original terminal was Ghostty before tmux started
+      local is_ghostty = os.getenv("GHOSTTY_RESOURCES_DIR") ~= nil or os.getenv("GHOSTTY_BIN_DIR") ~= nil
+
+      -- Only enable transparency if it's Ghostty
+      if is_ghostty then
+        opts.transparent_background = true
+      else
+        opts.transparent_background = false
+      end
+
       opts.integrations = {
         aerial = true,
         alpha = true,

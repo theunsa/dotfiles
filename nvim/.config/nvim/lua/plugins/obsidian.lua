@@ -5,6 +5,7 @@ return {
   ft = "markdown",
   dependencies = {
     "nvim-lua/plenary.nvim",
+    "ibhagwan/fzf-lua",
   },
   opts = {
     workspaces = {
@@ -12,6 +13,9 @@ return {
         name = "personal",
         path = "~/Documents/Obsidian",
       },
+    },
+    picker = {
+      name = "fzf-lua",
     },
     daily_notes = {
       folder = "daily",

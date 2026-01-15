@@ -78,6 +78,8 @@ export PATH="$HOME/.local/bin:$PATH"
 export PASSAGE_IDENTITIES_FILE="$HOME/.config/age/keys.txt"
 export PASSAGE_DIR="$HOME/.passage/store"
 
+export OPENCODE_API_KEY="$(passage show api-keys/opencode-api-key)"
+
 # Auto-load common API keys from passage (uncomment after migration)
 # if command -v passage >/dev/null 2>&1; then
 #   export OPENAI_API_KEY=$(passage show api-keys/openai 2>/dev/null)

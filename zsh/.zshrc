@@ -79,6 +79,7 @@ export PASSAGE_IDENTITIES_FILE="$HOME/.config/age/keys.txt"
 export PASSAGE_DIR="$HOME/.passage/store"
 
 export OPENCODE_API_KEY="$(passage show api-keys/opencode-api-key)"
+export PLUMBLINE_GIT_TOKEN="$(passage show business/plumb-line/plumbline-git-token)"
 
 # Auto-load common API keys from passage (uncomment after migration)
 # if command -v passage >/dev/null 2>&1; then

@@ -268,7 +268,7 @@ install)
   info "Run 'exec zsh' to reload your shell"
   ;;
 
-update)
+pull)
   # Pull dotfiles
   git -C "$DOTFILES" pull --rebase --autostash
   stow_dotfiles
@@ -296,11 +296,11 @@ push)
   ;;
 
 *)
-  echo "Usage: $0 [install|update|push]"
+  echo "Usage: $0 [install|pull|push]"
   echo ""
   echo "Commands:"
   echo "  install  - Install dependencies, link dotfiles, setup passage"
-  echo "  update   - Pull latest dotfiles and re-link"
+  echo "  pull     - Pull latest dotfiles and re-link"
   echo "  push     - Commit and push dotfiles changes"
   exit 1
   ;;

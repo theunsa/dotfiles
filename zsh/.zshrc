@@ -12,6 +12,7 @@ setopt HIST_IGNORE_SPACE
 alias p="pnpm"
 alias v="nvim"
 alias vi="nvim"
+alias vi-a="CLAUDE_CONFIG_DIR=~/.claude-albertec nvim"
 alias ls="eza"
 alias ll="eza -la"
 
@@ -61,9 +62,11 @@ export PATH="$PATH:$HOME/.turso"
 eval "$(zoxide init zsh)"
 
 # Claude Code
-# alias claude-noyolo="~/.claude/local/claude"
-# alias claude="~/.claude/local/claude --dangerously-skip-permissions"
 alias claude="~/.claude/local/claude"
+alias claude-yolo="~/.claude/local/claude --dangerously-skip-permissions"
+alias haiku="~/.claude/local/claude --print --model=haiku"
+alias sonnet="~/.claude/local/claude --print --model=sonnet"
+alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-permissions"
 
 # Stop Zsh from complaining if ?? doesn't match a file
 setopt nonomatch
@@ -80,6 +83,7 @@ export PASSAGE_DIR="$HOME/.passage/store"
 
 export OPENCODE_API_KEY="$(passage show api-keys/opencode-api-key)"
 export PLUMBLINE_GIT_TOKEN="$(passage show business/plumb-line/plumbline-git-token)"
+export PLUMBLINE_GPG_KEY="$(passage show business/plumb-line/plumbline-gpg-key)"
 
 # Auto-load common API keys from passage (uncomment after migration)
 # if command -v passage >/dev/null 2>&1; then

@@ -5,3 +5,9 @@ vim.g.snacks_animate = false
 
 -- Automatically reload a file if it changes outside of the editor
 vim.o.autoread = true
+
+-- Disable swap files entirely
+vim.o.swapfile = false
+
+-- Disable autoformat on save
+vim.g.autoformat = false

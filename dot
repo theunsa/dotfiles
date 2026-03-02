@@ -252,7 +252,7 @@ stow_dotfiles() {
 
   for dir in */; do
     dir="${dir%/}"
-    stow "$dir"
+    stow --ignore='^new$' "$dir"
   done
 
   ok "Dotfiles linked."

@@ -10,3 +10,6 @@ aws.env
 # OS / editor junk (optional)
 .DS_Store
 *.swp
+
+# Runtime artifacts
+*/new

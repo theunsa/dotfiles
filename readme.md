@@ -109,6 +109,8 @@ Bootstrap automatically installs all required tools:
 - **eza** - Modern ls replacement
 - **zoxide** - Smart cd
 - **nvm** - Node version manager
+- **oxfmt** - OXC formatter for JS/TS and related files
+- **oxlint** - OXC linter for JS/TS and related files
 
 **Secrets Management:**
 - **age** - Encryption
@@ -131,4 +133,3 @@ Mine backed up in macOS Keychain.
 - macOS (Homebrew)
 - Debian/Ubuntu (apt)
 - Arch Linux (pacman)
-

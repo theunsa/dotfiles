@@ -97,7 +97,7 @@ install_tools() {
     fi
 
     # Install tools via Homebrew
-    local tools=(neovim tmux zsh starship eza zoxide nvm)
+    local tools=(neovim tmux zsh starship eza zoxide nvm oxfmt oxlint)
     for tool in "${tools[@]}"; do
       if ! brew list "$tool" &>/dev/null; then
         info "Installing $tool..."

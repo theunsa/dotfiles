@@ -3,19 +3,19 @@ return {
   opts = {
     formatters_by_ft = {
       lua = { "stylua" },
-      vue = { "biome" },
-      javascript = { "biome" },
-      typescript = { "biome" },
-      javascriptreact = { "biome" },
-      typescriptreact = { "biome" },
-      json = { "biome" },
-      jsonc = { "biome" },
-      html = { "biome" },
-      css = { "biome" },
-      scss = { "biome" },
-      less = { "biome" },
-      yaml = { "biome" },
-      markdown = { "biome" },
+      vue = { "oxfmt" },
+      javascript = { "oxfmt" },
+      typescript = { "oxfmt" },
+      javascriptreact = { "oxfmt" },
+      typescriptreact = { "oxfmt" },
+      json = { "oxfmt" },
+      jsonc = { "oxfmt" },
+      html = { "oxfmt" },
+      css = { "oxfmt" },
+      scss = { "oxfmt" },
+      less = { "oxfmt" },
+      yaml = { "oxfmt" },
+      markdown = { "oxfmt" },
     },
     format_on_save = {
       lsp_format = "fallback",
@@ -23,4 +23,3 @@ return {
     },
   },
 }
-

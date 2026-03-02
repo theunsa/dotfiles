@@ -1,6 +1,6 @@
 shell-integration = zsh
 font-family = JetBrains Mono
-theme = Catppuccin Mocha
+theme = Nord
 mouse-hide-while-typing = true
 scrollback-limit = 1000000
 font-size = 14

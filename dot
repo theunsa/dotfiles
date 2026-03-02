@@ -5,6 +5,9 @@ DOTFILES="$HOME/dotfiles"
 LOCAL_BIN="$HOME/.local/bin"
 AGE_KEY_DIR="$HOME/.config/age"
 AGE_KEY_FILE="$AGE_KEY_DIR/keys.txt"
+TMUX_PLUGIN_DIR="$HOME/.local/share/tmux/plugins"
+TPM_DIR="$TMUX_PLUGIN_DIR/tpm"
+TPM_VERSION="v3.1.0"
 
 # --- Helpers ---
 info() { echo "[*] $*"; }
@@ -149,6 +152,56 @@ install_tools() {
   ok "Essential tools installed."
 }
 
+install_tpm() {
+  local plugin_dir="$TPM_DIR"
+  local plugin_parent
+  plugin_parent=$(dirname "$plugin_dir")
+
+  mkdir -p "$plugin_parent"
+
+  if [[ -d "$plugin_dir/.git" ]]; then
+    info "Updating tmux-plugins/tpm to $TPM_VERSION..."
+    git -C "$plugin_dir" fetch --tags --force origin
+    git -C "$plugin_dir" checkout "$TPM_VERSION"
+    ok "tpm ready in $plugin_dir"
+    return
+  fi
+
+  if [[ -e "$plugin_dir" ]]; then
+    warn "$plugin_dir exists but is not a git repo. Skipping tpm install."
+    return
+  fi
+
+  info "Installing tmux-plugins/tpm $TPM_VERSION..."
+  git clone --branch "$TPM_VERSION" --depth 1 https://github.com/tmux-plugins/tpm.git "$plugin_dir"
+  ok "tpm installed to $plugin_dir"
+}
+
+sync_tmux_plugins() {
+  local tpm_install="$TPM_DIR/bin/install_plugins"
+
+  if ! command -v tmux >/dev/null 2>&1; then
+    warn "tmux is not installed yet. Skipping tmux plugin sync."
+    return
+  fi
+
+  if [[ ! -f "$HOME/.tmux.conf" ]]; then
+    warn "~/.tmux.conf is missing. Skipping tmux plugin sync."
+    return
+  fi
+
+  if [[ ! -x "$tpm_install" ]]; then
+    warn "TPM install script not found at $tpm_install. Skipping tmux plugin sync."
+    return
+  fi
+
+  info "Installing/updating tmux plugins via TPM..."
+  mkdir -p "$TMUX_PLUGIN_DIR"
+  tmux start-server \; set-environment -g TMUX_PLUGIN_MANAGER_PATH "$TMUX_PLUGIN_DIR/" >/dev/null 2>&1
+  "$tpm_install"
+  ok "tmux plugins synchronized."
+}
+
 setup_age_key() {
   if [[ -f "$AGE_KEY_FILE" ]]; then
     info "Age key already exists at $AGE_KEY_FILE"
@@ -251,9 +304,11 @@ install)
   install_stow
   install_age
   install_passage
+  install_tpm
 
   # Link dotfiles
   stow_dotfiles
+  sync_tmux_plugins
 
   # Setup secrets management
   setup_age_key
@@ -271,7 +326,9 @@ install)
 pull)
   # Pull dotfiles
   git -C "$DOTFILES" pull --rebase --autostash
+  install_tpm
   stow_dotfiles
+  sync_tmux_plugins
 
   # Pull passage store (if it exists)
   if [[ -d "$HOME/.passage/store/.git" ]]; then

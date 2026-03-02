@@ -11,3 +11,6 @@ vim.o.swapfile = false
 
 -- Disable autoformat on save
 vim.g.autoformat = false
+
+-- Force truecolor explicitly so Neovim does not depend on upstream defaults.
+vim.o.termguicolors = true

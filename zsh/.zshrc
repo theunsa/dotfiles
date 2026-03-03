@@ -15,6 +15,7 @@ alias vi="nvim"
 alias vi-a="CLAUDE_CONFIG_DIR=~/.claude-albertec nvim"
 alias ls="eza"
 alias ll="eza -la"
+alias yz="yazi"
 
 export EDITOR='nvim'
 export PLATFORM=`uname`
@@ -61,6 +62,23 @@ export PATH="$PATH:$HOME/.turso"
 # Init zoxide
 eval "$(zoxide init zsh)"
 
+# Yazi shell wrapper: keep the shell's cwd in sync after quitting.
+function y() {
+  local tmp cwd exit_code
+  tmp="$(mktemp "${TMPDIR:-/tmp}/yazi-cwd.XXXXXX")" || return 1
+
+  command yazi "$@" --cwd-file="$tmp"
+  exit_code=$?
+
+  cwd="$(command cat -- "$tmp" 2>/dev/null)"
+  if [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && [ -d "$cwd" ]; then
+    builtin cd -- "$cwd"
+  fi
+
+  rm -f -- "$tmp"
+  return $exit_code
+}
+
 # Claude Code
 alias claude="~/.claude/local/claude"
 alias claude-yolo="~/.claude/local/claude --dangerously-skip-permissions"
@@ -91,5 +109,6 @@ export PLUMBLINE_GPG_KEY="$(passage show business/plumb-line/plumbline-gpg-key)"
 #   export ANTHROPIC_API_KEY=$(passage show api-keys/anthropic 2>/dev/null)
 #   export GITHUB_TOKEN=$(passage show api-keys/github-token 2>/dev/null)
 # fi
-export TERM=xterm-256color
-
+# Preserve the terminal's own TERM (needed for Ghostty-aware apps like Yazi).
+: "${TERM:=xterm-256color}"
+export TERM

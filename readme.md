@@ -107,6 +107,7 @@ Bootstrap automatically installs all required tools:
 
 **CLI Utilities:**
 - **eza** - Modern ls replacement
+- **yazi** - Terminal file manager
 - **zoxide** - Smart cd
 - **nvm** - Node version manager
 - **oxfmt** - OXC formatter for JS/TS and related files
@@ -118,6 +119,16 @@ Bootstrap automatically installs all required tools:
 - **stow** - Symlink manager
 
 All configs linked to `$HOME` via stow.
+
+### Yazi on macOS
+
+Install Yazi and the optional preview/search dependencies with Homebrew:
+
+```bash
+brew install yazi ffmpeg sevenzip jq poppler fd ripgrep fzf zoxide resvg imagemagick font-symbols-only-nerd-font
+```
+
+Ghostty supports Yazi image previews out of the box. The Zsh config in this repo intentionally avoids overwriting `TERM` so Ghostty can be detected correctly.
 
 ---
 

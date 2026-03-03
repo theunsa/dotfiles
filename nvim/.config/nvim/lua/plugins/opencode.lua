@@ -1,4 +1,5 @@
 return {
+  enabled = false,
   "NickvanDyke/opencode.nvim",
   dependencies = {
     { "folke/snacks.nvim", opts = { input = {}, picker = {}, terminal = {} } },

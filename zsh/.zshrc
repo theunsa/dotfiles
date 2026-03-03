@@ -103,12 +103,11 @@ export OPENCODE_API_KEY="$(passage show api-keys/opencode-api-key)"
 export PLUMBLINE_GIT_TOKEN="$(passage show business/plumb-line/plumbline-git-token)"
 export PLUMBLINE_GPG_KEY="$(passage show business/plumb-line/plumbline-gpg-key)"
 
-# Auto-load common API keys from passage (uncomment after migration)
-# if command -v passage >/dev/null 2>&1; then
-#   export OPENAI_API_KEY=$(passage show api-keys/openai 2>/dev/null)
-#   export ANTHROPIC_API_KEY=$(passage show api-keys/anthropic 2>/dev/null)
-#   export GITHUB_TOKEN=$(passage show api-keys/github-token 2>/dev/null)
-# fi
+# Increase open-file limit on osx
+if [[ "$PLATFORM" == "Darwin" ]]; then
+  ulimit -n 4096
+fi
+
 # Preserve the terminal's own TERM (needed for Ghostty-aware apps like Yazi).
 : "${TERM:=xterm-256color}"
 export TERM

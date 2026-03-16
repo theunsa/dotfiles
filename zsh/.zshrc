@@ -23,7 +23,53 @@ setopt HIST_REDUCE_BLANKS
 setopt HIST_SAVE_NO_DUPS
 
 alias p="pnpm"
-alias v="nvim"
+function r() {
+  local dir="$PWD"
+
+  while [[ "$dir" != "/" ]]; do
+    if [[ -x "$dir/bin/rails" ]]; then
+      "$dir/bin/rails" "$@"
+      return
+    fi
+
+    dir="${dir:h}"
+  done
+
+  command rails "$@"
+}
+
+alias lsa="ls -a"
+alias lt="eza --tree --level=2 --long --icons --git"
+alias lta="lt -a"
+alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+alias eff='$EDITOR "$(ff)"'
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias d="docker"
+alias g="git"
+alias gst="git status"
+alias gcm="git commit -m"
+alias gcam="git commit -a -m"
+alias gcad="git commit -a --amend"
+alias ta='tmux attach || tmux new -s Work'
+
+function t() {
+  if [[ $# -gt 0 ]]; then
+    sesh connect "$1"
+  else
+    sesh connect "$(sesh list | fzf)"
+  fi
+}
+
+function v() {
+  if [[ $# -eq 0 ]]; then
+    command nvim .
+  else
+    command nvim "$@"
+  fi
+}
+
 alias vi="nvim"
 alias vi-a="CLAUDE_CONFIG_DIR=~/.claude-albertec nvim"
 alias ls="eza"

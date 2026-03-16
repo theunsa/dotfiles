@@ -56,9 +56,15 @@ return {
         vim.api.nvim_set_hl(0, "SnacksWinSeparator", { fg = nord.polar_night_2, bg = nord.polar_night_0 })
         vim.api.nvim_set_hl(0, "WinSeparator", { fg = nord.polar_night_2, bg = nord.polar_night_0 })
         vim.api.nvim_set_hl(0, "LspInlayHint", { fg = nord.frost_2, bg = nord.polar_night_1, italic = false })
+        vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", { bg = nord.polar_night_2 })
+        vim.api.nvim_set_hl(0, "SnacksPickerPreviewCursorLine", { bg = nord.polar_night_2 })
+        vim.api.nvim_set_hl(0, "SnacksPickerDir", { fg = nord.polar_night_3 })
+        vim.api.nvim_set_hl(0, "SnacksPickerPathHidden", { fg = nord.polar_night_3 })
+        vim.api.nvim_set_hl(0, "SnacksPickerPathIgnored", { fg = nord.polar_night_3 })
         vim.api.nvim_set_hl(0, "SnacksPickerMatch", { fg = nord.frost_1, bold = true })
         vim.api.nvim_set_hl(0, "SnacksPickerInputSearch", { fg = nord.snow_storm_0, bold = true })
         vim.api.nvim_set_hl(0, "SnacksPickerSearch", { fg = nord.snow_storm_0, bg = nord.polar_night_2, bold = true })
+        vim.api.nvim_set_hl(0, "SnacksPickerGitStatusUntracked", { fg = nord.frost_1, bold = true })
       end
 
       local function apply_terminal_palette()

@@ -54,11 +54,25 @@ alias gcam="git commit -a -m"
 alias gcad="git commit -a --amend"
 alias ta='tmux attach || tmux new -s Work'
 
+function sesh_default_layout() {
+  printf "%s" "tmux send-keys -t 0 'nvim' C-m && tmux split-window -v -p 20 && tmux send-keys -t 1 'clear && claude' C-m && tmux split-window -h -p 50 -t 1 && tmux send-keys -t 2 'clear' C-m && tmux select-pane -t 0"
+}
+
 function t() {
+  local target
+
   if [[ $# -gt 0 ]]; then
-    sesh connect "$1"
+    target="$1"
   else
-    sesh connect "$(sesh list | fzf)"
+    target="$(sesh list | fzf)"
+  fi
+
+  [[ -z "$target" ]] && return
+
+  if sesh list -c | command grep -Fxq -- "$target"; then
+    sesh connect "$target"
+  else
+    sesh connect -c "$(sesh_default_layout)" "$target"
   fi
 }
 

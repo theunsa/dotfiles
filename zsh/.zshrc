@@ -145,6 +145,12 @@ alias haiku="~/.claude/local/claude --print --model=haiku"
 alias sonnet="~/.claude/local/claude --print --model=sonnet"
 alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-permissions"
 
+# ask to use Codex (fast) for now
+ask() {
+  codex exec -m gpt-5.4-mini --json --skip-git-repo-check -c reasoning_effort=low "$*" | \
+  jq -r 'select(.item.type == "agent_message") | .item.text'
+}
+
 # Stop Zsh from complaining if ?? doesn't match a file
 setopt nonomatch
 ??() {

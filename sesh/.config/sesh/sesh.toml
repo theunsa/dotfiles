@@ -1,0 +1,68 @@
+dir_length = 2  # Uses last 2 directories: "projects/sesh" instead of just "sesh"
+
+sort_order = [
+    "config", # show first
+    "tmux",
+    "zoxide",
+]
+
+[[session]]
+name = "Downloads 📥"
+path = "~/Downloads"
+startup_command = "ls"
+
+[[session]]
+name = "tmux config"
+path = "~"
+startup_command = "nvim .tmux.conf"
+
+[[session]]
+name = "batapp2"
+path = "~/Projects/albertec/new/batapp2"
+startup_command = """
+tmux split-window -v -p 20 && \
+tmux select-pane -t 0 && \
+tmux split-window -h -p 70 && \
+tmux send-keys 'nvim' C-m && \
+tmux select-pane -t 2 && \
+tmux send-keys 'clear' C-m && \
+tmux select-pane -t 1
+"""
+
+[[session]]
+name = "remi"
+path = "~/Projects/albertec/new/remi"
+startup_command = """
+tmux split-window -v -p 20 && \
+tmux select-pane -t 0 && \
+tmux send-keys 'vi-a' C-m && \
+tmux select-pane -t 1 && \
+tmux send-keys 'clear' C-m && \
+tmux select-pane -t 0
+"""
+
+[[session]]
+name = "pl"
+path = "~/Projects/plumbline/avoda-ui/"
+startup_command = """
+tmux split-window -v -p 20 && \
+tmux select-pane -t 0 && \
+tmux send-keys 'nvim' C-m && \
+tmux select-pane -t 1 && \
+tmux split-window -h -p 40 && \
+tmux send-keys 'cd ../avoda-platform && p dev' C-m && \
+tmux send-keys 'clear' C-m && \
+tmux select-pane -t 0
+"""
+
+[[session]]
+name = "dev"
+path = "."
+startup_command = """
+tmux send-keys -t 0 'nvim' C-m && \
+tmux split-window -v -p 20 && \
+tmux send-keys -t 1 'clear' C-m && \
+tmux split-window -h -p 50 -t 1 && \
+tmux send-keys -t 2 'clear' C-m && \
+tmux select-pane -t 0
+"""

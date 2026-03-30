@@ -161,8 +161,47 @@ alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-p
 
 # ask to use Codex (fast) for now
 ask() {
-  codex exec -m gpt-5.4-mini --json --skip-git-repo-check -c reasoning_effort=low "$*" | \
-  jq -r 'select(.item.type == "agent_message") | .item.text'
+  local model="gpt-5.4-mini"
+  local thread_file="${HOME}/.ask-thread"
+  local output
+
+  if [[ "${1:-}" == "--new" ]]; then
+    rm -f "$thread_file"
+    shift
+  fi
+
+  if [[ "${1:-}" == "--reset" ]]; then
+    rm -f "$thread_file"
+    return 0
+  fi
+
+  if [[ $# -eq 0 ]]; then
+    echo "usage: ask [--new|--reset] <prompt>" >&2
+    return 1
+  fi
+
+  if [[ -f "$thread_file" ]]; then
+    output="$(
+      codex exec resume "$(cat "$thread_file")" \
+        -m "$model" \
+        --json \
+        --skip-git-repo-check \
+        -c reasoning_effort=low \
+        "$*" 2>/dev/null
+    )"
+  else
+    output="$(
+      codex exec \
+        -m "$model" \
+        --json \
+        --skip-git-repo-check \
+        -c reasoning_effort=low \
+        "$*" 2>/dev/null
+    )"
+  fi
+
+  printf '%s\n' "$output" | jq -r 'select(.type == "thread.started") | .thread_id' | tail -n 1 > "$thread_file"
+  printf '%s\n' "$output" | jq -r 'select(.item.type == "agent_message") | .item.text'
 }
 
 # Stop Zsh from complaining if ?? doesn't match a file

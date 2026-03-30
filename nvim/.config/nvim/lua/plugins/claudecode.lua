@@ -4,7 +4,8 @@ return {
     dependencies = { "folke/snacks.nvim" },
     config = true,
     opts = function(_, opts)
-      opts.terminal_cmd = "~/.claude/local/claude"
+      local claude = vim.fn.exepath("claude")
+      opts.terminal_cmd = claude ~= "" and claude or vim.fn.expand("~/.local/bin/claude")
 
       -- CUSTOMIZE THE UI: Make the Claude window wider or on the left
       opts.terminal = {

@@ -153,10 +153,9 @@ function y() {
 }
 
 # Claude Code
-alias claude="~/.claude/local/claude"
-alias claude-yolo="~/.claude/local/claude --dangerously-skip-permissions"
-alias haiku="~/.claude/local/claude --print --model=haiku"
-alias sonnet="~/.claude/local/claude --print --model=sonnet"
+alias claude-yolo="claude --dangerously-skip-permissions"
+alias haiku="claude --print --model=haiku"
+alias sonnet="claude --print --model=sonnet"
 alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-permissions"
 
 # ask to use Codex (fast) for now

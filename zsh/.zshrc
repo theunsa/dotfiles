@@ -159,7 +159,7 @@ alias sonnet="claude --print --model=sonnet"
 alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-permissions"
 
 # ask to use Codex (fast) for now
-ask() {
+_ask() {
   local model="gpt-5.4-mini"
   local thread_file="${HOME}/.ask-thread"
   local output
@@ -202,6 +202,7 @@ ask() {
   printf '%s\n' "$output" | jq -r 'select(.type == "thread.started") | .thread_id' | tail -n 1 > "$thread_file"
   printf '%s\n' "$output" | jq -r 'select(.item.type == "agent_message") | .item.text'
 }
+alias ask='noglob _ask'
 
 # Stop Zsh from complaining if ?? doesn't match a file
 setopt nonomatch

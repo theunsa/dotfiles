@@ -3,3 +3,13 @@
 	email = theunsa@gmail.com
 [core]
 	editor = nvim
+[alias]
+	st = status -sb
+	c = commit
+	cm = commit -m
+	ca = commit --amend
+	cam = commit -a -m
+	co = checkout
+	sw = switch
+	br = branch
+	lg = log --oneline --graph --decorate

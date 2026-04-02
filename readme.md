@@ -1,6 +1,6 @@
 # My Dotfiles
 
-Personal configuration for `zsh`, `tmux`, `nvim`, and other tools. Designed for portability with encrypted secrets using [passage](https://github.com/FiloSottile/passage) (Age-based password manager).
+Personal configuration for `git`, `zsh`, `tmux`, `nvim`, and other tools. Designed for portability with encrypted secrets using [passage](https://github.com/FiloSottile/passage) (Age-based password manager).
 
 ---
 
@@ -118,7 +118,7 @@ Bootstrap automatically installs all required tools:
 - **passage** - Password manager
 - **stow** - Symlink manager
 
-All configs linked to `$HOME` via stow.
+All configs, including `~/.gitconfig`, are linked to `$HOME` via stow.
 
 ### Yazi on macOS
 

@@ -48,10 +48,6 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias d="docker"
 alias g="git"
-alias gst="git status"
-alias gcm="git commit -m"
-alias gcam="git commit -a -m"
-alias gcad="git commit -a --amend"
 alias ta='tmux attach || tmux new -s Work'
 
 function sesh_default_layout() {

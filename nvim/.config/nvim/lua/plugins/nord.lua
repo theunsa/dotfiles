@@ -59,7 +59,7 @@ return {
         vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", { bg = nord.polar_night_2 })
         vim.api.nvim_set_hl(0, "SnacksPickerPreviewCursorLine", { bg = nord.polar_night_2 })
         vim.api.nvim_set_hl(0, "SnacksPickerDir", { fg = nord.frost_2 })
-        vim.api.nvim_set_hl(0, "SnacksPickerPathHidden", { fg = nord.polar_night_3 })
+        vim.api.nvim_set_hl(0, "SnacksPickerPathHidden", { fg = nord.frost_2 })
         vim.api.nvim_set_hl(0, "SnacksPickerPathIgnored", { fg = nord.polar_night_3 })
         vim.api.nvim_set_hl(0, "SnacksPickerRow", { fg = nord.frost_1 })
         vim.api.nvim_set_hl(0, "SnacksPickerCol", { fg = nord.frost_1 })

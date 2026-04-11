@@ -154,69 +154,16 @@ alias haiku="claude --print --model=haiku"
 alias sonnet="claude --print --model=sonnet"
 alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-permissions"
 
-# ask to use opencode's lightweight non-agent flow
+# ask — quick questions via Gemini 2.0 Flash Lite (free tier)
+export GEMINI_API_KEY="$(passage show api-keys/gemini-api-key-ask)"
 _ask() {
-  local model="${ASK_MODEL:-openrouter/google/gemini-2.5-flash-lite}"
-  local session_file="${HOME}/.ask-session"
-  local exit_code=0
-  local answer session_id
-  local output_file stderr_file
-  local -a cmd
-
-  if [[ "${1:-}" == "--new" ]]; then
-    rm -f "$session_file"
-    shift
-  fi
-
-  if [[ "${1:-}" == "--reset" ]]; then
-    rm -f "$session_file"
-    return 0
-  fi
-
-  if [[ $# -eq 0 ]]; then
-    echo "usage: ask [--new|--reset] <prompt>" >&2
-    return 1
-  fi
-
-  output_file="$(mktemp "${TMPDIR:-/tmp}/ask-output.XXXXXX")" || return 1
-  stderr_file="$(mktemp "${TMPDIR:-/tmp}/ask-stderr.XXXXXX")" || {
-    rm -f "$output_file"
-    return 1
-  }
-
-  cmd=(opencode run --pure --format json --model "$model")
-  if [[ -f "$session_file" ]]; then
-    cmd+=(-s "$(<"$session_file")")
-  fi
-  cmd+=("$*")
-
-  "${cmd[@]}" >"$output_file" 2>"$stderr_file"
-  exit_code=$?
-
-  if (( exit_code != 0 )); then
-    cat "$stderr_file" >&2
-    rm -f "$output_file" "$stderr_file"
-    return $exit_code
-  fi
-
-  session_id="$(jq -r 'select(.sessionID != null) | .sessionID' "$output_file" | head -n 1)"
-  if [[ -n "$session_id" && "$session_id" != "null" ]]; then
-    printf '%s\n' "$session_id" > "$session_file"
-  fi
-
-  answer="$(jq -rs '[.[] | select(.type == "text") | .part.text] | join("")' "$output_file")"
-
-  if [[ -z "$answer" ]]; then
-    jq -r '.error.data.message // .error.message // empty' "$output_file" >&2
-    rm -f "$output_file" "$stderr_file"
-    return 1
-  fi
-
-  printf '%s' "$answer"
-  if [[ "$answer" != *$'\n' ]]; then
-    printf '\n'
-  fi
-  rm -f "$output_file" "$stderr_file"
+  [[ $# -eq 0 ]] && { echo "usage: ask <prompt>" >&2; return 1; }
+  local escaped
+  escaped=$(printf '%s' "$*" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
+  curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}" \
+    -H 'Content-Type: application/json' \
+    -d "{\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}" \
+  | jq -r '.candidates[0].content.parts[0].text'
 }
 alias ask='noglob _ask'
 

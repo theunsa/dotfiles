@@ -157,12 +157,24 @@ alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-p
 # ask — quick questions via Gemini 2.0 Flash Lite (free tier)
 export GEMINI_API_KEY="$(passage show api-keys/gemini-api-key-ask)"
 _ask() {
-  [[ $# -eq 0 ]] && { echo "usage: ask <prompt>" >&2; return 1; }
-  local escaped
+  [[ $# -eq 0 ]] && { echo "usage: ask [-v] <prompt>" >&2; return 1; }
+  local verbose=0
+  if [[ "$1" == "-v" || "$1" == "--verbose" ]]; then
+    verbose=1; shift
+  fi
+  [[ $# -eq 0 ]] && { echo "usage: ask [-v] <prompt>" >&2; return 1; }
+  local escaped sys payload
   escaped=$(printf '%s' "$*" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
+  if (( verbose )); then
+    payload="{\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}"
+  else
+    sys='You answer terminal questions for an expert developer. Reply in plain text with the minimum needed. No preamble, no disclaimers, no pep talk, no recap. No markdown headings, no bold, no bullet hierarchies unless listing ≥3 discrete items. For commands: show the command, then one short line of context only if non-obvious. For concepts: ≤3 sentences. For "how do I X": show the exact keystrokes or command first, explain only if asked. Never explain what things "are like" with analogies. Never walk through hypothetical scenarios. Assume the reader knows their tools.'
+    sys=$(printf '%s' "$sys" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
+    payload="{\"systemInstruction\":{\"parts\":[{\"text\":${sys}}]},\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}"
+  fi
   curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}" \
     -H 'Content-Type: application/json' \
-    -d "{\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}" \
+    -d "$payload" \
   | jq -r '.candidates[0].content.parts[0].text'
 }
 alias ask='noglob _ask'

@@ -2,21 +2,9 @@ return {
   {
     "folke/snacks.nvim",
     keys = {
-      { "<leader>A", nil, desc = "AI/Codex" },
+      { "<leader>a", nil, desc = "AI" },
       {
-        "<leader>Ac",
-        function()
-          Snacks.terminal.toggle({ "codex" }, {
-            cwd = vim.fn.getcwd(),
-            win = {
-              position = "right",
-            },
-          })
-        end,
-        desc = "Toggle Codex",
-      },
-      {
-        "<leader>Ay",
+        "<leader>ax",
         function()
           Snacks.terminal.toggle({ "codex", "--yolo" }, {
             cwd = vim.fn.getcwd(),
@@ -25,7 +13,7 @@ return {
             },
           })
         end,
-        desc = "Toggle Codex Yolo",
+        desc = "Codex YOLO",
       },
     },
   },

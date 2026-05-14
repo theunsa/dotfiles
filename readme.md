@@ -13,19 +13,24 @@ Personal configuration for `git`, `zsh`, `tmux`, `nvim`, and other tools. Design
 # macOS: xcode-select --install
 # Linux: sudo apt install git
 
-# 2. Clone and bootstrap
+# 2. Clone the repo
 git clone git@github.com:youruser/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./bootstrap.sh install
 
-# 3. Reload shell
-exec zsh
+# 3. If restoring existing secrets, restore your backed-up age key first
+mkdir -p ~/.config/age
+# Copy your backed-up key to ~/.config/age/keys.txt
+[[ -f ~/.config/age/keys.txt ]] && chmod 600 ~/.config/age/keys.txt
 
-# 4. Clone your secrets (if you have them backed up)
+# 4. Install tools, link dotfiles, and initialize passage
+./dot install
+
+# 5. Clone your secrets store (if you have one backed up)
 rm -rf ~/.passage/store
 git clone git@github.com:youruser/passage-store.git ~/.passage/store
 
-# 5. Test
+# 6. Reload shell and test
+exec zsh
 passage show api-keys/openai
 ```
 
@@ -35,19 +40,29 @@ passage show api-keys/openai
 
 ```bash
 # Pull latest configs and secrets
-./bootstrap.sh update
+./dot pull
 
 # ... make changes to configs or secrets ...
 
 # Push everything
-./bootstrap.sh push
+./dot push
 ```
 
 ---
 
 ## Working with Secrets
 
-Secrets are managed with `passage` and stored in `~/.passage/store/` (encrypted git private repo).
+Secrets are managed with `passage` and stored in `~/.passage/store/` as `.age` files. That store can be synced with a private git repo because the file contents are encrypted.
+
+The important pieces are:
+
+- `~/.config/age/keys.txt` - the private age identity. Back this up; without it, existing secrets cannot be decrypted.
+- `~/.passage/store/.age-recipients` - the public age recipient key used when encrypting new secrets.
+- `~/.passage/store/**/*.age` - encrypted secret files managed by passage.
+- `PASSAGE_IDENTITIES_FILE="$HOME/.config/age/keys.txt"` - set in `zsh/.zshrc` so passage knows which private key to use.
+- `PASSAGE_DIR="$HOME/.passage/store"` - set in `zsh/.zshrc` so passage uses the expected store.
+
+`age` does the encryption and decryption. `passage` gives the password-manager commands, folder structure, clipboard support, editing, and git workflow around those encrypted files.
 
 ```bash
 # Add a secret
@@ -84,19 +99,19 @@ passage git pull
 
 ---
 
-## Bootstrap Commands
+## Dotfile Commands
 
 | Command | Description |
 |---------|-------------|
-| `./bootstrap.sh install` | Install tools, link dotfiles, setup passage |
-| `./bootstrap.sh update` | Pull dotfiles + secrets, re-link configs |
-| `./bootstrap.sh push` | Push dotfiles + secrets to GitHub |
+| `./dot install` | Install tools, link dotfiles, setup passage |
+| `./dot pull` | Pull dotfiles + secrets, re-link configs |
+| `./dot push` | Commit and push dotfiles + secrets |
 
 ---
 
 ## What Gets Installed
 
-Bootstrap automatically installs all required tools:
+`./dot install` automatically installs all required tools:
 
 **Core Tools:**
 - **neovim** - Text editor

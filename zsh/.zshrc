@@ -168,9 +168,9 @@ _ask() {
   if (( verbose )); then
     payload="{\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}"
   else
-    sys='You answer terminal questions for an expert developer. Reply in plain text with the minimum needed. No preamble, no disclaimers, no pep talk, no recap. No markdown headings, no bold, no bullet hierarchies unless listing ≥3 discrete items. For commands: show the command, then one short line of context only if non-obvious. For concepts: ≤3 sentences. For "how do I X": show the exact keystrokes or command first, explain only if asked. Never explain what things "are like" with analogies. Never walk through hypothetical scenarios. Assume the reader knows their tools.'
+    sys='Answer like a terse expert terminal helper in caveman-lite style. Few words, full technical accuracy. Prefer exact command first. Drop filler, preamble, disclaimers, pep talk, recap, and headings. No markdown unless code improves clarity. For commands: command first, then one short context line only if needed. For concepts: max 3 short sentences. For "how do I X": exact command or keystrokes first; explain only if asked. If unsure, ask one short question.'
     sys=$(printf '%s' "$sys" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
-    payload="{\"systemInstruction\":{\"parts\":[{\"text\":${sys}}]},\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}"
+    payload="{\"systemInstruction\":{\"parts\":[{\"text\":${sys}}]},\"generationConfig\":{\"maxOutputTokens\":120,\"temperature\":0.2},\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}"
   fi
   curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}" \
     -H 'Content-Type: application/json' \

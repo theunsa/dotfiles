@@ -1,15 +1,74 @@
-# Just to be save
+# Secrets
 keys.*
 *.key
-
-# Unencrypted secrets
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+id_rsa*
+id_ed25519*
+auth.json
+hosts.yml
+credentials
+credentials.*
 secrets.env
 aws.env
 *.env
+.env.*
+!.env.example
+!.env.template
 
-# OS / editor junk (optional)
+# Local-only agent settings
+.claude/settings.local.json
+**/.claude/settings.local.json
+
+# OS / editor junk
 .DS_Store
 *.swp
+*.swo
 
 # Runtime artifacts
 */new
+node_modules/
+extensions/
+cache/
+.cache/
+tmp/
+.tmp/
+log/
+logs/
+sessions/
+archived_sessions/
+attachments/
+shell-snapshots/
+shell_snapshots/
+file-history/
+telemetry/
+plugins/cache/
+vendor_imports/
+process_manager/
+computer-use/
+ambient-suggestions/
+
+# Histories and databases
+history*.jsonl
+session_index.jsonl
+transcription-history.jsonl
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Large/generated artifacts
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.dmg
+*.iso
+*.img
+*.qcow2
+*.lance

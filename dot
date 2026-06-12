@@ -96,8 +96,12 @@ install_tools() {
       exit 1
     fi
 
-    # Install tools via Homebrew
-    local tools=(neovim tmux zsh starship eza zoxide nvm oxfmt oxlint)
+    local tools=(
+      neovim tmux zsh starship eza zoxide nvm oxfmt oxlint
+      fzf jq ripgrep fd bat sesh mise yazi pnpm gh lazygit gitleaks
+      tree wget ffmpeg sevenzip poppler resvg imagemagick
+      btop htop midnight-commander
+    )
     for tool in "${tools[@]}"; do
       if ! brew list "$tool" &>/dev/null; then
         info "Installing $tool..."
@@ -105,11 +109,13 @@ install_tools() {
       fi
     done
 
-    # Ghostty (if available via Homebrew cask)
-    if ! brew list --cask ghostty &>/dev/null 2>&1; then
-      info "Installing ghostty..."
-      brew install --cask ghostty 2>/dev/null || warn "ghostty not available via Homebrew, install manually from https://ghostty.org"
-    fi
+    local casks=(ghostty codex cursor-cli ngrok meld)
+    for cask in "${casks[@]}"; do
+      if ! brew list --cask "$cask" &>/dev/null; then
+        info "Installing $cask..."
+        brew install --cask "$cask"
+      fi
+    done
 
   elif command -v apt >/dev/null 2>&1; then
     # Debian/Ubuntu
@@ -258,6 +264,48 @@ stow_dotfiles() {
   ok "Dotfiles linked."
 }
 
+audit_dotfiles() {
+  local max_bytes="${DOT_AUDIT_MAX_BYTES:-262144}"
+  local failed=0
+  local secret_pattern='[s]k-[a-z0-9_-]{20,}|gh[p]_[a-z0-9_]{20,}|[g]ithub_pat_|AKIA[0-9A-Z]{16}|[B]EGIN .* PRIVATE KEY'
+
+  cd "$DOTFILES"
+  info "Auditing dotfiles for large files and secrets..."
+
+  while IFS= read -r -d '' file; do
+    [[ -f "$file" ]] || continue
+
+    local size
+    size=$(wc -c <"$file" | tr -d ' ')
+    if (( size > max_bytes )); then
+      warn "Tracked file is larger than ${max_bytes} bytes: $file (${size} bytes)"
+      failed=1
+    fi
+  done < <(git ls-files -z)
+
+  if ! git diff --cached --quiet; then
+    if command -v gitleaks >/dev/null 2>&1; then
+      git diff --cached | gitleaks stdin --no-banner --redact --exit-code 1
+    else
+      git diff --cached -U0 | rg -n -i "$secret_pattern" \
+        && failed=1 || true
+    fi
+  fi
+
+  if git ls-files -z | xargs -0 rg -n -i "$secret_pattern" >/dev/null; then
+    warn "Tracked files contain text matching secret patterns. Inspect with:"
+    warn "git ls-files -z | xargs -0 rg -n -i '<secret-pattern>'"
+    failed=1
+  fi
+
+  if (( failed != 0 )); then
+    warn "Dotfiles audit failed."
+    return 1
+  fi
+
+  ok "Dotfiles audit passed."
+}
+
 git_commit_push() {
   local dir=$1
   local msg=$2
@@ -266,6 +314,9 @@ git_commit_push() {
   # Commit any uncommitted changes
   if [[ -n "$(git status --porcelain)" ]]; then
     git add -A
+    if [[ "$dir" == "$DOTFILES" ]]; then
+      audit_dotfiles
+    fi
     git commit -m "$msg" || true
   fi
 
@@ -340,6 +391,10 @@ pull)
   ok "Everything updated!"
   ;;
 
+audit)
+  audit_dotfiles
+  ;;
+
 push)
   # Push dotfiles
   git_commit_push "$DOTFILES" "update dotfiles"
@@ -353,12 +408,13 @@ push)
   ;;
 
 *)
-  echo "Usage: $0 [install|pull|push]"
+  echo "Usage: $0 [install|pull|push|audit]"
   echo ""
   echo "Commands:"
   echo "  install  - Install dependencies, link dotfiles, setup passage"
   echo "  pull     - Pull latest dotfiles and re-link"
   echo "  push     - Commit and push dotfiles changes"
+  echo "  audit    - Check tracked/staged dotfiles for secrets and large files"
   exit 1
   ;;
 esac

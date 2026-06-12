@@ -118,6 +118,11 @@ export PATH=$PATH:"$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform
 # NODE_PATH
 export NODE_PATH=$(npm root -g)
 
+# Add Postgres.app to path
+export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
+# Set postgres as default db
+export PGDATABASE="postgres"
+
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
@@ -154,7 +159,8 @@ alias haiku="claude --print --model=haiku"
 alias sonnet="claude --print --model=sonnet"
 alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-permissions"
 
-# ask — quick questions via Gemini 2.0 Flash Lite (free tier)
+# ask — quick questions via Gemini Flash-Lite (free tier)
+export ASK_MODEL="${ASK_MODEL:-gemini-3.1-flash-lite}"
 export GEMINI_API_KEY="$(passage show api-keys/gemini-api-key-ask)"
 _ask() {
   [[ $# -eq 0 ]] && { echo "usage: ask [-v] <prompt>" >&2; return 1; }
@@ -163,7 +169,8 @@ _ask() {
     verbose=1; shift
   fi
   [[ $# -eq 0 ]] && { echo "usage: ask [-v] <prompt>" >&2; return 1; }
-  local escaped sys payload
+  [[ -z "$GEMINI_API_KEY" ]] && { echo "ask: GEMINI_API_KEY is empty" >&2; return 1; }
+  local escaped sys payload response_file http_code
   escaped=$(printf '%s' "$*" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
   if (( verbose )); then
     payload="{\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}"
@@ -172,10 +179,33 @@ _ask() {
     sys=$(printf '%s' "$sys" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
     payload="{\"systemInstruction\":{\"parts\":[{\"text\":${sys}}]},\"generationConfig\":{\"maxOutputTokens\":120,\"temperature\":0.2},\"contents\":[{\"parts\":[{\"text\":${escaped}}]}]}"
   fi
-  curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}" \
+
+  response_file="$(mktemp "${TMPDIR:-/tmp}/ask-response.XXXXXX")" || return 1
+  http_code="$(
+    curl -sS -o "$response_file" -w "%{http_code}" \
+      "https://generativelanguage.googleapis.com/v1beta/models/${ASK_MODEL}:generateContent?key=${GEMINI_API_KEY}" \
     -H 'Content-Type: application/json' \
-    -d "$payload" \
-  | jq -r '.candidates[0].content.parts[0].text'
+      -d "$payload"
+  )"
+
+  if [[ "$http_code" != 2* ]]; then
+    jq -r '.error.message // "ask: Gemini API HTTP error"' "$response_file" >&2
+    rm -f "$response_file"
+    return 1
+  fi
+
+  if ! jq -er '.candidates[0].content.parts[]?.text' "$response_file"; then
+    jq -r '
+      .error.message //
+      .promptFeedback.blockReason //
+      .candidates[0].finishReason //
+      "ask: no text returned by Gemini"
+    ' "$response_file" >&2
+    rm -f "$response_file"
+    return 1
+  fi
+
+  rm -f "$response_file"
 }
 alias ask='noglob _ask'
 

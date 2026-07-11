@@ -2,4 +2,5 @@
 bun = "1"
 node = "lts"
 pnpm = "11"
+python = "3.14"
 ruby = "4"

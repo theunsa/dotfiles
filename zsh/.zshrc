@@ -1,11 +1,10 @@
-# TA: trying out starship in favor of oh-my-zsh
-eval "$(starship init zsh)"
+# Put user-installed commands first and initialize tools only when available.
+export PATH="$HOME/.local/bin:$PATH"
 
-# # Path to your oh-my-zsh installation.
-# export ZSH="$HOME/.oh-my-zsh"
-# # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="pygmalion"
-# source $ZSH/oh-my-zsh.sh
+(( $+commands[mise] )) && eval "$(mise activate zsh)"
+(( $+commands[starship] )) && eval "$(starship init zsh)"
+(( $+commands[fzf] )) && eval "$(fzf --zsh)"
+(( $+commands[atuin] )) && eval "$(atuin init zsh)"
 
 # Share command history across shells and tmux panes.
 HISTFILE=$HOME/.zsh_history
@@ -50,10 +49,6 @@ alias d="docker"
 alias g="git"
 alias ta='tmux attach || tmux new -s Work'
 
-function sesh_default_layout() {
-  printf "%s" "tmux send-keys -t 0 'nvim' C-m && tmux split-window -v -p 20 && tmux send-keys -t 1 'clear && claude' C-m && tmux split-window -h -p 50 -t 1 && tmux send-keys -t 2 'clear' C-m && tmux select-pane -t 0"
-}
-
 function t() {
   local target
 
@@ -68,8 +63,29 @@ function t() {
   if sesh list -c | command grep -Fxq -- "$target"; then
     sesh connect "$target"
   else
-    sesh connect -c "$(sesh_default_layout)" "$target"
+    sesh connect -c "$HOME/.config/sesh/default-layout.sh" "$target"
   fi
+}
+
+# Show the keybindings AeroSpace actually loaded. Pass resize or service to
+# inspect those modes; main is the default.
+aero-keys() {
+  local mode="${1:-main}"
+
+  if ! (( $+commands[aerospace] )); then
+    echo "aero-keys: AeroSpace is unavailable" >&2
+    return 1
+  fi
+
+  aerospace config --get "mode.${mode}.binding" --json | jq -r '
+    to_entries
+    | sort_by(.key)[]
+    | [
+        .key,
+        (.value | if type == "array" then join(" → ") else . end)
+      ]
+    | @tsv
+  ' | column -t -s $'\t'
 }
 
 function v() {
@@ -87,7 +103,7 @@ alias ll="eza -la"
 alias yz="yazi"
 
 export EDITOR='nvim'
-export PLATFORM=`uname`
+export PLATFORM="$(uname)"
 export PROJECT_HOME=$HOME/Projects
 export USER_NAME="Theuns Alberts"
 
@@ -101,40 +117,19 @@ else
   export JAVA_HOME="/usr/lib/jvm/default-java"
 fi
 
-# nvm setup
-export NVM_DIR="$HOME/.nvm"
-if [[ "$PLATFORM" == "Darwin" ]]; then
-  # macOS with Homebrew
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-else
-  # Linux or other systems
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-fi
-
 # PATH
-export PATH=$PATH:"$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
-# NODE_PATH
-export NODE_PATH=$(npm root -g)
+export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
 
 # Add Postgres.app to path
 export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
 # Set postgres as default db
 export PGDATABASE="postgres"
 
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$PATH:$BUN_INSTALL/bin"
-
 # Turso
 export PATH="$PATH:$HOME/.turso"
 
 # Init zoxide
-eval "$(zoxide init zsh)"
+(( $+commands[zoxide] )) && eval "$(zoxide init zsh)"
 
 # Yazi shell wrapper: keep the shell's cwd in sync after quitting.
 function y() {
@@ -161,7 +156,6 @@ alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-p
 
 # ask — quick questions via Gemini Flash-Lite (free tier)
 export ASK_MODEL="${ASK_MODEL:-gemini-3.1-flash-lite}"
-export GEMINI_API_KEY="$(passage show api-keys/gemini-api-key-ask)"
 _ask() {
   [[ $# -eq 0 ]] && { echo "usage: ask [-v] <prompt>" >&2; return 1; }
   local verbose=0
@@ -169,7 +163,9 @@ _ask() {
     verbose=1; shift
   fi
   [[ $# -eq 0 ]] && { echo "usage: ask [-v] <prompt>" >&2; return 1; }
-  [[ -z "$GEMINI_API_KEY" ]] && { echo "ask: GEMINI_API_KEY is empty" >&2; return 1; }
+  local api_key="${GEMINI_API_KEY:-}"
+  [[ -n "$api_key" ]] || api_key="$(passage show api-keys/gemini-api-key-ask 2>/dev/null)"
+  [[ -n "$api_key" ]] || { echo "ask: Gemini API key is unavailable" >&2; return 1; }
   local escaped sys payload response_file http_code
   escaped=$(printf '%s' "$*" | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
   if (( verbose )); then
@@ -183,8 +179,9 @@ _ask() {
   response_file="$(mktemp "${TMPDIR:-/tmp}/ask-response.XXXXXX")" || return 1
   http_code="$(
     curl -sS -o "$response_file" -w "%{http_code}" \
-      "https://generativelanguage.googleapis.com/v1beta/models/${ASK_MODEL}:generateContent?key=${GEMINI_API_KEY}" \
-    -H 'Content-Type: application/json' \
+      "https://generativelanguage.googleapis.com/v1beta/models/${ASK_MODEL}:generateContent" \
+      -H 'Content-Type: application/json' \
+      -H "x-goog-api-key: ${api_key}" \
       -d "$payload"
   )"
 
@@ -215,16 +212,28 @@ setopt nonomatch
   claude -p "$*"
 }
 
-. "$HOME/.local/bin/env"
-export PATH="$HOME/.local/bin:$PATH"
+[[ -r "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
 # Passage (Age-based password manager)
 export PASSAGE_IDENTITIES_FILE="$HOME/.config/age/keys.txt"
 export PASSAGE_DIR="$HOME/.passage/store"
 
-export OPENCODE_API_KEY="$(passage show api-keys/opencode-api-key)"
-export PLUMBLINE_GIT_TOKEN="$(passage show business/plumb-line/plumbline-git-token)"
-export PLUMBLINE_GPG_KEY="$(passage show business/plumb-line/plumbline-gpg-key)"
+# Sensitive work credentials are opt-in, not inherited by every shell process.
+load_work_secrets() {
+  local git_token gpg_key
+  git_token="$(passage show business/plumb-line/plumbline-git-token)" || return
+  gpg_key="$(passage show business/plumb-line/plumbline-gpg-key)" || return
+  export PLUMBLINE_GIT_TOKEN="$git_token"
+  export PLUMBLINE_GPG_KEY="$gpg_key"
+}
+
+# Keep the OpenCode key scoped to the OpenCode process.
+opencode() {
+  local api_key="${OPENCODE_API_KEY:-}"
+  [[ -n "$api_key" ]] || api_key="$(passage show api-keys/opencode-api-key 2>/dev/null)"
+  [[ -n "$api_key" ]] || { echo "opencode: API key is unavailable" >&2; return 1; }
+  OPENCODE_API_KEY="$api_key" command opencode "$@"
+}
 
 # Increase open-file limit on osx
 if [[ "$PLATFORM" == "Darwin" ]]; then
@@ -234,4 +243,13 @@ fi
 # Preserve the terminal's own TERM (needed for Ghostty-aware apps like Yazi).
 : "${TERM:=xterm-256color}"
 export TERM
-eval "$(~/.local/bin/mise activate)"
+
+# These must be sourced last so highlighting sees all widgets and aliases.
+if [[ "$PLATFORM" == "Darwin" ]] && (( $+commands[brew] )); then
+  _brew_prefix="$(brew --prefix)"
+  [[ -r "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
+    source "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  [[ -r "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
+    source "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  unset _brew_prefix
+fi

@@ -4,8 +4,14 @@ theme = Nord
 mouse-hide-while-typing = true
 scrollback-limit = 1000000
 font-size = 14
-gtk-titlebar = false
-
+macos-titlebar-style = hidden
+window-padding-x = 12
+window-padding-y = 8
+window-padding-balance = true
+background-opacity = 0.97
+cursor-style = block
+cursor-style-blink = false
+confirm-close-surface = false
 
 keybind = ctrl+n=new_window
 

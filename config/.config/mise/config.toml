@@ -1,2 +1,5 @@
 [tools]
+bun = "1"
+node = "lts"
+pnpm = "11"
 ruby = "4"

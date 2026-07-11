@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES="$HOME/dotfiles"
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_BIN="$HOME/.local/bin"
 AGE_KEY_DIR="$HOME/.config/age"
 AGE_KEY_FILE="$AGE_KEY_DIR/keys.txt"
 TMUX_PLUGIN_DIR="$HOME/.local/share/tmux/plugins"
 TPM_DIR="$TMUX_PLUGIN_DIR/tpm"
 TPM_VERSION="v3.1.0"
+STOW_PACKAGES=(
+  agents aerospace claude codex config ghostty git nvim sesh starship tmux yazi zsh
+)
 
 # --- Helpers ---
 info() { echo "[*] $*"; }
@@ -77,11 +80,13 @@ install_passage() {
   info "Installing passage..."
   ensure_local_bin
 
-  local tmp_dir
-  tmp_dir=$(mktemp -d)
-  git clone --depth 1 https://github.com/FiloSottile/passage.git "$tmp_dir"
-  make -C "$tmp_dir" install PREFIX="$HOME/.local"
-  rm -rf "$tmp_dir"
+  (
+    local tmp_dir
+    tmp_dir=$(mktemp -d)
+    trap 'rm -rf "$tmp_dir"' EXIT
+    git clone --depth 1 https://github.com/FiloSottile/passage.git "$tmp_dir"
+    make -C "$tmp_dir" install PREFIX="$HOME/.local"
+  )
 
   ok "passage installed to $LOCAL_BIN"
 }
@@ -96,26 +101,11 @@ install_tools() {
       exit 1
     fi
 
-    local tools=(
-      neovim tmux zsh starship eza zoxide nvm oxfmt oxlint
-      fzf jq ripgrep fd bat sesh mise yazi pnpm gh lazygit gitleaks
-      tree wget ffmpeg sevenzip poppler resvg imagemagick
-      btop htop midnight-commander
-    )
-    for tool in "${tools[@]}"; do
-      if ! brew list "$tool" &>/dev/null; then
-        info "Installing $tool..."
-        brew install "$tool"
-      fi
-    done
-
-    local casks=(ghostty codex cursor-cli ngrok meld)
-    for cask in "${casks[@]}"; do
-      if ! brew list --cask "$cask" &>/dev/null; then
-        info "Installing $cask..."
-        brew install --cask "$cask"
-      fi
-    done
+    info "Reconciling packages from $DOTFILES/Brewfile..."
+    # Homebrew requires explicit trust for formulae from non-core taps.
+    brew trust --formula felixkratz/formulae/borders
+    brew bundle install --file "$DOTFILES/Brewfile" --no-upgrade
+    ok "Homebrew packages reconciled."
 
   elif command -v apt >/dev/null 2>&1; then
     # Debian/Ubuntu
@@ -146,13 +136,13 @@ install_tools() {
       curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
     fi
 
-    warn "ghostty and nvm should be installed manually on Linux"
+    warn "ghostty and mise should be installed manually on Linux"
 
   elif command -v pacman >/dev/null 2>&1; then
     # Arch Linux
     sudo pacman -S --noconfirm neovim tmux zsh starship eza zoxide
 
-    warn "ghostty and nvm should be installed manually on Arch"
+    warn "ghostty and mise should be installed manually on Arch"
   fi
 
   ok "Essential tools installed."
@@ -208,6 +198,17 @@ sync_tmux_plugins() {
   ok "tmux plugins synchronized."
 }
 
+sync_runtimes() {
+  if ! command -v mise >/dev/null 2>&1; then
+    warn "mise is unavailable. Skipping language runtime sync."
+    return
+  fi
+
+  info "Reconciling language runtimes from mise config..."
+  mise install --yes
+  ok "Language runtimes reconciled."
+}
+
 setup_age_key() {
   if [[ -f "$AGE_KEY_FILE" ]]; then
     info "Age key already exists at $AGE_KEY_FILE"
@@ -256,9 +257,13 @@ stow_dotfiles() {
   info "Linking dotfiles from $DOTFILES"
   cd "$DOTFILES"
 
-  for dir in */; do
-    dir="${dir%/}"
-    stow --ignore='^new$' "$dir"
+  local package
+  for package in "${STOW_PACKAGES[@]}"; do
+    [[ -d "$package" ]] || {
+      warn "Stow package is missing: $package"
+      return 1
+    }
+    stow --restow --target "$HOME" --ignore='(^|/)new$' "$package"
   done
 
   ok "Dotfiles linked."
@@ -281,20 +286,22 @@ audit_dotfiles() {
       warn "Tracked file is larger than ${max_bytes} bytes: $file (${size} bytes)"
       failed=1
     fi
-  done < <(git ls-files -z)
+  done < <(git ls-files -co --exclude-standard -z)
 
-  if ! git diff --cached --quiet; then
-    if command -v gitleaks >/dev/null 2>&1; then
-      git diff --cached | gitleaks stdin --no-banner --redact --exit-code 1
-    else
-      git diff --cached -U0 | rg -n -i "$secret_pattern" \
-        && failed=1 || true
-    fi
-  fi
-
-  if git ls-files -z | xargs -0 rg -n -i "$secret_pattern" >/dev/null; then
+  # Scan every tracked or commit-eligible untracked file before staging. This
+  # avoids leaving a failed audit's files in the index.
+  if command -v gitleaks >/dev/null 2>&1; then
+    while IFS= read -r -d '' file; do
+      [[ -f "$file" ]] || continue
+      if ! gitleaks stdin --no-banner --redact --log-level error --exit-code 1 <"$file"; then
+        warn "Potential secret detected in: $file"
+        failed=1
+      fi
+    done < <(git ls-files -co --exclude-standard -z)
+  elif git ls-files -co --exclude-standard -z \
+    | xargs -0 rg -n -i "$secret_pattern" >/dev/null; then
     warn "Tracked files contain text matching secret patterns. Inspect with:"
-    warn "git ls-files -z | xargs -0 rg -n -i '<secret-pattern>'"
+    warn "git ls-files -co --exclude-standard -z | xargs -0 rg -n -i '<secret-pattern>'"
     failed=1
   fi
 
@@ -313,11 +320,11 @@ git_commit_push() {
 
   # Commit any uncommitted changes
   if [[ -n "$(git status --porcelain)" ]]; then
-    git add -A
     if [[ "$dir" == "$DOTFILES" ]]; then
       audit_dotfiles
     fi
-    git commit -m "$msg" || true
+    git add -A
+    git commit -m "$msg"
   fi
 
   # Push if there are unpushed commits
@@ -337,6 +344,55 @@ git_commit_push() {
     info "Pushing $(basename "$dir") (setting upstream)..."
     git push -u origin "$branch" 2>/dev/null && ok "Pushed $(basename "$dir")" || warn "No remote configured for $(basename "$dir")"
   fi
+}
+
+doctor() {
+  local failed=0
+  local commands=(git stow zsh tmux nvim starship fzf rg fd mise sesh yazi gitleaks passage)
+
+  info "Checking dotfiles dependencies and links..."
+  if is_macos; then
+    commands+=(brew aerospace borders ghostty)
+    local package installed_formulae installed_casks
+    installed_formulae="$(brew list --formula)"
+    installed_casks="$(brew list --cask)"
+    while IFS= read -r package; do
+      grep -Fxq "${package##*/}" <<<"$installed_formulae" || {
+        warn "Brewfile formula is missing: $package"
+        failed=1
+      }
+    done < <(brew bundle list --formula --file "$DOTFILES/Brewfile")
+    while IFS= read -r package; do
+      grep -Fxq "${package##*/}" <<<"$installed_casks" || {
+        warn "Brewfile cask is missing: $package"
+        failed=1
+      }
+    done < <(brew bundle list --cask --file "$DOTFILES/Brewfile")
+  fi
+
+  local command_name
+  for command_name in "${commands[@]}"; do
+    if command -v "$command_name" >/dev/null 2>&1; then
+      ok "$command_name"
+    else
+      warn "$command_name is missing"
+      failed=1
+    fi
+  done
+
+  if ! stow --simulate --restow --target "$HOME" --ignore='(^|/)new$' "${STOW_PACKAGES[@]}"; then
+    warn "One or more Stow packages conflict with files in $HOME"
+    failed=1
+  fi
+
+  if command -v mise >/dev/null 2>&1 && ! mise install --dry-run-code >/dev/null; then
+    warn "One or more mise runtimes are not installed"
+    failed=1
+  fi
+
+  audit_dotfiles || failed=1
+  (( failed == 0 )) || return 1
+  ok "Dotfiles environment is healthy."
 }
 
 # --- Main ---
@@ -360,10 +416,16 @@ install)
   # Link dotfiles
   stow_dotfiles
   sync_tmux_plugins
+  sync_runtimes
 
   # Setup secrets management
   setup_age_key
   init_passage
+
+  if is_macos; then
+    info "Starting AeroSpace..."
+    open -a AeroSpace
+  fi
 
   ok "Bootstrap complete!"
   echo ""
@@ -377,9 +439,12 @@ install)
 pull)
   # Pull dotfiles
   git -C "$DOTFILES" pull --rebase --autostash
+  install_tools
+  install_stow
   install_tpm
   stow_dotfiles
   sync_tmux_plugins
+  sync_runtimes
 
   # Pull passage store (if it exists)
   if [[ -d "$HOME/.passage/store/.git" ]]; then
@@ -395,6 +460,10 @@ audit)
   audit_dotfiles
   ;;
 
+doctor)
+  doctor
+  ;;
+
 push)
   # Push dotfiles
   git_commit_push "$DOTFILES" "update dotfiles"
@@ -408,13 +477,14 @@ push)
   ;;
 
 *)
-  echo "Usage: $0 [install|pull|push|audit]"
+  echo "Usage: $0 [install|pull|push|audit|doctor]"
   echo ""
   echo "Commands:"
   echo "  install  - Install dependencies, link dotfiles, setup passage"
   echo "  pull     - Pull latest dotfiles and re-link"
   echo "  push     - Commit and push dotfiles changes"
   echo "  audit    - Check tracked/staged dotfiles for secrets and large files"
+  echo "  doctor   - Verify packages, commands, links, and secret hygiene"
   exit 1
   ;;
 esac

@@ -59,10 +59,5 @@ tmux select-pane -t 0
 name = "dev"
 path = "."
 startup_command = """
-tmux send-keys -t 0 'nvim' C-m && \
-tmux split-window -v -p 20 && \
-tmux send-keys -t 1 'clear' C-m && \
-tmux split-window -h -p 50 -t 1 && \
-tmux send-keys -t 2 'clear' C-m && \
-tmux select-pane -t 0
+~/.config/sesh/default-layout.sh
 """

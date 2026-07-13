@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+options=(
+  'active_color=0xff88c0d0'
+  'inactive_color=0x663b4252'
+  'width=3.0'
+  'style=uniform'
+  'hidpi=on'
+  'order=above'
+  'ax_focus=off'
+)
+
+borders "${options[@]}"

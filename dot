@@ -9,7 +9,7 @@ TMUX_PLUGIN_DIR="$HOME/.local/share/tmux/plugins"
 TPM_DIR="$TMUX_PLUGIN_DIR/tpm"
 TPM_VERSION="v3.1.0"
 STOW_PACKAGES=(
-  agents aerospace claude codex config ghostty git nvim sesh starship tmux yazi zsh
+  agents borders claude codex config ghostty git hammerspoon nvim sesh starship tmux yazi zsh
 )
 
 # --- Helpers ---
@@ -209,6 +209,15 @@ sync_runtimes() {
   ok "Language runtimes reconciled."
 }
 
+start_desktop_services() {
+  is_macos || return
+
+  info "Starting desktop services..."
+  brew services restart felixkratz/formulae/borders
+  open -gj -a Hammerspoon
+  ok "Hammerspoon and JankyBorders started."
+}
+
 setup_age_key() {
   if [[ -f "$AGE_KEY_FILE" ]]; then
     info "Age key already exists at $AGE_KEY_FILE"
@@ -352,7 +361,7 @@ doctor() {
 
   info "Checking dotfiles dependencies and links..."
   if is_macos; then
-    commands+=(brew aerospace borders ghostty)
+    commands+=(brew borders ghostty)
     local package installed_formulae installed_casks
     installed_formulae="$(brew list --formula)"
     installed_casks="$(brew list --cask)"
@@ -382,6 +391,15 @@ doctor() {
 
   if ! stow --simulate --restow --target "$HOME" --ignore='(^|/)new$' "${STOW_PACKAGES[@]}"; then
     warn "One or more Stow packages conflict with files in $HOME"
+    failed=1
+  fi
+
+  if is_macos && [[ ! -d /Applications/Hammerspoon.app ]]; then
+    warn "Hammerspoon.app is missing"
+    failed=1
+  fi
+  if is_macos && [[ ! -d /Applications/Raycast.app ]]; then
+    warn "Raycast.app is missing"
     failed=1
   fi
 
@@ -423,8 +441,7 @@ install)
   init_passage
 
   if is_macos; then
-    info "Starting AeroSpace..."
-    open -a AeroSpace
+    start_desktop_services
   fi
 
   ok "Bootstrap complete!"
@@ -445,6 +462,7 @@ pull)
   stow_dotfiles
   sync_tmux_plugins
   sync_runtimes
+  start_desktop_services
 
   # Pull passage store (if it exists)
   if [[ -d "$HOME/.passage/store/.git" ]]; then

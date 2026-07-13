@@ -10,8 +10,8 @@ setup, and secrets that never live in Git.
 - GNU Stow links an explicit list of configuration packages.
 - `./dot install` is safe to run repeatedly.
 - Passage encrypts secrets outside this repository.
-- One tool owns each concern: AeroSpace for windows, sesh for sessions, mise for
-  language runtimes, and tmux for terminal layout.
+- One tool owns each concern: macOS for Spaces, Hammerspoon for global hotkeys,
+  sesh for sessions, mise for language runtimes, and tmux for terminal layout.
 - Optional visual polish must not obscure or complicate the workflow.
 
 ## Install
@@ -25,10 +25,10 @@ cd ~/dotfiles
 
 The installer reconciles the `Brewfile`, installs Passage and TPM, explicitly
 stows the supported packages, initializes the encrypted secret store when
-needed, synchronizes tmux plugins and mise runtimes, and starts AeroSpace on
-macOS. Existing packages and initialized stores are left intact.
+needed, synchronizes tmux plugins and mise runtimes, and starts Hammerspoon and
+JankyBorders on macOS. Existing packages and initialized stores are left intact.
 
-On first AeroSpace launch, grant Accessibility access in **System Settings →
+On first launch, grant Hammerspoon Accessibility access in **System Settings →
 Privacy & Security → Accessibility**.
 
 ## Commands
@@ -50,40 +50,40 @@ terminal utilities, preview dependencies, desktop tools, and applications.
 brew bundle install --file ~/dotfiles/Brewfile --no-upgrade
 ```
 
-The desktop layer intentionally includes AeroSpace and JankyBorders but not
-SketchyBar. Nord remains the shared palette across Ghostty, tmux, Neovim,
-Starship, and focused-window borders.
+The desktop layer intentionally includes Hammerspoon, Raycast, and JankyBorders
+but not a tiling window manager or SketchyBar. Nord remains the shared palette
+across Ghostty, tmux, Neovim, Starship, and focused-window borders.
 
-## AeroSpace
+## macOS desktop
 
-AeroSpace provides five deliberately generic workspaces so routing remains
-manual while learning the window model:
+Native macOS Spaces own workspace state and ordinary windows retain their chosen
+size. Hammerspoon provides the small keyboard layer missing from macOS:
 
 | Keys | Action |
 |---|---|
-| `Alt-H/J/K/L` | Focus a window |
-| `Alt-Shift-H/J/K/L` | Move a window |
-| `Alt-1…5` | Select a workspace |
-| `Alt-Shift-1…5` | Move a window to a workspace |
-| `Alt-/` | Toggle tile orientation |
-| `Alt-,` | Toggle accordion orientation |
-| `Alt-Shift-Space` | Toggle floating layout |
-| `Alt-F` | Toggle AeroSpace fullscreen |
-| `Alt-R` | Enter resize mode |
-| `Alt-Shift-;` | Enter service mode |
+| `Alt-H/J/K/L` | Focus the nearest window left/down/up/right |
+| `Alt-1…5` | Select native Desktop 1–5 |
+| `Alt-T/B/A/D/P/E` | Focus/open Ghostty, Vivaldi, Codex, Docker, Preview, Finder |
 | `Alt-Enter` | Open a Ghostty window |
-| `Alt-Q` | Close the focused window |
+| `Alt-/` | Show the Hammerspoon keymap |
+| `Ctrl-Alt-H/L` | Left/right; repeat to cycle among halves and thirds |
+| `Ctrl-Alt-J/K` | Bottom/top half |
+| `Ctrl-Alt-Y/U/B/N` | Top-left/top-right/bottom-left/bottom-right quarter |
+| `Ctrl-Alt-C/F` | Centre/fill |
 
-The hierarchy is intentional: `Alt-H/J/K/L` navigates macOS windows while
-`Ctrl-H/J/K/L` continues navigating tmux and Neovim panes.
+Create five native Desktops in Mission Control, then enable **Switch to Desktop
+1…5** under **System Settings → Keyboard → Keyboard Shortcuts → Mission
+Control**. Keep their native `Control-1…5` bindings: Hammerspoon maps
+`Alt-1…5` onto them without using private Spaces APIs.
 
-Inspect the bindings AeroSpace actually loaded at any time:
+Assign applications once through **Dock icon → Options → Assign To → This
+Desktop**. These assignments are machine-local because native Space identifiers
+are not portable. Recommended assignments are Ghostty → 1, Vivaldi → 2, Codex →
+3, Docker → 4, and Preview/Finder → 5.
 
-```bash
-aero-keys          # main mode
-aero-keys resize
-aero-keys service
-```
+Raycast remains available for richer manual window layouts and searchable window
+switching. Critical global hotkeys remain auditable in
+`~/.hammerspoon/init.lua`; no private Raycast export is committed.
 
 ## Sessions
 
@@ -104,7 +104,8 @@ Inside tmux, use prefix `Ctrl-A`, then:
 |---|---|
 | `h/j/k/l` | Navigate panes |
 | `H/J/K/L` | Resize panes repeatedly |
-| `v` / `x` | Split horizontally / vertically in the current directory |
+| `%` / `"` | Split horizontally / vertically in the current directory |
+| `v` / `V` | Alternative horizontal / vertical splits |
 | `c` | Create a window in the current directory |
 | `s` | Open the sesh switcher |
 | `[` then `v`, `y` | Select and copy to the macOS clipboard |

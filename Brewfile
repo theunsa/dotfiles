@@ -2,7 +2,6 @@
 # by responsibility; `brew bundle` remains idempotent and never removes extras.
 
 # Taps
-tap "nikitabobko/tap"
 tap "felixkratz/formulae"
 
 # Shell and core CLI
@@ -50,9 +49,11 @@ brew "resvg"
 brew "sevenzip"
 
 # macOS desktop
-cask "nikitabobko/tap/aerospace"
 brew "felixkratz/formulae/borders"
 cask "ghostty"
+cask "hammerspoon"
+# Preserve an existing direct-download installation; install it on fresh Macs.
+cask "raycast" unless File.directory?("/Applications/Raycast.app")
 
 # Developer applications
 cask "codex"

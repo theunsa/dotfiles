@@ -4,7 +4,8 @@ export PATH="$HOME/.local/bin:$PATH"
 (( $+commands[mise] )) && eval "$(mise activate zsh)"
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 (( $+commands[fzf] )) && eval "$(fzf --zsh)"
-(( $+commands[atuin] )) && eval "$(atuin init zsh)"
+# Atuin owns Ctrl-R search; Up retains normal one-command-at-a-time history.
+(( $+commands[atuin] )) && eval "$(atuin init zsh --disable-up-arrow)"
 
 # Share command history across shells and tmux panes.
 HISTFILE=$HOME/.zsh_history
@@ -65,27 +66,6 @@ function t() {
   else
     sesh connect -c "$HOME/.config/sesh/default-layout.sh" "$target"
   fi
-}
-
-# Show the keybindings AeroSpace actually loaded. Pass resize or service to
-# inspect those modes; main is the default.
-aero-keys() {
-  local mode="${1:-main}"
-
-  if ! (( $+commands[aerospace] )); then
-    echo "aero-keys: AeroSpace is unavailable" >&2
-    return 1
-  fi
-
-  aerospace config --get "mode.${mode}.binding" --json | jq -r '
-    to_entries
-    | sort_by(.key)[]
-    | [
-        .key,
-        (.value | if type == "array" then join(" → ") else . end)
-      ]
-    | @tsv
-  ' | column -t -s $'\t'
 }
 
 function v() {

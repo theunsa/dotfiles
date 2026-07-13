@@ -1,20 +1,11 @@
-# Theuns' Dotfiles
+# Theuns' dotfiles
 
-Keyboard-first macOS development environment with portable terminal defaults.
-The repository favors declarative dependencies, explicit ownership, idempotent
-setup, and secrets that never live in Git.
+My keyboard-first macOS setup for development.
 
-## Principles
+It uses native macOS Desktops, Hammerspoon shortcuts, Ghostty, tmux, sesh,
+LazyVim, and mise. There is no tiling window manager or custom menu bar.
 
-- `Brewfile` declares macOS packages; it never removes unrelated packages.
-- GNU Stow links an explicit list of configuration packages.
-- `./dot install` is safe to run repeatedly.
-- Passage encrypts secrets outside this repository.
-- One tool owns each concern: macOS for Spaces, Hammerspoon for global hotkeys,
-  sesh for sessions, mise for language runtimes, and tmux for terminal layout.
-- Optional visual polish must not obscure or complicate the workflow.
-
-## Install
+## Get running
 
 ```bash
 xcode-select --install
@@ -23,130 +14,145 @@ cd ~/dotfiles
 ./dot install
 ```
 
-The installer reconciles the `Brewfile`, installs Passage and TPM, explicitly
-stows the supported packages, initializes the encrypted secret store when
-needed, synchronizes tmux plugins and mise runtimes, and starts Hammerspoon and
-JankyBorders on macOS. Existing packages and initialized stores are left intact.
+Run `./dot install` again whenever you want. It installs missing Homebrew
+packages, links the dotfiles, installs language runtimes, and starts the desktop
+helpers without removing unrelated software.
 
-On first launch, grant Hammerspoon Accessibility access in **System Settings →
-Privacy & Security → Accessibility**.
+The first time Hammerspoon opens, allow it under **System Settings → Privacy &
+Security → Accessibility**.
 
-## Commands
-
-| Command | Purpose |
-|---|---|
-| `./dot install` | Reconcile packages, links, plugins, and secret storage |
-| `./dot pull` | Pull changes, reconcile packages, and restow configs |
-| `./dot push` | Audit, commit, and push dotfiles and encrypted secrets |
-| `./dot audit` | Scan commit-eligible files for secrets and large files |
-| `./dot doctor` | Verify packages, commands, links, and repository hygiene |
-
-## macOS packages
-
-The root `Brewfile` is grouped into taps, core shell tools, development tools,
-terminal utilities, preview dependencies, desktop tools, and applications.
+## Keep it healthy
 
 ```bash
-brew bundle install --file ~/dotfiles/Brewfile --no-upgrade
+./dot pull       # pull changes and apply them
+./dot doctor     # check the setup
+./dot audit      # check for secrets and oversized files
+./dot push       # audit, commit, and push
 ```
 
-The desktop layer intentionally includes Hammerspoon, Raycast, and JankyBorders
-but not a tiling window manager or SketchyBar. Nord remains the shared palette
-across Ghostty, tmux, Neovim, Starship, and focused-window borders.
+Packages live in the root `Brewfile`. Language versions live in
+`~/.config/mise/config.toml`.
 
-## macOS desktop
+## Move around macOS
 
-Native macOS Spaces own workspace state and ordinary windows retain their chosen
-size. Hammerspoon provides the small keyboard layer missing from macOS:
+Create five Desktops in Mission Control. In **System Settings → Keyboard →
+Keyboard Shortcuts → Mission Control**, enable `Control-1` through `Control-5`.
+
+Hammerspoon gives them shorter shortcuts:
 
 | Keys | Action |
 |---|---|
-| `Alt-H/J/K/L` | Focus the nearest window left/down/up/right |
-| `Alt-1…5` | Select native Desktop 1–5 |
-| `Alt-T/B/A/D/P/E` | Focus/open Ghostty, Vivaldi, Codex, Docker, Preview, Finder |
-| `Alt-Enter` | Open a Ghostty window |
-| `Alt-/` | Show the Hammerspoon keymap |
-| `Ctrl-Alt-H/L` | Left/right; repeat to cycle among halves and thirds |
+| `Alt-1…5` | Go to Desktop 1–5 |
+| `Alt-H/J/K/L` | Focus the window left/down/up/right |
+| `Alt-T` | Ghostty |
+| `Alt-B` | Vivaldi |
+| `Alt-A` | Codex |
+| `Alt-D` | Docker |
+| `Alt-P` | Preview |
+| `Alt-E` | Finder |
+| `Alt-Enter` | New Ghostty window |
+| `Alt-/` | Show all Hammerspoon shortcuts |
+
+Assign apps to Desktops once from **Dock icon → Options → Assign To → This
+Desktop**. A useful starting point is Ghostty on 1, Vivaldi on 2, Codex on 3,
+Docker on 4, and Preview/Finder on 5.
+
+### Place windows
+
+| Keys | Action |
+|---|---|
+| `Ctrl-Alt-H/L` | Left/right half; repeat for one-third or two-thirds |
 | `Ctrl-Alt-J/K` | Bottom/top half |
-| `Ctrl-Alt-Y/U/B/N` | Top-left/top-right/bottom-left/bottom-right quarter |
+| `Ctrl-Alt-Y/U/B/N` | Four corners |
 | `Ctrl-Alt-C/F` | Centre/fill |
 
-Create five native Desktops in Mission Control, then enable **Switch to Desktop
-1…5** under **System Settings → Keyboard → Keyboard Shortcuts → Mission
-Control**. Keep their native `Control-1…5` bindings: Hammerspoon maps
-`Alt-1…5` onto them without using private Spaces APIs.
+Raycast is still there for anything that does not deserve a permanent shortcut.
 
-Assign applications once through **Dock icon → Options → Assign To → This
-Desktop**. These assignments are machine-local because native Space identifiers
-are not portable. Recommended assignments are Ghostty → 1, Vivaldi → 2, Codex →
-3, Docker → 4, and Preview/Finder → 5.
+## Start work
 
-Raycast remains available for richer manual window layouts and searchable window
-switching. Critical global hotkeys remain auditable in
-`~/.hammerspoon/init.lua`; no private Raycast export is committed.
-
-## Sessions
-
-`t` is the single entry point for project sessions:
+Use `t` to open or switch projects:
 
 ```bash
-t                    # select through sesh + fzf
-t ~/Projects/my-app  # connect to a specific project
+t                    # choose with sesh and fzf
+t ~/Projects/my-app  # open any directory
 ```
 
-New sessions use `~/.config/sesh/default-layout.sh`: an editor window with two
-supporting shell panes plus a detached Lazygit window. Project-specific layouts
-remain in `sesh.toml`. Existing sessions are reattached rather than rebuilt.
+The standard layout is simple: LazyVim on top, two shells below, and lazygit in
+a second window.
 
-Inside tmux, use prefix `Ctrl-A`, then:
+Configured sessions:
+
+| Session | What opens |
+|---|---|
+| `dev` | Standard layout in the current directory |
+| `batapp2` | Standard layout in Batapp |
+| `marula-flow` | Standard layout without the lazygit window |
+| `marula-smooth` | Standard layout in Marula Smooth |
+| `remi` | Standard layout in Remi |
+| `pl` | Avoda UI and Platform together |
+
+`pl` opens LazyVim in Avoda UI, with UI and Platform shells below it. Its second
+window opens LazyVim in Avoda Platform.
+
+Sesh does not rebuild a session that is already running. Kill that tmux session
+first when you want a changed layout to take effect.
+
+Tmux restores the last saved set of sessions when it starts. After removing old
+sessions, press `Ctrl-A Ctrl-S` to save the clean set.
+
+## Use tmux
+
+The prefix is `Ctrl-A` and window numbers start at zero.
+
+| After `Ctrl-A` | Action |
+|---|---|
+| `h/j/k/l` | Move between panes |
+| `H/J/K/L` | Resize the current pane |
+| `%` / `"` | Split left-right / top-bottom |
+| `v` / `V` | Same splits with easier keys |
+| `c` | New window |
+| `s` | Sesh switcher |
+| `r` | Reload tmux config |
+| `[` | Enter copy mode |
+
+In copy mode, press `v` to select and `y` to copy to the macOS clipboard.
+
+## Use the shell
 
 | Keys | Action |
 |---|---|
-| `h/j/k/l` | Navigate panes |
-| `H/J/K/L` | Resize panes repeatedly |
-| `%` / `"` | Split horizontally / vertically in the current directory |
-| `v` / `V` | Alternative horizontal / vertical splits |
-| `c` | Create a window in the current directory |
-| `s` | Open the sesh switcher |
-| `[` then `v`, `y` | Select and copy to the macOS clipboard |
+| `Ctrl-R` | Search history with Atuin |
+| `Up` | Previous Zsh command |
+| `Tab` | Accept the grey suggestion, or open completion |
 
-## Language runtimes
-
-mise owns Bun, Node, pnpm, Python, and Ruby versions. `./dot install` and
-`./dot pull` install anything declared but missing. After changing
-`~/.config/mise/config.toml`, you can also reconcile directly:
+Useful commands:
 
 ```bash
-mise install
+v              # LazyVim in the current directory
+y              # Yazi, keeping the directory you leave it in
+ask "question" # quick terminal answer
 ```
+
+Ghostty uses `Cmd-R` to reload its config and `Ctrl-N` to open a new window.
 
 ## Secrets
 
-Passage stores Age-encrypted values in `~/.passage/store`; the Age identity is
-`~/.config/age/keys.txt`. Neither belongs in this repository. Back up the Age
-identity separately—without it, encrypted values cannot be recovered.
+Secrets belong in Passage, not this repository.
 
 ```bash
 passage insert api-keys/openai
 passage show api-keys/openai
 passage edit api-keys/openai
-passage -c api-keys/github-token
 ```
 
-Secrets are loaded only when needed. `ask` reads its API key for that request,
-`opencode` scopes its key to the child process, and `load_work_secrets` is an
-explicit opt-in for business credentials. They are not exported during every
-shell startup.
+The encrypted store is in `~/.passage/store`. The key that unlocks it is
+`~/.config/age/keys.txt`. Back up that key somewhere private; losing it means
+losing the store.
 
-The encrypted Passage store may use its own private Git remote:
-
-```bash
-git clone git@github.com:YOUR_USER/YOUR_PRIVATE_PASSAGE_STORE.git ~/.passage/store
-```
+`ask` and `opencode` load their keys only when used. Run `load_work_secrets`
+when a shell explicitly needs the work credentials.
 
 ## Linux
 
-The terminal configurations remain broadly portable, but the complete,
-declarative bootstrap is macOS-first. The Debian/Ubuntu and Arch installer
-branches currently install only a minimal shell/editor subset and should be
-treated as best-effort support.
+The shell, tmux, and editor configs are portable. The full installer is built
+for macOS; Linux setup is best effort.

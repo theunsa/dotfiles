@@ -1,6 +1,10 @@
 # Put user-installed commands first and initialize tools only when available.
 export PATH="$HOME/.local/bin:$PATH"
 
+# Some GUI launchers inherit NO_COLOR from their parent process. Interactive
+# terminals are intentionally coloured, so do not pass that opt-out downstream.
+unset NO_COLOR
+
 (( $+commands[mise] )) && eval "$(mise activate zsh)"
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 (( $+commands[fzf] )) && eval "$(fzf --zsh)"
@@ -229,6 +233,22 @@ if [[ "$PLATFORM" == "Darwin" ]] && (( $+commands[brew] )); then
   _brew_prefix="$(brew --prefix)"
   [[ -r "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
     source "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+  # Tab accepts visible autosuggestion text; without a suggestion it retains
+  # fzf's completion UI (or falls back to ordinary Zsh completion).
+  _tab_accept_or_complete() {
+    if [[ -n "$POSTDISPLAY" ]]; then
+      zle autosuggest-accept
+    elif (( $+widgets[fzf-completion] )); then
+      zle fzf-completion
+    else
+      zle expand-or-complete
+    fi
+  }
+  zle -N _tab_accept_or_complete
+  bindkey -M emacs '^I' _tab_accept_or_complete
+  bindkey -M viins '^I' _tab_accept_or_complete
+
   [[ -r "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
     source "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
   unset _brew_prefix

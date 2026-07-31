@@ -13,8 +13,8 @@ end
 local configWatcher = hs.pathwatcher.new(configSource, hs.reload)
 configWatcher:start()
 
-local function bind(modifiers, key, callback)
-  hs.hotkey.bind(modifiers, key, nil, callback)
+local function bind(modifiers, key, callback, repeatable)
+  hs.hotkey.bind(modifiers, key, callback, nil, repeatable and callback or nil)
 end
 
 local function withFocusedWindow(callback)
@@ -33,7 +33,7 @@ local focus = {
 }
 
 for key, callback in pairs(focus) do
-  bind({ "alt" }, key, callback)
+  bind({ "alt" }, key, callback, true)
 end
 
 -- Native window placement. Ctrl-Alt keeps Alt-H/J/K/L dedicated to focus.
@@ -116,13 +116,7 @@ bind({ "ctrl", "alt" }, "f", function()
   end)
 end)
 
--- Use native Mission Control for Spaces. Enable macOS's Control-1…5
--- "Switch to Desktop" shortcuts; Alt-1…5 then becomes the ergonomic layer.
-for desktop = 1, 5 do
-  bind({ "alt" }, tostring(desktop), function()
-    hs.eventtap.keyStroke({ "ctrl" }, tostring(desktop), 0)
-  end)
-end
+-- Native Mission Control owns Ctrl-1…5 for switching Desktops.
 
 -- Launch or focus common applications. Native app-to-Desktop assignments
 -- make macOS switch to the appropriate Space when the app is activated.
@@ -142,14 +136,14 @@ for key, bundleID in pairs(applications) do
 end
 
 bind({ "alt" }, "return", function()
-  hs.task.new("/usr/bin/open", nil, { "-na", "Ghostty" }):start()
+  hs.application.launchOrFocusByBundleID("com.mitchellh.ghostty")
 end)
 
 local keymap = [[
 Alt-H/J/K/L       focus left/down/up/right
-Alt-1…5           switch native Desktop
+Ctrl-1…5          switch native Desktop
 Alt-T/B/A/D/P/E   Ghostty/browser/Codex/Docker/Preview/Finder
-Alt-Enter         new Ghostty window
+Alt-Enter         focus or launch Ghostty
 Ctrl-Alt-H/L      left/right; repeat for halves or thirds
 Ctrl-Alt-J/K      bottom/top half
 Ctrl-Alt-Y/U/B/N  screen quarters

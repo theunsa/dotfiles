@@ -42,7 +42,7 @@ Hammerspoon gives them shorter shortcuts:
 
 | Keys | Action |
 |---|---|
-| `Alt-1…5` | Go to Desktop 1–5 |
+| `Ctrl-1…5` | Go to Desktop 1–5 |
 | `Alt-H/J/K/L` | Focus the window left/down/up/right |
 | `Alt-T` | Ghostty |
 | `Alt-B` | Vivaldi |
@@ -50,7 +50,7 @@ Hammerspoon gives them shorter shortcuts:
 | `Alt-D` | Docker |
 | `Alt-P` | Preview |
 | `Alt-E` | Finder |
-| `Alt-Enter` | New Ghostty window |
+| `Alt-Enter` | Focus or launch Ghostty |
 | `Alt-/` | Show all Hammerspoon shortcuts |
 
 Assign apps to Desktops once from **Dock icon → Options → Assign To → This
@@ -133,7 +133,7 @@ y              # Yazi, keeping the directory you leave it in
 ask "question" # quick terminal answer
 ```
 
-Ghostty uses `Cmd-R` to reload its config and `Ctrl-N` to open a new window.
+Ghostty uses `Cmd-R` to reload its config and `Cmd-N` to open a new window.
 
 ## Secrets
 

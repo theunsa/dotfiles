@@ -13,7 +13,7 @@ cursor-style = block
 cursor-style-blink = false
 confirm-close-surface = false
 
-keybind = ctrl+n=new_window
+keybind = super+n=new_window
 
 #keybind = ctrl+h=goto_split:left
 #keybind = ctrl+j=goto_split:bottom

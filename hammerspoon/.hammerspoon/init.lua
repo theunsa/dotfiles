@@ -1,6 +1,7 @@
 -- Native macOS owns Spaces and window state. Hammerspoon only supplies the
 -- small, explicit keyboard layer that macOS is missing.
 require("hs.ipc")
+local spaces = require("hs.spaces")
 
 hs.window.animationDuration = 0
 hs.autoLaunch(true)
@@ -116,7 +117,61 @@ bind({ "ctrl", "alt" }, "f", function()
   end)
 end)
 
+-- Move a window to another monitor while retaining its relative frame.
+bind({ "ctrl", "alt" }, "m", function()
+  withFocusedWindow(function(window)
+    local nextScreen = window:screen():next()
+    if nextScreen ~= window:screen() then
+      window:moveToScreen(nextScreen, false, true, 0)
+    end
+  end)
+end)
+
 -- Native Mission Control owns Ctrl-1…5 for switching Desktops.
+
+-- Send the focused window to Desktop 1…5 without following it. Full-screen
+-- application spaces are excluded so the numbers match ordinary Desktops.
+local function userSpacesForScreen(screen)
+  local result = {}
+  local screenSpaces, errorMessage = spaces.spacesForScreen(screen)
+
+  if not screenSpaces then
+    return nil, errorMessage
+  end
+
+  for _, spaceID in ipairs(screenSpaces) do
+    if spaces.spaceType(spaceID) == "user" then
+      table.insert(result, spaceID)
+    end
+  end
+
+  return result
+end
+
+for desktop = 1, 5 do
+  bind({ "ctrl", "alt", "shift" }, tostring(desktop), function()
+    withFocusedWindow(function(window)
+      local desktopSpaces, errorMessage = userSpacesForScreen(window:screen())
+      local targetSpace = desktopSpaces and desktopSpaces[desktop]
+
+      if not targetSpace then
+        hs.alert.show(errorMessage or ("Desktop " .. desktop .. " is not available on this display"))
+        return
+      end
+
+      for _, currentSpace in ipairs(spaces.windowSpaces(window) or {}) do
+        if currentSpace == targetSpace then
+          return
+        end
+      end
+
+      local moved, moveError = spaces.moveWindowToSpace(window, targetSpace)
+      if not moved then
+        hs.alert.show(moveError or ("Could not move window to Desktop " .. desktop))
+      end
+    end)
+  end)
+end
 
 -- Launch or focus common applications. Native app-to-Desktop assignments
 -- make macOS switch to the appropriate Space when the app is activated.
@@ -148,6 +203,8 @@ Ctrl-Alt-H/L      left/right; repeat for halves or thirds
 Ctrl-Alt-J/K      bottom/top half
 Ctrl-Alt-Y/U/B/N  screen quarters
 Ctrl-Alt-C/F      centre/fill
+Ctrl-Alt-M        move window to next monitor
+Ctrl-Alt-Shift-1…5 send window to Desktop
 ]]
 
 bind({ "alt" }, "/", function()

@@ -448,7 +448,9 @@ install)
   echo ""
   echo "Next steps:"
   echo "  1. Back up your Age key from $AGE_KEY_FILE"
-  echo "  2. Add secrets: passage insert api-keys/openai"
+  echo "  2. Add service secrets with 'passage insert' as needed"
+  echo "  3. Optionally give $HOME/.passage/store a private Git remote"
+  echo "     See the README for the Passage setup and exact secret names"
   echo ""
   info "Run 'exec zsh' to reload your shell"
   ;;
@@ -466,9 +468,13 @@ pull)
 
   # Pull passage store (if it exists)
   if [[ -d "$HOME/.passage/store/.git" ]]; then
-    info "Syncing passage store..."
-    git -C "$HOME/.passage/store" pull --rebase --autostash
-    ok "Passage store synced."
+    if git -C "$HOME/.passage/store" rev-parse '@{upstream}' >/dev/null 2>&1; then
+      info "Syncing passage store..."
+      git -C "$HOME/.passage/store" pull --rebase --autostash
+      ok "Passage store synced."
+    else
+      warn "Passage store has no upstream remote. Skipping its pull."
+    fi
   fi
 
   ok "Everything updated!"

@@ -5,11 +5,32 @@ My keyboard-first macOS setup for development.
 It uses native macOS Desktops, Hammerspoon shortcuts, Ghostty, tmux, sesh,
 LazyVim, and mise. There is no tiling window manager or custom menu bar.
 
+These are personal, opinionated dotfiles rather than a universal installer. They
+are useful to browse and copy from, but fork and customise them before installing
+them as your own setup. The complete macOS setup is tested on Apple Silicon.
+
+## Before you install
+
+Install the Xcode command-line tools and [Homebrew](https://brew.sh), then fork
+this repository into your own GitHub account.
+
+The installer uses GNU Stow to link files into your home directory. It does not
+delete unrelated files, but it will stop when an existing file conflicts with a
+managed dotfile. Back up your current dotfiles first.
+
+At minimum, review these personal settings in your fork:
+
+- `git/.gitconfig`: Git name, email, and credential helper
+- `sesh/.config/sesh/sesh.toml`: project names and paths
+- `zsh/.zshrc`: name, work paths, aliases, and secret names
+- `hammerspoon/.hammerspoon/init.lua`: application shortcuts
+- `claude/.claude/settings.json`: local paths and permissions
+
 ## Get running
 
 ```bash
 xcode-select --install
-git clone git@github.com:theunsa/dotfiles.git ~/dotfiles
+git clone https://github.com/YOUR-GITHUB-USER/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./dot install
 ```
@@ -27,11 +48,14 @@ Security → Accessibility**.
 ./dot pull       # pull changes and apply them
 ./dot doctor     # check the setup
 ./dot audit      # check for secrets and oversized files
-./dot push       # audit, commit, and push
+./dot push       # audit, commit all local changes, and push
 ```
 
 Packages live in the root `Brewfile`. Language versions live in
 `~/.config/mise/config.toml`.
+
+`./dot push` also commits and pushes the Passage store when that store has a Git
+remote. Review `git status` first if you do not want every local change included.
 
 ## Move around macOS
 
@@ -57,6 +81,9 @@ Assign apps to Desktops once from **Dock icon → Options → Assign To → This
 Desktop**. A useful starting point is Ghostty on 1, Vivaldi on 2, Codex on 3,
 Docker on 4, and Preview/Finder on 5.
 
+Vivaldi and Docker are optional and are not installed by the `Brewfile`. Install
+them separately or change their bundle IDs in the Hammerspoon configuration.
+
 ### Place windows
 
 | Keys | Action |
@@ -65,6 +92,8 @@ Docker on 4, and Preview/Finder on 5.
 | `Ctrl-Alt-J/K` | Bottom/top half |
 | `Ctrl-Alt-Y/U/B/N` | Four corners |
 | `Ctrl-Alt-C/F` | Centre/fill |
+| `Ctrl-Alt-M` | Move the window to the next monitor |
+| `Ctrl-Alt-Shift-1…5` | Send the window to Desktop 1–5 |
 
 Raycast is still there for anything that does not deserve a permanent shortcut.
 
@@ -80,7 +109,7 @@ t ~/Projects/my-app  # open any directory
 The standard layout is simple: LazyVim on top, two shells below, and lazygit in
 a second window.
 
-Configured sessions:
+My configured sessions:
 
 | Session | What opens |
 |---|---|
@@ -93,6 +122,10 @@ Configured sessions:
 
 `pl` opens LazyVim in Avoda UI, with UI and Platform shells below it. Its second
 window opens LazyVim in Avoda Platform.
+
+These named sessions are examples tied to my project directories. Replace or
+remove them in `~/.config/sesh/sesh.toml`; the generic `dev` session and
+`t /path/to/project` work with any directory.
 
 Sesh does not rebuild a session that is already running. Kill that tmux session
 first when you want a changed layout to take effect.
@@ -135,22 +168,55 @@ ask "question" # quick terminal answer
 
 Ghostty uses `Cmd-R` to reload its config and `Cmd-N` to open a new window.
 
-## Secrets
+## Secrets: Passage and Age
 
 Secrets belong in Passage, not this repository.
 
+Passage is the command-line password manager; Age provides its encryption. Each
+secret is encrypted inside `~/.passage/store` for the public key listed in that
+store's `.age-recipients` file. The matching private Age identity lives separately
+at `~/.config/age/keys.txt` and decrypts the secrets.
+
+`./dot install` installs both tools, generates the Age identity when it is
+missing, adds its public recipient to the Passage store, and initializes that
+store as a separate Git repository.
+
 ```bash
-passage insert api-keys/openai
-passage show api-keys/openai
-passage edit api-keys/openai
+passage insert api-keys/gemini-api-key-ask
+passage insert api-keys/opencode-api-key
+passage show api-keys/gemini-api-key-ask
+passage edit api-keys/gemini-api-key-ask
 ```
 
-The encrypted store is in `~/.passage/store`. The key that unlocks it is
-`~/.config/age/keys.txt`. Back up that key somewhere private; losing it means
-losing the store.
-
 `ask` and `opencode` load their keys only when used. Run `load_work_secrets`
-when a shell explicitly needs the work credentials.
+when a shell explicitly needs the work credentials after changing its
+Passage paths to match your own.
+
+### Back up the Passage store privately
+
+The encrypted store and private Age identity are separate backups. The store
+contains the encrypted secrets; the identity unlocks them. You need both to
+recover your secrets.
+
+Create a private GitHub repository for the encrypted store:
+
+```bash
+gh auth login
+gh repo create passage-store \
+  --private \
+  --source="$HOME/.passage/store" \
+  --remote=origin \
+  --push
+```
+
+After that, `./dot push` commits and pushes Passage changes, and `./dot pull`
+pulls them. Keep this repository private even though its entries are encrypted.
+Never add `~/.config/age/keys.txt` to it—or to any Git repository.
+
+Back up `~/.config/age/keys.txt` separately in a secure location and preserve its
+`600` permissions. Losing that identity means the encrypted store cannot be
+recovered. Anyone who obtains it together with the store can decrypt the
+secrets.
 
 ## Linux
 

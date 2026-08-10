@@ -7,6 +7,12 @@ unset NO_COLOR
 
 (( $+commands[mise] )) && eval "$(mise activate zsh)"
 (( $+commands[starship] )) && eval "$(starship init zsh)"
+
+# Initialize native completion before fzf adds its completion UI. This loads
+# command-aware completers such as Git's branch and ref completion.
+autoload -Uz compinit
+compinit
+
 (( $+commands[fzf] )) && eval "$(fzf --zsh)"
 # Atuin owns Ctrl-R search; Up retains normal one-command-at-a-time history.
 (( $+commands[atuin] )) && eval "$(atuin init zsh --disable-up-arrow)"

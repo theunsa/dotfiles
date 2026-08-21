@@ -141,8 +141,8 @@ The prefix is `Ctrl-A` and window numbers start at zero.
 |---|---|
 | `h/j/k/l` | Move between panes |
 | `H/J/K/L` | Resize the current pane |
-| `|` / `-` | Split left-right / top-bottom |
-| `%` / `"`, `v` / `V` | Compatibility aliases for the same splits |
+| `\` / `-` | Split left-right / top-bottom |
+| `%` / `"` | Native tmux aliases for the same splits |
 | `c` | New window |
 | `s` | Sesh switcher |
 | `r` | Reload tmux config |
@@ -160,8 +160,7 @@ across workspaces.
 |---|---|
 | `h/j/k/l` | Move between panes |
 | `H/J/K/L` | Resize the current pane by five cells |
-| `|` / `-` | Split left-right / top-bottom |
-| `v` / `V` | Compatibility aliases for the same splits |
+| `-` | Split top-bottom |
 | `c` | New tab |
 | `1…9` | Switch tabs |
 | `g` / `s` | Open the agent and workspace finder |
@@ -175,6 +174,9 @@ across workspaces.
 `Ctrl-H/J/K/L` moves seamlessly through Neovim splits and Herdr panes, just
 like `vim-tmux-navigator` does under tmux. The pinned Herdr navigation plugin
 is synchronized by `./dot install` and `./dot pull`.
+
+`Ctrl-\` directly creates a left-right split without pressing the leader or
+Shift.
 
 Codex and Claude integrations are synchronized by `./dot install` and
 `./dot pull`. They let Herdr identify agent sessions and resume supported

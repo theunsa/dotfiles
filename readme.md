@@ -141,14 +141,44 @@ The prefix is `Ctrl-A` and window numbers start at zero.
 |---|---|
 | `h/j/k/l` | Move between panes |
 | `H/J/K/L` | Resize the current pane |
-| `%` / `"` | Split left-right / top-bottom |
-| `v` / `V` | Same splits with easier keys |
+| `|` / `-` | Split left-right / top-bottom |
+| `%` / `"`, `v` / `V` | Compatibility aliases for the same splits |
 | `c` | New window |
 | `s` | Sesh switcher |
 | `r` | Reload tmux config |
 | `[` | Enter copy mode |
 
 In copy mode, press `v` to select and `y` to copy to the macOS clipboard.
+
+## Use Herdr
+
+Run `herdr` from a project directory. Herdr uses the same `Ctrl-A` prefix and
+the familiar tmux navigation keys, while its sidebar tracks Codex and Claude
+across workspaces.
+
+| After `Ctrl-A` | Action |
+|---|---|
+| `h/j/k/l` | Move between panes |
+| `H/J/K/L` | Resize the current pane by five cells |
+| `|` / `-` | Split left-right / top-bottom |
+| `v` / `V` | Compatibility aliases for the same splits |
+| `c` | New tab |
+| `1…9` | Switch tabs |
+| `g` / `s` | Open the agent and workspace finder |
+| `w` | Open workspace navigation |
+| `b` | Toggle the agent sidebar |
+| `r` | Reload Herdr config |
+| `[` | Enter copy mode |
+| `z` | Zoom the current pane |
+| `d` / `q` | Detach and leave agents running |
+
+`Ctrl-H/J/K/L` moves seamlessly through Neovim splits and Herdr panes, just
+like `vim-tmux-navigator` does under tmux. The pinned Herdr navigation plugin
+is synchronized by `./dot install` and `./dot pull`.
+
+Codex and Claude integrations are synchronized by `./dot install` and
+`./dot pull`. They let Herdr identify agent sessions and resume supported
+conversations after a server restart.
 
 ## Use the shell
 

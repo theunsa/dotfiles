@@ -1,0 +1,139 @@
+# Keep Herdr close to the tmux workflow in this repository while exposing its
+# agent-aware workspace and notification features.
+onboarding = false
+
+[theme]
+name = "nord"
+
+[terminal]
+default_shell = "/bin/zsh"
+shell_mode = "auto"
+new_cwd = "follow"
+
+[update]
+channel = "stable"
+version_check = true
+manifest_check = true
+
+[keys]
+prefix = "ctrl+a"
+
+# Tmux muscle memory.
+help = "prefix+?"
+detach = ["prefix+d", "prefix+q"]
+reload_config = "prefix+r"
+new_tab = ["prefix+c", "prefix+shift+c"]
+switch_tab = "prefix+1..9"
+close_tab = "prefix+shift+x"
+copy_mode = "prefix+["
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+split_vertical = ["prefix+|", "prefix+v"]
+split_horizontal = ["prefix+minus", "prefix+shift+v"]
+close_pane = "prefix+x"
+zoom = "prefix+z"
+resize_mode = "prefix+shift+r"
+
+# Typecraft's leader+g agent/workspace finder, with leader+s as the sesh-like
+# alias. Leader+b collapses or fully hides the agent sidebar.
+goto = ["prefix+g", "prefix+s"]
+workspace_picker = "prefix+w"
+toggle_sidebar = "prefix+b"
+
+# Uppercase H/J/K/L resize in the tmux config, so disable Herdr's default swap
+# actions on those keys before assigning the commands below.
+swap_pane_left = ""
+swap_pane_down = ""
+swap_pane_up = ""
+swap_pane_right = ""
+
+# Match vim-tmux-navigator: Ctrl-H/J/K/L moves through Neovim splits first,
+# then crosses the edge into the adjacent Herdr pane. In non-Vim panes the
+# same keys focus Herdr panes directly.
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "vim-herdr-navigation.left"
+description = "navigate left (Neovim/Herdr)"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "vim-herdr-navigation.down"
+description = "navigate down (Neovim/Herdr)"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "vim-herdr-navigation.up"
+description = "navigate up (Neovim/Herdr)"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "vim-herdr-navigation.right"
+description = "navigate right (Neovim/Herdr)"
+
+[[keys.command]]
+key = "prefix+shift+h"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane resize --current --direction left --amount 5'
+description = "resize pane left"
+
+[[keys.command]]
+key = "prefix+shift+j"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane resize --current --direction down --amount 5'
+description = "resize pane down"
+
+[[keys.command]]
+key = "prefix+shift+k"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane resize --current --direction up --amount 5'
+description = "resize pane up"
+
+[[keys.command]]
+key = "prefix+shift+l"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane resize --current --direction right --amount 5'
+description = "resize pane right"
+
+[ui]
+sidebar_width = 26
+sidebar_min_width = 18
+sidebar_max_width = 36
+sidebar_start_collapsed = false
+sidebar_collapsed_mode = "hidden"
+mouse_capture = true
+copy_on_select = true
+confirm_close = true
+prompt_new_tab_name = false
+prompt_new_workspace_name = false
+pane_borders = true
+pane_scrollbars = false
+pane_gaps = false
+show_agent_labels_on_pane_borders = true
+hide_tab_bar_when_single_tab = false
+tab_bar_position = "bottom"
+agent_panel_sort = "priority"
+accent = "cyan"
+
+[ui.toast]
+delivery = "system"
+delay_seconds = 1
+
+[ui.sound]
+enabled = true
+
+[session]
+resume_agents_on_restore = true
+
+[experimental]
+# Pane contents can contain secrets. Agent conversations are resumed through
+# the official integrations without saving arbitrary terminal history.
+pane_history = false
+
+[advanced]
+scrollback_limit_bytes = 10000000

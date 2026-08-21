@@ -8,8 +8,9 @@ AGE_KEY_FILE="$AGE_KEY_DIR/keys.txt"
 TMUX_PLUGIN_DIR="$HOME/.local/share/tmux/plugins"
 TPM_DIR="$TMUX_PLUGIN_DIR/tpm"
 TPM_VERSION="v3.1.0"
+HERDR_NAV_REF="820d48f5d9c9a7dece6a4bebfa3982ec30bbfbb7"
 STOW_PACKAGES=(
-  agents borders claude codex config ghostty git hammerspoon nvim sesh starship tmux yazi zsh
+  agents borders claude codex config ghostty git hammerspoon herdr nvim sesh starship tmux yazi zsh
 )
 
 # --- Helpers ---
@@ -198,6 +199,36 @@ sync_tmux_plugins() {
   ok "tmux plugins synchronized."
 }
 
+sync_herdr_integrations() {
+  if ! command -v herdr >/dev/null 2>&1; then
+    warn "herdr is unavailable. Skipping agent integrations."
+    return
+  fi
+
+  local integration
+  for integration in claude codex; do
+    if herdr integration install "$integration"; then
+      ok "Herdr $integration integration synchronized."
+    else
+      warn "Could not synchronize the Herdr $integration integration."
+    fi
+  done
+}
+
+sync_herdr_plugins() {
+  if ! command -v herdr >/dev/null 2>&1; then
+    warn "herdr is unavailable. Skipping Herdr plugins."
+    return
+  fi
+
+  if herdr plugin install paulbkim-dev/vim-herdr-navigation \
+    --ref "$HERDR_NAV_REF" --yes; then
+    ok "Herdr Neovim navigation plugin synchronized."
+  else
+    warn "Could not synchronize the Herdr Neovim navigation plugin."
+  fi
+}
+
 sync_runtimes() {
   if ! command -v mise >/dev/null 2>&1; then
     warn "mise is unavailable. Skipping language runtime sync."
@@ -357,7 +388,7 @@ git_commit_push() {
 
 doctor() {
   local failed=0
-  local commands=(git stow zsh tmux nvim starship fzf rg fd mise sesh yazi gitleaks passage)
+  local commands=(git stow zsh tmux herdr nvim starship fzf rg fd mise sesh yazi gitleaks passage)
 
   info "Checking dotfiles dependencies and links..."
   if is_macos; then
@@ -434,6 +465,8 @@ install)
   # Link dotfiles
   stow_dotfiles
   sync_tmux_plugins
+  sync_herdr_integrations
+  sync_herdr_plugins
   sync_runtimes
 
   # Setup secrets management
@@ -463,6 +496,8 @@ pull)
   install_tpm
   stow_dotfiles
   sync_tmux_plugins
+  sync_herdr_integrations
+  sync_herdr_plugins
   sync_runtimes
   start_desktop_services
 

@@ -27,6 +27,7 @@ brew "zsh-syntax-highlighting"
 # Development workflow
 brew "atuin"
 brew "gh"
+brew "herdr" unless File.executable?(File.expand_path("~/.local/bin/herdr"))
 brew "lazygit"
 brew "neovim"
 brew "oxfmt"

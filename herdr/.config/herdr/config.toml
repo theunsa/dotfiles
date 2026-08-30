@@ -5,6 +5,14 @@ onboarding = false
 [theme]
 name = "nord"
 
+# Herdr's stock Nord muted tokens use Polar Night shades against a Polar Night
+# sidebar, which makes headings, branches, shortcuts, and agent metadata too
+# faint. Keep the Nord palette, but use Frost/Snow Storm shades for legibility.
+[theme.custom]
+overlay0 = "#81a1c1"
+overlay1 = "#8fbcbb"
+subtext0 = "#d8dee9"
+
 [terminal]
 default_shell = "/bin/zsh"
 shell_mode = "auto"
@@ -119,6 +127,24 @@ hide_tab_bar_when_single_tab = false
 tab_bar_position = "bottom"
 agent_panel_sort = "priority"
 accent = "cyan"
+
+[ui.sidebar.agents]
+# Separate agent entries and keep their secondary details readable without
+# competing with the workspace name.
+row_gap = 1
+rows = [
+  ["state_icon", { token = "workspace", fg = "#e5e9f0", bold = true }, { token = "tab", fg = "#8fbcbb" }],
+  [{ token = "agent", fg = "#88c0d0" }],
+]
+
+[ui.sidebar.spaces]
+# Give every top-level project its own visual block. Project names carry the
+# hierarchy; branches stay legible but use a quieter, desaturated Nord shade.
+row_gap = 1
+rows = [
+  ["state_icon", { token = "workspace", fg = "#e5e9f0", bold = true }],
+  [{ token = "branch", fg = "#8a99b2" }, "git_status"],
+]
 
 [ui.toast]
 delivery = "system"

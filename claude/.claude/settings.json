@@ -56,7 +56,19 @@
       }
     }
   },
+  "feedbackDrafts": "off",
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-fable-5": {
+      "effortLevel": "high"
+    },
+    "claude-sonnet-5": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    }
+  },
   "tui": "default",
   "voice": {
     "enabled": true,

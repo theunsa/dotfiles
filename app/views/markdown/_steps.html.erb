@@ -13,7 +13,8 @@
         <p class="mt-3 text-2xl font-bold tracking-tight text-primary"><%= item["price"] %></p>
       <% end %>
       <% if item["body"].present? %>
-        <p class="mt-3 leading-relaxed"><%= renderer.inline_html(item["body"]) %></p>
+        <%# A div, not a p: inline_html returns block-level markdown output. %>
+        <div class="mt-3 leading-relaxed [&>p+p]:mt-3"><%= renderer.inline_html(item["body"]) %></div>
       <% end %>
       <% if item["note"].present? %>
         <p class="mt-3 text-sm font-medium text-muted-foreground"><%= item["note"] %></p>

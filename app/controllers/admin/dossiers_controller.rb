@@ -3,6 +3,10 @@ class Admin::DossiersController < ApplicationController
 
   def index
     @dossiers = Dossier.order(created_at: :desc)
+    # Three grouped queries instead of three per row.
+    @visit_counts = Visit.group(:dossier_id).count
+    @last_viewed = Visit.group(:dossier_id).maximum(:viewed_at)
+    @accepted_ids = Acceptance.distinct.pluck(:dossier_id).to_set
   end
 
   def show

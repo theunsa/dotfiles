@@ -1,0 +1,5 @@
+<%# A block whose front matter won't parse must be visible, never silently
+    dropped — same rule as _unknown (see docs/PLAN.md step 4). %>
+<div class="not-prose my-8 rounded-lg border border-dashed border-destructive p-4 text-sm" data-block="parse-error">
+  Could not read the front matter of <code>::<%= name %></code> — <%= error %>
+</div>

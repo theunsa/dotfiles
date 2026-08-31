@@ -1,4 +1,43 @@
 namespace :dossier do
+  desc "Create the admin user, or reset its password. Usage: rake 'dossier:user[you@example.com]'"
+  task :user, [ :email ] => :environment do |_, args|
+    require "io/console"
+
+    email = args[:email].to_s.strip
+    abort "Usage: rake 'dossier:user[you@example.com]'" if email.blank?
+
+    # Prompted, never an argument or ENV var: keeps the password out of shell
+    # history, `ps` output and the deploy config. This is also the recovery
+    # path — there is no password-reset email in this app.
+    #
+    # getpass needs a TTY, and `kamal app exec` doesn't always give one, so fall
+    # back to a plain read (echoed, but still not in argv) rather than blowing up.
+    read = lambda do |prompt|
+      if $stdin.tty?
+        $stdin.getpass(prompt)
+      else
+        $stderr.print(prompt)
+        $stdin.gets.to_s.chomp
+      end
+    end
+
+    password = read.call("Password: ")
+    confirmation = read.call("Confirm password: ")
+    abort "Passwords do not match." unless password == confirmation
+    abort "Password must be at least 12 characters." if password.to_s.length < 12
+
+    user = User.find_or_initialize_by(email_address: email)
+    existed = user.persisted?
+    user.password = password
+    user.password_confirmation = confirmation
+
+    if user.save
+      puts existed ? "Password reset for #{user.email_address}." : "Created admin user #{user.email_address}."
+    else
+      abort user.errors.full_messages.join(", ")
+    end
+  end
+
   desc "Import a prototype-style markdown file (front matter + body) as a Dossier. Usage: rake 'dossier:import[path/to/index.md]'"
   task :import, [ :path ] => :environment do |_, args|
     abort "Usage: rake 'dossier:import[path/to/index.md]'" if args[:path].blank?

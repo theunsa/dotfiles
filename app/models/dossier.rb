@@ -31,7 +31,8 @@ class Dossier < ApplicationRecord
 
   def last_viewed_at = visits.maximum(:viewed_at)
 
-  def accepted? = acceptances.exists?
+  # No label: "anything accepted at all?" (admin list). With one: that step only.
+  def accepted?(label = nil) = label ? acceptances.exists?(label: label) : acceptances.exists?
 
   private
 

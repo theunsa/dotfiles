@@ -40,5 +40,27 @@
       </div>
     <% end %>
     <%= yield %>
+
+    <% if authenticated? %>
+      <%# Backs every data-turbo-confirm on the admin side. Rendered only for the
+          author — the client's page stays free of admin chrome. %>
+      <dialog class="alert-dialog" data-size="sm"
+              data-controller="confirm-dialog"
+              data-action="close->confirm-dialog#closed">
+        <article>
+          <header>
+            <h2>Are you sure?</h2>
+            <p data-confirm-dialog-target="message"></p>
+          </header>
+          <footer>
+            <button type="button" class="btn" data-variant="outline"
+                    data-action="confirm-dialog#cancel">Cancel</button>
+            <button type="button" class="btn"
+                    data-confirm-dialog-target="accept"
+                    data-action="confirm-dialog#accept">Continue</button>
+          </footer>
+        </article>
+      </dialog>
+    <% end %>
   </body>
 </html>

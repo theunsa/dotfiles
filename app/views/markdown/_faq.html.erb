@@ -1,5 +1,9 @@
-<%= render "components/accordion", class: "dossier-faq not-prose my-8",
-      name: "faq-#{data.object_id}",
-      items: (data["items"] || []).map { |item|
-        { title: item["label"], content: renderer.inline_html(item["content"]) }
-      } %>
+<%# Wrapped like _callout wraps its alert, so every block carries a data-block
+    hook — the accordion component takes no arbitrary attributes. %>
+<div class="dossier-faq not-prose my-8" data-block="faq">
+  <%= render "components/accordion",
+        name: "faq-#{block_index}",
+        items: (data["items"] || []).map { |item|
+          { title: item["label"], content: renderer.inline_html(item["content"]) }
+        } %>
+</div>

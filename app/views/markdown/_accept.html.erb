@@ -1,7 +1,16 @@
 <div class="dossier-accept not-prose my-8" data-block="accept">
-  <% if defined?(dossier) && dossier %>
-    <% label = attrs["label"].presence || "Accept Step 1" %>
-    <% if (acceptance = dossier.acceptances.order(:accepted_at).first) %>
+  <% label = attrs["label"].presence || "Accept Step 1" %>
+  <% if local_assigns[:preview] %>
+    <%# Admin preview: show the button, but never a working one. Clicking a live
+        one here would record an acceptance the client never made. %>
+    <div class="flex items-center gap-3">
+      <%= render "components/button", label: label, size: "lg", type: "button", disabled: true %>
+      <span class="text-xs text-muted-foreground">Preview — not clickable</span>
+    </div>
+  <% elsif defined?(dossier) && dossier %>
+    <%# Matched on label, not "any acceptance": a dossier may carry an ::accept
+        block per step, and each has to be acceptable on its own. %>
+    <% if (acceptance = dossier.acceptances.find_by(label: label)) %>
       <%= render "components/alert",
             title: "Accepted on #{acceptance.accepted_at.strftime('%-d %B %Y')}",
             icon: content_tag(:svg, content_tag(:path, nil, d: "M20 6 9 17l-5-5"),

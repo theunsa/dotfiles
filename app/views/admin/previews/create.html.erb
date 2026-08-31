@@ -1,0 +1,8 @@
+<%# Same wrapper class as the public page, so spacing and measure match. %>
+<div class="dossier-prose">
+  <% if @html.blank? %>
+    <p class="text-sm text-muted-foreground">Nothing to preview yet.</p>
+  <% else %>
+    <%= @html %>
+  <% end %>
+</div>

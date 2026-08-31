@@ -4,9 +4,9 @@
     <h1 class="text-2xl font-semibold text-foreground">Dossiers</h1>
     <div class="flex items-center gap-3">
       <%= render "components/button", label: "New dossier", href: new_admin_dossier_path %>
-      <%= button_to session_path, method: :delete, class: "contents" do %>
-        <%= render "components/button", label: "Log out", variant: "ghost", type: "submit" %>
-      <% end %>
+      <%# Not via components/button — see the note on the delete button in show. %>
+      <%= button_to "Log out", session_path, method: :delete,
+            class: "btn", data: { variant: "ghost" } %>
     </div>
   </header>
 
@@ -16,12 +16,12 @@
         rows: @dossiers.map { |dossier|
           [
             link_to(dossier.client_name, admin_dossier_path(dossier), class: "font-medium text-foreground"),
-            dossier.visits.count,
-            dossier.last_viewed_at&.strftime("%-d %b %Y %H:%M") || "—",
+            @visit_counts.fetch(dossier.id, 0),
+            @last_viewed[dossier.id]&.strftime("%-d %b %Y %H:%M") || "—",
             safe_join([
               render("components/badge", label: dossier.published? ? "Published" : "Draft",
                 variant: dossier.published? ? nil : "secondary"),
-              (render("components/badge", label: "Accepted ✓", class: "ml-1") if dossier.accepted?),
+              (render("components/badge", label: "Accepted ✓", class: "ml-1") if @accepted_ids.include?(dossier.id)),
               (render("components/badge", label: "🔒", variant: "outline", class: "ml-1") if dossier.passcode_protected?)
             ].compact),
             link_to("Open", dossier_path(slug: dossier.slug), class: "text-muted-foreground")

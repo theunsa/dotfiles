@@ -28,10 +28,45 @@
       <%= render "components/label", for: "document_title", text: "Page title" %>
       <%= doc.text_field :title, id: "document_title", class: "input mt-1 w-full" %>
     </div>
-    <div>
+    <div data-controller="markdown-editor"
+         data-markdown-editor-preview-url-value="<%= admin_preview_path %>">
       <%= render "components/label", for: "document_body_markdown", text: "Markdown" %>
-      <p class="mt-1 text-xs text-muted-foreground">Supports ::steps, ::callout, ::faq and ::accept blocks — same syntax as the prototype.</p>
-      <%= doc.text_area :body_markdown, id: "document_body_markdown", rows: 24, class: "textarea mt-1 w-full font-mono text-sm" %>
+
+      <div class="mt-1 flex flex-wrap items-center gap-2">
+        <span class="text-xs text-muted-foreground">Insert:</span>
+        <% MarkdownRenderer::SNIPPETS.each do |name, snippet| %>
+          <button type="button" class="btn" data-variant="outline" data-size="sm"
+                  data-action="markdown-editor#insert"
+                  data-snippet="<%= snippet[:body] %>"
+                  data-placeholder="<%= snippet[:placeholder] %>">
+            <%= snippet[:label] %>
+          </button>
+        <% end %>
+
+        <div class="ml-auto flex items-center gap-1" role="tablist">
+          <button type="button" class="btn" data-variant="ghost" data-size="sm" role="tab"
+                  aria-selected="true"
+                  data-markdown-editor-target="editTab"
+                  data-action="markdown-editor#showEdit">Edit</button>
+          <button type="button" class="btn" data-variant="ghost" data-size="sm" role="tab"
+                  aria-selected="false"
+                  data-markdown-editor-target="previewTab"
+                  data-action="markdown-editor#showPreview">Preview</button>
+        </div>
+      </div>
+
+      <%= doc.text_area :body_markdown, id: "document_body_markdown", rows: 24,
+            class: "textarea mt-2 w-full font-mono text-sm",
+            data: { markdown_editor_target: "textarea" } %>
+
+      <%# Rendered by the real MarkdownRenderer, so it can't drift from the
+          client's page. Hidden until Preview is clicked; with JS off the
+          textarea is simply always visible and the chips do nothing. %>
+      <%# bg-background, not the textarea's muted fill: the preview should sit on
+          the same ground the client's page does. %>
+      <div class="mt-2 w-full overflow-auto rounded-lg border border-border bg-background px-5 py-4"
+           style="min-height: 30rem"
+           data-markdown-editor-target="preview" hidden></div>
     </div>
   <% end %>
 

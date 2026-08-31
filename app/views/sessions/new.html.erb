@@ -15,9 +15,6 @@
             placeholder: "Enter your password", maxlength: 72, class: "input mt-1 w-full" %>
     </div>
 
-    <div class="flex items-center gap-4">
-      <%= render "components/button", label: "Sign in", type: "submit", size: "lg" %>
-      <%= link_to "Forgot password?", new_password_path, class: "text-sm text-muted-foreground" %>
-    </div>
+    <%= render "components/button", label: "Sign in", type: "submit", size: "lg" %>
   <% end %>
 </main>

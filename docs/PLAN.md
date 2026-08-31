@@ -99,10 +99,58 @@ Every placeholder view now uses them; verified in a real browser at 390px in lig
 One gotcha worth knowing: `.dossier-prose`'s heading/paragraph rules had to be scoped with
 `:not(:where(.not-prose, .not-prose *))` (extras.css) — without it they bled into the
 partials' own `<h2>`/`<h3>` tags, since there's no Tailwind Typography plugin backing the
-`not-prose` class that was already in the placeholder markup. Still open: the admin preview
-toggle (step 9 — form is a plain textarea so far), the system test (step 12), and step 11
-(Kamal config generated but untuned). Step 8's either/or was decided: the accept button
+`not-prose` class that was already in the placeholder markup. Still open: the system test
+(step 12) and step 11 (Kamal config generated but untuned). Step 8's either/or was decided: the accept button
 renders via an `::accept` block in the markdown (`{label="…"}`), no dossier flag.
+
+Review pass 2026-08-31 (42 tests green after dropping 7 password-reset tests, adding 6):
+
+- **Markdown blocks now render through the request's view context.** `Document#body_html`
+  takes the caller's view (`self` from the template) and `MarkdownRenderer#to_html` passes
+  it down. Rendering via `ApplicationController.render` put the partials outside the
+  request, so `protect_against_forgery?` was false and `form_with` silently omitted the
+  CSRF token — `::accept` only submitted because Turbo Drive supplies the `X-CSRF-Token`
+  header from the meta tag, and was a 422 with JS off. Regression test in
+  `test/integration/accept_form_test.rb` runs with forgery protection actually enabled.
+- **Acceptances are keyed on label**, so a dossier can carry one `::accept` per step;
+  previously accepting any one marked them all accepted and blocked the rest.
+- **Block front matter permits Date/Time and reports parse failures.** A `due: 2026-01-01`
+  raised `Psych::DisallowedClass`, which was rescued into an empty `data` hash — the whole
+  block vanished from the page. Failures now render `markdown/_parse_error`, matching the
+  step-4 rule that unknown blocks must never disappear silently.
+- **Password reset is gone** (controller, mailer, views, routes, tests). It needed SMTP
+  that this app deliberately doesn't have, so "Forgot password?" was a dead link in
+  production. Recovery is `bin/rails dossier:user[email]`, which prompts for the password
+  rather than taking it in argv or ENV; `db/seeds.rb` now aborts in production when
+  `ADMIN_EMAIL`/`ADMIN_PASSWORD` are unset instead of creating a known-credential admin.
+- Minor: admin index does three grouped queries instead of three per row; `::steps` bodies
+  render in a `div` (block-level markdown was being put inside a `<p>`); FAQ accordion
+  groups are named from a parse-order index instead of `object_id`.
+
+**Draft preview (2026-08-31):** `DossierScoped#set_dossier` scopes to `Dossier.published`
+only for anonymous visitors — the signed-in author sees drafts on their real public page,
+under a "Draft preview" bar. Same reasoning as `require_unlocked`'s admin bypass, and it
+makes the documented "import, review, then publish" flow actually possible. Acceptances are
+refused on unpublished dossiers so proofreading can't manufacture one.
+
+**Step 9 done (2026-08-31):** the admin editor is still a plain textarea, plus one Stimulus
+controller (`markdown_editor_controller.js`, no editor library) giving it:
+
+- **Insert chips** for the four blocks, from `MarkdownRenderer::SNIPPETS` — kept beside
+  `KNOWN_BLOCKS` so a snippet can't drift from what the parser accepts, with a test
+  asserting each round-trips. Two things the insert has to get right: `::name` only parses
+  alone on its line, so the controller pads with whatever blank lines the cursor position
+  is missing (a block landing mid-paragraph renders as plain text with *no* error); and
+  insertion goes through `document.execCommand("insertText")`, because assigning
+  `textarea.value` wipes the native undo stack and a mis-clicked chip becomes unundoable.
+- **Edit/Preview**, POSTing the unsaved markdown to `Admin::PreviewsController` and
+  rendering it through the real `MarkdownRenderer`. `::accept` renders disabled under a
+  `preview: true` context flag — a live button in the preview would record an acceptance
+  the client never made.
+
+Both are progressive enhancement; the textarea works with JS off. Verified in a browser:
+chips insert with correct padding, Cmd-Z reverses an insert, preview renders all four
+blocks, no console errors.
 
 1. **App skeleton** — `rails new` at the repo root (SQLite, importmap, propshaft,
    tailwind), run the auth generator, seed the single user from ENV credentials.
@@ -168,6 +216,7 @@ VPS beyond the app container.
 ## Explicitly NOT in v1
 
 - Client logins / magic links (passcode is the ceiling)
+- Password reset by email for the author — no SMTP in the stack; recovery is a rake task
 - Email notifications, PDF export, file attachments
 - Multiple visible documents per dossier (schema yes, UI no)
 - WYSIWYG or JS markdown editors

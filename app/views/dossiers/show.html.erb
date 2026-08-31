@@ -3,6 +3,10 @@
   <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <% end %>
 
+<% if previewing_draft? %>
+  <%= render "dossiers/draft_banner", dossier: @dossier %>
+<% end %>
+
 <%= render "shared/brand_bar" %>
 
 <article class="dossier-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10 text-foreground">
@@ -11,7 +15,7 @@
     <p class="mt-2 text-sm text-muted-foreground">Prepared for <%= @dossier.client_name %></p>
 
     <div class="mt-8">
-      <%= @document.body_html %>
+      <%= @document.body_html(self) %>
     </div>
   <% else %>
     <p>Nothing here yet.</p>

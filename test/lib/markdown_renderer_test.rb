@@ -80,9 +80,63 @@ class MarkdownRendererTest < ActiveSupport::TestCase
     refute_includes html, 'data-block="steps"'
   end
 
-  test "invalid YAML inside a block does not raise" do
+  test "invalid YAML inside a block does not raise, and says so visibly" do
     md = "::steps\n---\nitems: [unclosed\n---\n::"
-    assert_nothing_raised { MarkdownRenderer.new(md).to_html }
+    html = nil
+    assert_nothing_raised { html = MarkdownRenderer.new(md).to_html }
+    assert_includes html, 'data-block="parse-error"'
+  end
+
+  test "unclosed front matter renders a parse error rather than an empty block" do
+    md = "::steps\n---\nitems:\n  - title: A\n::"
+    html = MarkdownRenderer.new(md).to_html
+    assert_includes html, 'data-block="parse-error"'
+    refute_includes html, 'data-block="steps"'
+  end
+
+  test "dates in block front matter parse instead of silently emptying the block" do
+    md = <<~MD
+      ::steps
+      ---
+      items:
+        - title: Discovery
+          due: 2026-01-01
+      ---
+      ::
+    MD
+    html = MarkdownRenderer.new(md).to_html
+    assert_includes html, 'data-block="steps"'
+    assert_includes html, "Discovery"
+    refute_includes html, 'data-block="parse-error"'
+  end
+
+  test "faq accordion groups get stable names across renders" do
+    md = "::faq\n---\nitems:\n  - label: Q\n    content: A\n---\n::"
+    assert_equal MarkdownRenderer.new(md).to_html, MarkdownRenderer.new(md).to_html
+    assert_includes MarkdownRenderer.new(md).to_html, 'name="faq-0"'
+  end
+
+  # The editor chips insert these verbatim, so a snippet that no longer parses
+  # would hand the author broken markdown with no warning.
+  test "every known block has a snippet, and every snippet renders as that block" do
+    assert_equal MarkdownRenderer::KNOWN_BLOCKS.sort, MarkdownRenderer::SNIPPETS.keys.sort
+
+    MarkdownRenderer::SNIPPETS.each do |name, snippet|
+      html = MarkdownRenderer.new(snippet[:body], context: { preview: true }).to_html
+
+      assert_includes html, %(data-block="#{name}"), "#{name} snippet did not render as a #{name} block"
+      refute_includes html, 'data-block="unknown"', "#{name} snippet rendered as an unknown block"
+      refute_includes html, 'data-block="parse-error"', "#{name} snippet failed to parse"
+      assert_includes snippet[:body], snippet[:placeholder],
+        "#{name} placeholder is not present in its own snippet, so the editor cannot select it"
+    end
+  end
+
+  test "accept renders inert in preview so a proofread cannot record an acceptance" do
+    html = MarkdownRenderer.new(MarkdownRenderer::SNIPPETS["accept"][:body], context: { preview: true }).to_html
+
+    assert_includes html, "disabled"
+    refute_includes html, "<form"
   end
 
   test "accept_block? detects the accept block" do

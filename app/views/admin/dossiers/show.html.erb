@@ -46,11 +46,15 @@
   </section>
 
   <p class="mt-12">
-    <%= button_to admin_dossier_path(@dossier), method: :delete,
-          data: { turbo_confirm: "Delete #{@dossier.client_name} and all its visits/acceptances?" },
-          class: "contents" do %>
-      <%= render "components/button", label: "Delete dossier", variant: "destructive", size: "sm", type: "submit" %>
-    <% end %>
+    <%# Styled directly rather than through components/button: button_to with a
+        block nests a <button> inside its own <button>, which the parser hoists
+        apart — leaving the button you actually click without the confirm. %>
+    <%= button_to "Delete dossier", admin_dossier_path(@dossier), method: :delete,
+          class: "btn",
+          data: {
+            variant: "destructive", size: "sm",
+            turbo_confirm: "Delete #{@dossier.client_name}? Its #{pluralize(@dossier.visits.count, "visit")} and #{pluralize(@dossier.acceptances.count, "acceptance")} go too. This cannot be undone."
+          } %>
   </p>
 </main>
 

@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
+  # No password-reset routes: single-author tool, no SMTP anywhere in the stack.
+  # Recovery is `bin/rails dossier:user[email]` on the box (see README).
   resource :session
-  resources :passwords, param: :token
 
   get "up" => "rails/health#show", as: :rails_health_check
 
@@ -17,5 +18,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root "dossiers#index"
     resources :dossiers
+    # POST, not GET: the markdown being previewed is unsaved and too long for a URL.
+    resource :preview, only: :create
   end
 end

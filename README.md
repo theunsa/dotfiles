@@ -64,19 +64,36 @@ correlating with new ones. Counts and timestamps are unaffected.
 
 ## Writing a dossier
 
-The editor is a plain textarea with two aids above it:
+A dossier body is one markdown document. Plain GFM (headings, lists, tables,
+code, quotes) renders as prose; the special sections are fenced code blocks
+whose language is a block name, holding YAML:
+
+````markdown
+```callout
+title: You only commit to Step 1
+body: Every step is priced **before** it starts.
+```
+````
+
+Blocks: `steps`, `callout`, `faq`, `accept`. Because a fence is standard
+CommonMark, the document survives any other markdown tool — elsewhere the
+blocks just show as highlighted YAML. Any other fence language (` ```ruby `)
+renders as an ordinary code block. A block whose YAML won't parse renders a
+visible error box, never nothing.
+
+The editor is a plain textarea with a live preview beside it:
 
 - **Insert chips** (Steps / Callout / FAQ / Accept) drop a filled-in starter block
   at the cursor and select its example text so you can type straight over it.
   Snippets live in `MarkdownRenderer::SNIPPETS`, beside the parser that reads
   them, and a test asserts each one still renders as the block it claims to be.
-- **Edit / Preview** renders the unsaved markdown through the same
-  `MarkdownRenderer` the client's page uses, so the preview can't drift from the
-  real thing. An `::accept` button previews as disabled — a live one would record
-  an acceptance the client never made.
+- **Live preview** renders the unsaved markdown (debounced, side by side on wide
+  screens) through the same `MarkdownRenderer` the client's page uses, so it
+  can't drift from the real thing. An accept button previews as disabled — a
+  live one would record an acceptance the client never made.
 
 Both are progressive enhancement: with JavaScript off the textarea still works,
-the chips just do nothing.
+the chips just do nothing and no preview appears.
 
 ## Importing prototype content
 
@@ -85,7 +102,9 @@ bin/rails 'dossier:import[nuxt-prototype/content/d/ji4n-managing-agent/index.md]
 ```
 
 Imports as an **unpublished** dossier — review it in `/admin`, then publish.
-Unpublished dossiers 404 publicly.
+Unpublished dossiers 404 publicly. The prototype's MDC directives
+(`::callout{…}` … `::`) are rewritten to the fenced YAML blocks above on the
+way in.
 
 ## Deploy
 

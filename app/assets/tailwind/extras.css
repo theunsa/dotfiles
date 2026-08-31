@@ -20,6 +20,40 @@
 }
 
 /*
+ * The markdown editor breaking out of the admin form's max-w-3xl column.
+ * Only from `lg` up, where the split preview appears and two columns of a
+ * 48rem container would leave each side too narrow to work in.
+ *
+ * `100dvw` counts the scrollbar, so the gutter is subtracted rather than
+ * assumed — without it the breakout is a scrollbar's width too wide and the
+ * whole admin page scrolls sideways.
+ */
+@media (min-width: 1024px) {
+  .editor-wide {
+    position: relative;
+    left: 50%;
+    width: min(96rem, 100dvw - 3rem);
+    transform: translateX(-50%);
+  }
+}
+
+/*
+ * Editor and preview stand side by side, so they have to agree on height:
+ * the textarea is a fixed rows= box, and the preview grows with its content.
+ * Both are pinned to the row, and the preview scrolls internally past it.
+ */
+@media (min-width: 1024px) {
+  .editor-split {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+
+  .editor-split > * {
+    max-height: 44rem;
+  }
+}
+
+/*
  * Mobile-first reading measure. Dossier pages are read on a ~390px phone
  * screen held one-handed, so body text stays large and line length short.
  */
@@ -37,10 +71,18 @@
 /*
  * Every rule below is scoped with :not(:where(.not-prose, .not-prose *)) —
  * the same escape hatch Tailwind Typography uses — so headings/paragraphs
- * rendered *inside* a `::steps`/`::callout`/`::faq`/`::accept` block (each
- * wrapped in `.not-prose`) keep the component partial's own styling instead
- * of inheriting these markdown-body rules.
+ * rendered *inside* a steps/callout/faq/accept block (each wrapped in
+ * `.not-prose`) keep the component partial's own styling instead of
+ * inheriting these markdown-body rules.
  */
+.dossier-prose h1:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
 .dossier-prose h2:not(:where(.not-prose, .not-prose *)) {
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
@@ -78,4 +120,67 @@
 
 .dossier-prose em:not(:where(.not-prose, .not-prose *)) {
   opacity: 0.8;
+}
+
+.dossier-prose code:not(:where(.not-prose, .not-prose *)) {
+  border-radius: 0.375rem;
+  background: var(--muted);
+  padding: 0.125rem 0.375rem;
+  font-size: 0.875em;
+}
+
+.dossier-prose pre:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: var(--muted);
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* The pre already carries the fill; a second layer inside it looks like a bug. */
+.dossier-prose pre code:not(:where(.not-prose, .not-prose *)) {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+.dossier-prose blockquote:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid var(--border);
+  padding-left: 1rem;
+  color: var(--muted-foreground);
+}
+
+.dossier-prose hr:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+/* GFM tables. Wide ones scroll with the page's own overflow on phones —
+   fine for the odd pricing table this app actually sees. */
+.dossier-prose table:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.dossier-prose th:not(:where(.not-prose, .not-prose *)) {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  text-align: left;
+  font-weight: 600;
+}
+
+.dossier-prose td:not(:where(.not-prose, .not-prose *)) {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  vertical-align: top;
 }

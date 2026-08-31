@@ -63,7 +63,8 @@ namespace :dossier do
     dossier.save!
 
     document = dossier.documents.first || dossier.documents.build
-    document.update!(title: front_matter["title"].presence || "Proposal", body_markdown: body)
+    document.update!(title: front_matter["title"].presence || "Proposal",
+                     body_markdown: LegacyBlockConverter.call(body))
 
     puts "Imported #{args[:path]} → /d/#{dossier.slug} (unpublished — review in admin, then publish)"
   end

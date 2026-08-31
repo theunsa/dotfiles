@@ -1,5 +1,7 @@
-<%# Same wrapper class as the public page, so spacing and measure match. %>
-<div class="dossier-prose">
+<%# Same wrapper class and measure as the public page, so spacing and line
+    breaks match. Centred, so a preview pane wider than the client's article
+    gains gutters rather than longer lines. %>
+<div class="dossier-prose mx-auto max-w-2xl">
   <% if @html.blank? %>
     <p class="text-sm text-muted-foreground">Nothing to preview yet.</p>
   <% else %>

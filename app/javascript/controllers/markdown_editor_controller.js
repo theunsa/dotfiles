@@ -1,10 +1,25 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The admin markdown editor: insert-a-block chips and an Edit/Preview toggle.
-// Deliberately not an editor library — a plain textarea plus this file.
+// The admin markdown editor: insert-a-block chips and a live side-by-side
+// preview. Deliberately not an editor library — a plain textarea plus this file.
+//
+// Progressive enhancement: the preview pane ships `hidden` and the split
+// wrapper single-column; connect() reveals and widens them. With JS off the
+// form is just a full-width textarea and the chips do nothing.
 export default class extends Controller {
-  static targets = ["textarea", "preview", "editTab", "previewTab"]
+  static targets = ["textarea", "preview", "split"]
   static values = { previewUrl: String }
+
+  connect() {
+    this.previewTarget.hidden = false
+    this.splitTarget.classList.add("editor-split")
+    this.refresh()
+  }
+
+  disconnect() {
+    clearTimeout(this.debounce)
+    this.abort?.abort()
+  }
 
   // --- Inserting a block -------------------------------------------------
 
@@ -22,9 +37,9 @@ export default class extends Controller {
     const before = textarea.value.slice(0, start)
     const after = textarea.value.slice(textarea.selectionEnd)
 
-    // `::name` only parses as a block when it sits alone on its line, and a
-    // block that lands mid-paragraph renders as plain text with no error at
-    // all — so pad with whatever blank lines the cursor position is missing.
+    // A ```name fence only parses as a block when it sits alone on its line,
+    // and one that lands mid-paragraph renders as literal text — so pad with
+    // whatever blank lines the cursor position is missing.
     const lead = this.#padding(before, "end")
     const text = lead + snippet + this.#padding(after, "start")
 
@@ -35,6 +50,7 @@ export default class extends Controller {
     }
 
     this.#select(placeholder, start + lead.length)
+    this.changed()
   }
 
   // Blank lines needed between the cursor and the text already on that side.
@@ -52,22 +68,24 @@ export default class extends Controller {
     if (at !== -1) this.textareaTarget.setSelectionRange(at, at + placeholder.length)
   }
 
-  // --- Edit / Preview ----------------------------------------------------
+  // --- Live preview -------------------------------------------------------
 
-  showEdit(event) {
-    event?.preventDefault()
-    this.#tab(false)
-    this.textareaTarget.focus()
+  // Wired to the textarea's input event; debounced so a burst of typing costs
+  // one render, not one per keystroke.
+  changed() {
+    clearTimeout(this.debounce)
+    this.debounce = setTimeout(() => this.refresh(), 350)
   }
 
-  async showPreview(event) {
-    event?.preventDefault()
-    this.#tab(true)
+  async refresh() {
+    this.abort?.abort()
+    this.abort = new AbortController()
     this.previewTarget.setAttribute("aria-busy", "true")
 
     try {
       const response = await fetch(this.previewUrlValue, {
         method: "POST",
+        signal: this.abort.signal,
         headers: {
           "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content,
           Accept: "text/html"
@@ -76,17 +94,13 @@ export default class extends Controller {
       })
       if (!response.ok) throw new Error(response.statusText)
       this.previewTarget.innerHTML = await response.text()
-    } catch {
-      this.previewTarget.textContent = "Could not render the preview. Your text is safe — switch back to Edit."
-    } finally {
+      this.previewTarget.removeAttribute("aria-busy")
+    } catch (error) {
+      // An aborted fetch means a newer render is on its way — keep aria-busy
+      // and let it finish; anything else is a real failure worth showing.
+      if (error.name === "AbortError") return
+      this.previewTarget.textContent = "Could not render the preview. Your text is safe — keep typing or reload."
       this.previewTarget.removeAttribute("aria-busy")
     }
-  }
-
-  #tab(previewing) {
-    this.textareaTarget.hidden = previewing
-    this.previewTarget.hidden = !previewing
-    this.editTabTarget.setAttribute("aria-selected", String(!previewing))
-    this.previewTabTarget.setAttribute("aria-selected", String(previewing))
   }
 }

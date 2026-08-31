@@ -6,7 +6,7 @@ class AcceptancesController < ApplicationController
   rate_limit to: 10, within: 1.minute, only: :create
 
   def create
-    # Idempotent per label, so a double-tap records once but a second ::accept
+    # Idempotent per label, so a double-tap records once but a second accept block
     # block (a later step) can still be accepted on its own.
     label = params[:label].presence || "Accepted"
     @dossier.acceptances.create!(label: label) unless @dossier.accepted?(label)

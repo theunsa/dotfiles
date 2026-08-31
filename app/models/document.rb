@@ -7,7 +7,7 @@ class Document < ApplicationRecord
   before_validation :set_defaults, on: :create
 
   # Pass the calling template's view context (`self` in ERB) so block partials
-  # render inside the real request — ::accept builds a form and needs the CSRF
+  # render inside the real request — the accept block builds a form and needs the CSRF
   # token that only a request-bound view emits.
   def body_html(view = nil)
     MarkdownRenderer.new(body_markdown, context: { dossier: dossier }).to_html(view)

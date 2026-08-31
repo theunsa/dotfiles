@@ -8,8 +8,9 @@ acme_proposal:
 
     Too many mailboxes.
 
-    ::accept{label="Accept Step 1"}
-    ::
+    ```accept
+    label: Accept Step 1
+    ```
 
 locked_proposal:
   dossier: locked

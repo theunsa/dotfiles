@@ -5,7 +5,7 @@ require "test_helper"
 class DraftPreviewTest < ActionDispatch::IntegrationTest
   setup do
     @draft = dossiers(:draft)
-    @draft.documents.create!(title: "Draft proposal", body_markdown: "## Not live yet\n\n::accept{label=\"Accept Step 1\"}\n::\n")
+    @draft.documents.create!(title: "Draft proposal", body_markdown: "## Not live yet\n\n```accept\nlabel: Accept Step 1\n```\n")
   end
 
   test "anonymous visitors still get a 404" do

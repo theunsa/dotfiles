@@ -15,14 +15,16 @@ class AcceptancesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-block=accept]", text: /Accepted on/
   end
 
-  test "each ::accept block is accepted on its own label" do
+  test "each accept block is accepted on its own label" do
     dossier = dossiers(:acme)
     dossier.documents.first.update!(body_markdown: <<~MD)
-      ::accept{label="Accept Step 1"}
-      ::
+      ```accept
+      label: Accept Step 1
+      ```
 
-      ::accept{label="Accept Step 2"}
-      ::
+      ```accept
+      label: Accept Step 2
+      ```
     MD
 
     post dossier_acceptances_url(slug: dossier.slug), params: { label: "Accept Step 1" }

@@ -2,23 +2,24 @@ require "test_helper"
 
 class DossierTest < ActiveSupport::TestCase
   test "generates an unguessable slug from client_name on create" do
-    dossier = Dossier.create!(client_name: "Acme Body Corporate")
+    dossier = accounts(:studio).dossiers.create!(client_name: "Acme Body Corporate")
     assert_match(/\A[a-z0-9]{4}-acme-body-corporate\z/, dossier.slug)
   end
 
   test "does not overwrite an explicitly set slug" do
-    dossier = Dossier.create!(client_name: "Acme", slug: "zzzz-fixed")
+    dossier = accounts(:studio).dossiers.create!(client_name: "Acme", slug: "zzzz-fixed")
     assert_equal "zzzz-fixed", dossier.slug
   end
 
-  test "requires a unique slug" do
-    Dossier.create!(client_name: "Acme", slug: "dup-slug")
-    duplicate = Dossier.new(client_name: "Other", slug: "dup-slug")
+  # Slugs are one shared URL space, so a second account cannot take one either.
+  test "requires a globally unique slug" do
+    accounts(:studio).dossiers.create!(client_name: "Acme", slug: "dup-slug")
+    duplicate = accounts(:rival).dossiers.new(client_name: "Other", slug: "dup-slug")
     refute duplicate.valid?
   end
 
   test "rejects a non-E.164 whatsapp number but allows blank" do
-    dossier = Dossier.new(client_name: "Acme", whatsapp_number: "0821234567")
+    dossier = accounts(:studio).dossiers.new(client_name: "Acme", whatsapp_number: "0821234567")
     refute dossier.valid?
 
     dossier.whatsapp_number = ""

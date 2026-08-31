@@ -1,4 +1,5 @@
 class Dossier < ApplicationRecord
+  belongs_to :account
   has_many :documents, -> { order(:position) }, dependent: :destroy
   has_many :visits, dependent: :destroy
   has_many :acceptances, dependent: :destroy
@@ -9,6 +10,8 @@ class Dossier < ApplicationRecord
   has_secure_password :passcode, validations: false
 
   validates :client_name, presence: true
+  # Globally unique, not per-account: /d/:slug is one shared URL space, so that
+  # a client only ever needs the link, never the tenant it belongs to.
   validates :slug, presence: true, uniqueness: true
   validates :whatsapp_number, format: { with: /\A\+[1-9]\d{6,14}\z/, message: "must be E.164, e.g. +27821234567" },
                               allow_blank: true

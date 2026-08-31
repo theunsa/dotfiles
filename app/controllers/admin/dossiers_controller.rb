@@ -1,12 +1,13 @@
-class Admin::DossiersController < ApplicationController
+class Admin::DossiersController < Admin::BaseController
   before_action :set_dossier, only: %i[show edit update destroy]
 
   def index
-    @dossiers = Dossier.order(created_at: :desc)
-    # Three grouped queries instead of three per row.
-    @visit_counts = Visit.group(:dossier_id).count
-    @last_viewed = Visit.group(:dossier_id).maximum(:viewed_at)
-    @accepted_ids = Acceptance.distinct.pluck(:dossier_id).to_set
+    @dossiers = dossiers.order(created_at: :desc)
+    # Three grouped queries instead of three per row, each held to this account.
+    ids = @dossiers.select(:id)
+    @visit_counts = Visit.where(dossier_id: ids).group(:dossier_id).count
+    @last_viewed = Visit.where(dossier_id: ids).group(:dossier_id).maximum(:viewed_at)
+    @accepted_ids = Acceptance.where(dossier_id: ids).distinct.pluck(:dossier_id).to_set
   end
 
   def show
@@ -14,7 +15,7 @@ class Admin::DossiersController < ApplicationController
   end
 
   def new
-    @dossier = Dossier.new
+    @dossier = dossiers.new
     @dossier.documents.build(title: "Proposal")
   end
 
@@ -22,7 +23,7 @@ class Admin::DossiersController < ApplicationController
   end
 
   def create
-    @dossier = Dossier.new(dossier_params)
+    @dossier = dossiers.new(dossier_params)
     if @dossier.save
       redirect_to admin_dossier_path(@dossier), notice: "Dossier created."
     else
@@ -46,8 +47,9 @@ class Admin::DossiersController < ApplicationController
 
   private
 
+  # Another account's slug 404s here, the same as one that does not exist.
   def set_dossier
-    @dossier = Dossier.find_by!(slug: params[:id])
+    @dossier = dossiers.find_by!(slug: params[:id])
   end
 
   def dossier_params

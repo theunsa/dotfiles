@@ -15,7 +15,7 @@ class DossiersController < ApplicationController
 
   # One visit per session per 30 minutes; the author's own views don't count.
   def record_visit
-    return if authenticated?
+    return if author?
 
     seen = session[:seen_dossiers] ||= {}
     last = seen[@dossier.id.to_s]

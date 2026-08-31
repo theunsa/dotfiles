@@ -10,20 +10,29 @@ module DossierScoped
 
   private
 
-  # Drafts 404 for the world but stay visible to the signed-in author, so a
-  # dossier can be checked on its real page before it goes live. Same reasoning
-  # as require_unlocked below: the author can always see their own pages.
+  # Looked up across all accounts on purpose: the slug is the whole security
+  # model and is globally unique, so a client needs only the link. The dossier
+  # then decides which tenant's brand the page wears.
+  #
+  # Drafts 404 for the world but stay visible to their own author, so a dossier
+  # can be checked on its real page before it goes live. Being signed in to some
+  # other account is not enough — same reasoning as require_unlocked below.
   def set_dossier
-    scope = authenticated? ? Dossier.all : Dossier.published
-    @dossier = scope.find_by!(slug: params[:slug])
+    @dossier = Dossier.find_by!(slug: params[:slug])
+    Current.account = @dossier.account
+    raise ActiveRecord::RecordNotFound unless @dossier.published? || author?
   end
+
+  # The signed-in user owns this dossier's account.
+  def author? = authenticated? && Current.user.account_id == @dossier.account_id
 
   def previewing_draft? = !@dossier.published?
 
-  # Admin sessions bypass the gate so the author can always view their own pages.
+  # The dossier's own author bypasses the gate so they can always view their
+  # own pages. Being signed in to some other account is not enough.
   def require_unlocked
     return unless @dossier.passcode_protected?
-    return if authenticated? || unlocked?
+    return if author? || unlocked?
 
     redirect_to dossier_unlock_path(slug: @dossier.slug)
   end

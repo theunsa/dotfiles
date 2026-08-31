@@ -24,7 +24,7 @@ Decisions taken with the author (2026-08-30):
 
 | Decision | Choice | Why |
 |---|---|---|
-| Database | **SQLite** | Rails 8 default; Writebook-proven; zero extra services; backup = one file (Litestream optional). Each self-hoster gets their own instance, so Postgres's concurrency/multi-tenant advantages never apply. Revisit only if a central hosted instance ever exists. |
+| Database | **SQLite** | Rails 8 default; Writebook-proven; zero extra services; backup = one file (Litestream optional). Superseded in part by the tenancy decision below — SQLite stands, the reasoning changed. |
 | Content | **Markdown in DB, edited in an admin UI** | Removes the deploy step per client — this is the main reason to be in Rails. |
 | V1 scope | Parity with the prototype **plus** passcode gate, view tracking, accept button | These were the v2 items that justified the rewrite; ship them. |
 | Deploy | **Kamal** to the author's VPS | Rails 8 default; also the cleanest story for future self-hosters. |
@@ -37,6 +37,15 @@ Decisions taken with the author (2026-08-30):
 > There is no `shadcn-bridge.css` and no per-component Tailwind class strings any more.
 > Its README ("Using a component") and CLAUDE.md are the authority; where this plan and
 > that repo disagree, the repo wins.
+
+Decision revisited with the author (2026-08-31), while the app was still local:
+
+| Decision | Choice | Why |
+|---|---|---|
+| Tenancy | **Row-based `Account`, one shared database** | The app is going to be pointed at other consultants, so tenancy has to exist before there is data to retrofit. Scoping by `account_id` is the boring, proven Rails shape, keeps cross-account queries (totals, billing, an operator view) possible, and is database-agnostic — the escape hatch off SQLite stays open. |
+| A database file per tenant | **Rejected** | N migration runs, N backup jobs and connection switching per request, hand-rolled because Rails has no first-class support — all to buy isolation a scoped query already gives. Reconsider only for a customer with a hard data-residency or compliance demand. |
+| Database | **SQLite, confirmed** | The earlier reasoning ("every self-hoster runs their own instance") no longer holds, but the conclusion does: one box, mostly reads, dozens-to-hundreds of tenants is nowhere near SQLite's limits, and Rails 8 is tuned for it. Move to Postgres when there is more than one app server, heavy concurrent writes, or a customer who requires a managed database — not before. |
+| Slug uniqueness | **Global, not per-account** | `/d/:slug` is one shared URL space so a client needs only the link. The slug is already unguessable, and the dossier resolves its own tenant. |
 
 ## Stack
 
@@ -54,8 +63,12 @@ Decisions taken with the author (2026-08-30):
 ## Domain model
 
 ```
-User        # the author; Rails 8 auth generator. Single-user in practice.
+Account     # a tenant: one customer of this app, with its own users and dossiers
+  name, slug, tagline, contact_email   # the last three brand its pages
+User        # an author; Rails 8 auth generator
+  account_id, email_address, password_digest
 Dossier     # one client space
+  account_id       integer  # the owning tenant
   client_name      string   # "Acme Body Corporate" — shown as "Prepared for …"
   slug             string   # unguessable: 4-char base36 prefix + parameterized name, unique
   whatsapp_number  string   # E.164, powers the CTA
@@ -69,6 +82,9 @@ Visit       # view tracking, deliberately minimal (POPIA: no raw IPs)
 Acceptance  # the accept button's record
   dossier_id, label ("Step 1 — Discovery"), name (optional free text), accepted_at
 ```
+
+Only the two top-level tables carry `account_id`. `Document`, `Visit` and `Acceptance` are
+reachable only through a dossier, so scoping the dossier scopes them.
 
 `Document` exists from day one (proposal now, `status` page later) but v1 admin and public
 UI only ever show one document per dossier. No positions UI, no reordering — just the schema.

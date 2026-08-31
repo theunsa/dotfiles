@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_30_165444) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
   create_table "acceptances", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -19,6 +19,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_165444) do
     t.string "name"
     t.datetime "updated_at", null: false
     t.index ["dossier_id"], name: "index_acceptances_on_dossier_id"
+  end
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "contact_email"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.string "tagline"
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_accounts_on_slug", unique: true
   end
 
   create_table "documents", force: :cascade do |t|
@@ -33,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_165444) do
   end
 
   create_table "dossiers", force: :cascade do |t|
+    t.integer "account_id", null: false
     t.string "client_name"
     t.datetime "created_at", null: false
     t.string "passcode_digest"
@@ -41,6 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_165444) do
     t.datetime "updated_at", null: false
     t.string "whatsapp_number"
     t.string "whatsapp_text"
+    t.index ["account_id"], name: "index_dossiers_on_account_id"
     t.index ["slug"], name: "index_dossiers_on_slug", unique: true
   end
 
@@ -54,10 +66,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_165444) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.integer "account_id", null: false
     t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.string "password_digest", null: false
     t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_users_on_account_id"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
@@ -73,6 +87,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_165444) do
 
   add_foreign_key "acceptances", "dossiers"
   add_foreign_key "documents", "dossiers"
+  add_foreign_key "dossiers", "accounts"
   add_foreign_key "sessions", "users"
+  add_foreign_key "users", "accounts"
   add_foreign_key "visits", "dossiers"
 end

@@ -1,0 +1,12 @@
+studio:
+  name: Alberts Studio
+  slug: alberts-studio
+  tagline: I build practical business software.
+  contact_email: hello@studio.example
+
+# A second tenant, so every test can ask "can this account see the other one's
+# data?" rather than assuming there is only ever one.
+rival:
+  name: Rival Consulting
+  slug: rival-consulting
+  contact_email: hello@rival.example

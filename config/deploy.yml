@@ -2,58 +2,79 @@
 service: dossier
 
 # Name of the container image (use your-user/app-name on external registries).
-image: dossier
+image: theunsa/dossier
 
 # Deploy to these servers.
+#
+# `opstal`, not `bok`: bok's 80/443 still belong to dokploy-traefik, so no Kamal
+# app can run there until Dokploy is removed. opstal is already bootstrapped and
+# already runs kamal-proxy. Dossier is SQLite-only — it uses none of opstal's
+# shared PostgreSQL or Browserless — so all it costs that host is one container
+# and one volume. Moving it to bok later is a stop, an rsync of the volume, this
+# hostname, and a DNS record.
+#
+# The name resolves via /etc/hosts (or ~/.ssh/config) to opstal's public address;
+# Kamal SSHes in over the public IP, since a laptop is not on pyp1.
 servers:
   web:
-    - 192.168.0.1
-  # job:
-  #   hosts:
-  #     - 192.168.0.1
-  #   cmd: bin/jobs
+    hosts:
+      - opstal
+    options:
+      # opstal's real job is the shared PostgreSQL for four applications. A cap
+      # keeps a runaway Rails process from evicting its shared_buffers. 768m is
+      # comfortable for one Puma worker with Solid Queue in-process; tighter
+      # risks an OOM kill during boot.
+      memory: 768m
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+# kamal-proxy terminates TLS with Let's Encrypt and multiplexes this host with
+# uptime-kuma and headscale.
 #
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
+# The proxy is owned by the infra repo, which booted it. Never run
+# `kamal proxy boot` from here — it would reboot the proxy underneath two live
+# public services. `kamal deploy` registers with the running one.
 #
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-#
-# proxy:
-#   ssl: true
-#   host: app.example.com
+# The DNS record must be DNS-only (grey cloud) in Cloudflare at least until the
+# certificate is issued: with the orange cloud on, the http-01 challenge is
+# redirected to HTTPS and the origin has no certificate yet, so it cannot be
+# answered. Re-proxying afterwards requires SSL/TLS mode "Full (strict)".
+proxy:
+  ssl: true
+  host: dossier.albertec.co.za
 
 # Where you keep your container images.
+#
+# The package lives in the theunsa ghcr namespace and is created on first push;
+# it needs no GitHub repository behind it, and this repo has none.
 registry:
-  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
-
-  # Needed for authenticated registries.
-  # username: your-user
-
-  # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  server: ghcr.io
+  username: theunsa
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
+    # The only secret the application needs. There is no database password:
+    # every database here is a SQLite file on the volume below.
     - RAILS_MASTER_KEY
   clear:
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    TZ: Africa/Johannesburg
+
+    # One container, one volume, so Solid Queue runs inside Puma. Splitting jobs
+    # into their own container the way marula-flow does would give that container
+    # its own volume and a second copy of the SQLite files — the split is only
+    # safe once the database is not a local file.
     SOLID_QUEUE_IN_PUMA: true
 
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
+    # One Puma worker. The write load is one author plus a handful of client page
+    # views, and a single writer is the friendliest shape for SQLite; the spare
+    # cores belong to PostgreSQL.
+    WEB_CONCURRENCY: 1
 
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use dossier-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
+    # The landing page's contact address. Set explicitly because
+    # config/initializers/brand.rb falls back to a hello@example.com placeholder.
+    # BRAND_NAME and BRAND_TAGLINE default to the right values already.
+    BRAND_CONTACT: hi@albertec.co.za
 
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
@@ -64,10 +85,14 @@ aliases:
   console: app exec --interactive --reuse "bin/rails console"
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
-  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
-# Recommended to change this to a mounted volume path that is backed up off server.
+# All four SQLite databases — primary, cache, queue and cable — plus any local
+# Active Storage files live in here. This volume is the entire state of the
+# application: lose it and there is nothing else to restore from.
+#
+# It is deliberately not covered by infra's backup accessories, which dump
+# PostgreSQL only. Backups are this repo's own problem (rsync, later).
 volumes:
   - "dossier_storage:/rails/storage"
 
@@ -79,41 +104,9 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  context: .
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: ruby-4.0.5
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
-
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+  # Built on the laptop and pushed to ghcr, so a deploy costs opstal nothing but
+  # a pull. Uncomment to build on opstal instead if the uplink is too slow to
+  # push layers — at the cost of a CPU and RAM spike on the database host.
+  # remote: ssh://root@opstal

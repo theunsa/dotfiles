@@ -1,0 +1,5 @@
+<%
+  orientation = local_assigns.fetch(:orientation, "horizontal")
+  extra = local_assigns[:class]
+%>
+<div role="separator" aria-orientation="<%= orientation %>" class="separator<%= extra ? " #{extra}" : "" %>"<%= orientation == "vertical" ? raw(%( data-orientation="vertical")) : "" %>></div>

@@ -1,40 +1,10 @@
+/*
+ * app.css import chain, copied from rails-shadcn-ui's css/app.css: Basecoat
+ * ships the token defaults and component recipes; tokens.css overrides those
+ * values with dossier's theme; extras.css adds what Basecoat does not cover.
+ * See app/views/components/SOURCE.md for where the copy came from.
+ */
 @import "tailwindcss";
-
-/* Minimal reading typography for rendered markdown. Placeholder until the
-   shadcn token block + theme land; keep element-level so restyling is a swap. */
-.dossier-prose {
-  font-size: 1.0625rem;
-  line-height: 1.7;
-}
-.dossier-prose h2 {
-  margin-top: 2.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 1.375rem;
-  font-weight: 700;
-}
-.dossier-prose h3 {
-  margin-top: 1.75rem;
-  margin-bottom: 0.5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-.dossier-prose p,
-.dossier-prose ul,
-.dossier-prose ol {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-.dossier-prose ul {
-  list-style: disc;
-  padding-left: 1.25rem;
-}
-.dossier-prose ol {
-  list-style: decimal;
-  padding-left: 1.25rem;
-}
-.dossier-prose a {
-  text-decoration: underline;
-}
-.dossier-prose em {
-  opacity: 0.8;
-}
+@import "../../../vendor/basecoat/css/basecoat-luma.css";
+@import "./tokens.css";
+@import "./extras.css";

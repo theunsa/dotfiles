@@ -1,0 +1,32 @@
+<%
+  # A header cell is a string, or {label:, class:} when the column needs an
+  # alignment or width. A row is an array of cells, or {cells:, selected:}
+  # when the row carries a selection state; a cell is a string or
+  # {content:, class:}.
+  head = local_assigns.fetch(:head, [])
+  rows = local_assigns.fetch(:rows, [])
+  foot = local_assigns[:foot]
+  caption = local_assigns[:caption]
+  extra = local_assigns[:class]
+  cell_attrs = ->(cell) { cell.is_a?(Hash) && cell[:class] ? %( class="#{cell[:class]}") : "" }
+  cell_body = ->(cell) { cell.is_a?(Hash) ? cell[:content] : cell }
+%>
+<div class="table-container<%= extra ? " #{extra}" : "" %>">
+  <table class="table">
+    <% if caption %><caption><%= caption %></caption><% end %>
+    <thead>
+      <tr><% head.each do |h| %><th<%= raw cell_attrs.call(h) %>><%= cell_body.call(h) %></th><% end %></tr>
+    </thead>
+    <tbody>
+      <% rows.each do |row| %>
+        <% cells = row.is_a?(Hash) ? row.fetch(:cells, []) : row %>
+        <tr<%= row.is_a?(Hash) && row[:selected] ? raw(%( data-state="selected")) : "" %>>
+          <% cells.each do |cell| %><td<%= raw cell_attrs.call(cell) %>><%= cell_body.call(cell) %></td><% end %>
+        </tr>
+      <% end %>
+    </tbody>
+    <% if foot %>
+      <tfoot><tr><% foot.each do |f| %><td<%= raw cell_attrs.call(f) %>><%= cell_body.call(f) %></td><% end %></tr></tfoot>
+    <% end %>
+  </table>
+</div>

@@ -5,10 +5,10 @@
 
 <%= render "shared/brand_bar" %>
 
-<article class="dossier-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10">
+<article class="dossier-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10 text-foreground">
   <% if @document %>
-    <h1 class="text-3xl font-bold"><%= @document.title %></h1>
-    <p class="mt-2 text-sm opacity-70">Prepared for <%= @dossier.client_name %></p>
+    <h1 class="text-3xl font-bold tracking-tight"><%= @document.title %></h1>
+    <p class="mt-2 text-sm text-muted-foreground">Prepared for <%= @dossier.client_name %></p>
 
     <div class="mt-8">
       <%= @document.body_html %>
@@ -22,8 +22,8 @@
 
 <% if @dossier.whatsapp_url %>
   <%# Sticky thumb-reach CTA on phones only; the in-page card covers larger screens. %>
-  <div class="fixed inset-x-0 bottom-0 border-t bg-white/95 p-3 backdrop-blur sm:hidden">
-    <%= link_to "WhatsApp me", @dossier.whatsapp_url,
-          class: "block rounded-lg border px-5 py-3 text-center font-semibold no-underline" %>
+  <div class="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden">
+    <%= render "components/button", label: "WhatsApp me", href: @dossier.whatsapp_url,
+          size: "lg", class: "w-full no-underline" %>
   </div>
 <% end %>

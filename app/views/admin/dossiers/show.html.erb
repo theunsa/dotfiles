@@ -1,58 +1,61 @@
 <% content_for :title, "Admin — #{@dossier.client_name}" %>
 <main class="mx-auto max-w-3xl px-5 py-10">
-  <p class="text-sm"><%= link_to "← Dossiers", admin_root_path, class: "opacity-60" %></p>
+  <p class="text-sm"><%= link_to "← Dossiers", admin_root_path, class: "text-muted-foreground" %></p>
 
   <header class="mt-4 flex items-center justify-between">
-    <h1 class="text-2xl font-semibold"><%= @dossier.client_name %></h1>
-    <%= link_to "Edit", edit_admin_dossier_path(@dossier), class: "rounded-lg border px-4 py-2 text-sm font-semibold no-underline" %>
+    <h1 class="text-2xl font-semibold text-foreground"><%= @dossier.client_name %></h1>
+    <%= render "components/button", label: "Edit", href: edit_admin_dossier_path(@dossier), variant: "outline" %>
   </header>
 
   <dl class="mt-6 space-y-2 text-sm">
     <div>
-      <dt class="font-medium">Public link</dt>
-      <dd>
-        <code id="public-link"><%= dossier_url(slug: @dossier.slug) %></code>
-        <button type="button" class="ml-2 rounded border px-2 py-1 text-xs"
-                onclick="navigator.clipboard.writeText(document.getElementById('public-link').textContent)">Copy</button>
-        <% unless @dossier.published? %><span class="ml-2 opacity-60">(draft — 404s publicly)</span><% end %>
+      <dt class="font-medium text-foreground">Public link</dt>
+      <dd class="flex flex-wrap items-center gap-2">
+        <code id="public-link" class="text-muted-foreground"><%= dossier_url(slug: @dossier.slug) %></code>
+        <%= render "components/button", label: "Copy", variant: "outline", size: "xs",
+              class: "onclick-copy", type: "button" %>
+        <% unless @dossier.published? %><%= render "components/badge", label: "draft — 404s publicly", variant: "secondary" %><% end %>
       </dd>
     </div>
-    <div><dt class="font-medium">Passcode</dt><dd><%= @dossier.passcode_protected? ? "Set 🔒" : "None" %></dd></div>
-    <div><dt class="font-medium">WhatsApp</dt><dd><%= @dossier.whatsapp_number.presence || "—" %></dd></div>
+    <div><dt class="font-medium text-foreground">Passcode</dt><dd class="text-muted-foreground"><%= @dossier.passcode_protected? ? "Set 🔒" : "None" %></dd></div>
+    <div><dt class="font-medium text-foreground">WhatsApp</dt><dd class="text-muted-foreground"><%= @dossier.whatsapp_number.presence || "—" %></dd></div>
   </dl>
 
   <section class="mt-10">
-    <h2 class="text-lg font-semibold">Acceptances</h2>
+    <h2 class="text-lg font-semibold text-foreground">Acceptances</h2>
     <% if @dossier.acceptances.any? %>
-      <ul class="mt-2 text-sm">
+      <ul class="mt-2 space-y-1 text-sm">
         <% @dossier.acceptances.each do |acceptance| %>
           <li>✓ <%= acceptance.label %> — <%= acceptance.accepted_at.strftime("%-d %b %Y %H:%M") %></li>
         <% end %>
       </ul>
     <% else %>
-      <p class="mt-2 text-sm opacity-60">None yet.</p>
+      <p class="mt-2 text-sm text-muted-foreground">None yet.</p>
     <% end %>
   </section>
 
   <section class="mt-10">
-    <h2 class="text-lg font-semibold">Visits (<%= @dossier.visits.count %>)</h2>
-    <table class="mt-2 w-full text-left text-sm">
-      <thead><tr class="border-b"><th class="py-1">When</th><th>Device</th></tr></thead>
-      <tbody>
-        <% @visits.each do |visit| %>
-          <tr class="border-b">
-            <td class="py-2"><%= visit.viewed_at.strftime("%-d %b %Y %H:%M") %></td>
-            <td class="opacity-60"><%= visit.user_agent.to_s.truncate(80) %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @visits.empty? %><p class="mt-2 text-sm opacity-60">Not opened yet.</p><% end %>
+    <h2 class="text-lg font-semibold text-foreground">Visits (<%= @dossier.visits.count %>)</h2>
+    <%= render "components/table",
+          class: "mt-2",
+          head: [ "When", "Device" ],
+          rows: @visits.map { |visit|
+            [ visit.viewed_at.strftime("%-d %b %Y %H:%M"), visit.user_agent.to_s.truncate(80) ]
+          } %>
+    <% if @visits.empty? %><p class="mt-2 text-sm text-muted-foreground">Not opened yet.</p><% end %>
   </section>
 
   <p class="mt-12">
-    <%= button_to "Delete dossier", admin_dossier_path(@dossier), method: :delete,
+    <%= button_to admin_dossier_path(@dossier), method: :delete,
           data: { turbo_confirm: "Delete #{@dossier.client_name} and all its visits/acceptances?" },
-          class: "text-sm text-red-700" %>
+          class: "contents" do %>
+      <%= render "components/button", label: "Delete dossier", variant: "destructive", size: "sm", type: "submit" %>
+    <% end %>
   </p>
 </main>
+
+<script>
+  document.querySelector(".onclick-copy")?.addEventListener("click", () => {
+    navigator.clipboard.writeText(document.getElementById("public-link").textContent);
+  });
+</script>

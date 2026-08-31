@@ -90,12 +90,19 @@ POST /session, etc.         # Rails 8 auth generator routes
 
 ## Build order
 
-Status 2026-08-31: steps 1 and 3–10 are **built and tested** (43 tests green); every view
-uses placeholder markup with a comment naming the partial that should replace it. Step 2
-(theme + partials) is **next**. Still open: the admin preview toggle (step 9 — form is a
-plain textarea so far), the system test (step 12), and step 11 (Kamal config generated but
-untuned). Step 8's either/or was decided: the accept button renders via an `::accept`
-block in the markdown (`{label="…"}`), no dossier flag.
+Status 2026-08-31: steps 1–10 are **built and tested** (43 tests green). Step 2 (theme +
+partials) landed: `vendor/basecoat/` carries the Luma CSS chain (no JS — every partial used
+is native/static), `app/assets/tailwind/{tokens,extras}.css` supply the dossier token block
+and the separator recipe, and `app/views/components/` holds the 9 copied partials (button,
+card, alert, accordion, input, label, badge, separator, table; manifest in its `SOURCE.md`).
+Every placeholder view now uses them; verified in a real browser at 390px in light and dark.
+One gotcha worth knowing: `.dossier-prose`'s heading/paragraph rules had to be scoped with
+`:not(:where(.not-prose, .not-prose *))` (extras.css) — without it they bled into the
+partials' own `<h2>`/`<h3>` tags, since there's no Tailwind Typography plugin backing the
+`not-prose` class that was already in the placeholder markup. Still open: the admin preview
+toggle (step 9 — form is a plain textarea so far), the system test (step 12), and step 11
+(Kamal config generated but untuned). Step 8's either/or was decided: the accept button
+renders via an `::accept` block in the markdown (`{label="…"}`), no dossier flag.
 
 1. **App skeleton** — `rails new` at the repo root (SQLite, importmap, propshaft,
    tailwind), run the auth generator, seed the single user from ENV credentials.
@@ -111,6 +118,10 @@ block in the markdown (`{label="…"}`), no dossier flag.
    placeholder views (each carries a comment naming its target partial): `markdown/_steps`,
    `_callout`, `_faq`, `_accept`, `shared/_brand_bar`, `dossiers/_whatsapp_cta`, the unlock
    page, and the admin views. Dark mode is a `.dark` class on `<html>`.
+   *(Done. Also restyled `sessions/new` and `passwords/{new,edit}` — the Rails auth
+   generator's default views — for visual consistency; not in the original list but
+   trivial once the partials existed. Dark mode is applied automatically from
+   `prefers-color-scheme` via an inline head script, no toggle UI in v1.)*
 3. **Models + migrations** as above. Slug generation on Dossier create
    (`SecureRandom.alphanumeric(4).downcase + "-" + client_name.parameterize`).
 4. **Markdown pipeline** — Commonmarker with sanitization, plus a small pre-pass that

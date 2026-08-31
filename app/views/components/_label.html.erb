@@ -1,0 +1,6 @@
+<%
+  for_id = local_assigns[:for]
+  text   = local_assigns.fetch(:text, "Label")
+  extra  = local_assigns[:class]
+%>
+<label class="label<%= extra ? " #{extra}" : "" %>"<%= for_id ? raw(%( for="#{for_id}")) : "" %>><%= text %></label>

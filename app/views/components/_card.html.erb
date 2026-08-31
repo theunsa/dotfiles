@@ -1,0 +1,24 @@
+<%
+  title = local_assigns[:title]
+  description = local_assigns[:description]
+  body = local_assigns[:body]
+  footer = local_assigns[:footer]
+  action = local_assigns[:action]
+  size = local_assigns[:size]
+  # A media slot, not a generic one: the CSS rounds and un-pads the card for
+  # `> img:first-child` specifically, so anything here must be that image.
+  media = local_assigns[:media]
+  extra = local_assigns[:class]
+%>
+<div class="card<%= extra ? " #{extra}" : "" %>"<% if size %> data-size="<%= size %>"<% end %>>
+  <% if media %><%= media %><% end %>
+  <% if title || description %>
+    <header>
+      <% if title %><h2><%= title %></h2><% end %>
+      <% if description %><p><%= description %></p><% end %>
+      <% if action %><div class="card-action"><%= action %></div><% end %>
+    </header>
+  <% end %>
+  <% if body %><section><%= body %></section><% end %>
+  <% if footer %><footer><%= footer %></footer><% end %>
+</div>

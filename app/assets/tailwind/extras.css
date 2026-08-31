@@ -1,0 +1,81 @@
+/*
+ * extras.css — dossier's own component recipes, written in Basecoat's idiom
+ * (one root class, semantic HTML, data-* for variants). Copied from
+ * rails-shadcn-ui's css/extras.css, trimmed to what this app actually uses.
+ */
+
+@layer components {
+  /* Separator */
+  .separator {
+    @apply bg-border shrink-0;
+  }
+
+  .separator:not([data-orientation='vertical']) {
+    @apply h-px w-full;
+  }
+
+  .separator[data-orientation='vertical'] {
+    @apply h-full w-px self-stretch;
+  }
+}
+
+/*
+ * Mobile-first reading measure. Dossier pages are read on a ~390px phone
+ * screen held one-handed, so body text stays large and line length short.
+ */
+.dossier-prose {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+@media (min-width: 640px) {
+  .dossier-prose {
+    font-size: 1.125rem;
+  }
+}
+
+/*
+ * Every rule below is scoped with :not(:where(.not-prose, .not-prose *)) —
+ * the same escape hatch Tailwind Typography uses — so headings/paragraphs
+ * rendered *inside* a `::steps`/`::callout`/`::faq`/`::accept` block (each
+ * wrapped in `.not-prose`) keep the component partial's own styling instead
+ * of inheriting these markdown-body rules.
+ */
+.dossier-prose h2:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.dossier-prose h3:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.dossier-prose p:not(:where(.not-prose, .not-prose *)),
+.dossier-prose ul:not(:where(.not-prose, .not-prose *)),
+.dossier-prose ol:not(:where(.not-prose, .not-prose *)) {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.dossier-prose ul:not(:where(.not-prose, .not-prose *)) {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.dossier-prose ol:not(:where(.not-prose, .not-prose *)) {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+
+.dossier-prose a:not(:where(.not-prose, .not-prose *)) {
+  text-decoration: underline;
+}
+
+.dossier-prose em:not(:where(.not-prose, .not-prose *)) {
+  opacity: 0.8;
+}

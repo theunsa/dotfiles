@@ -1,0 +1,17 @@
+<%
+  type  = local_assigns.fetch(:type, "text")
+  name  = local_assigns[:name]
+  id    = local_assigns[:id]
+  value = local_assigns[:value]
+  placeholder = local_assigns[:placeholder]
+  disabled = local_assigns.fetch(:disabled, false)
+  invalid  = local_assigns.fetch(:invalid, false)
+  extra = local_assigns[:class]
+%>
+<input type="<%= type %>" class="input<%= extra ? " #{extra}" : "" %>"<%=
+  raw [
+    id && %( id="#{id}"), name && %( name="#{name}"),
+    value && %( value="#{value}"), placeholder && %( placeholder="#{placeholder}"),
+    disabled ? " disabled" : nil, invalid ? %( aria-invalid="true") : nil
+  ].compact.join
+%> />

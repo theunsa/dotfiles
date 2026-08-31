@@ -1,7 +1,8 @@
-<%# Placeholder markup — restyle with the shadcn alert partial when the UI corpus lands. %>
-<aside class="dossier-callout not-prose my-8 rounded-lg border-l-4 border p-5" data-block="callout">
-  <% if attrs["title"].present? %>
-    <p class="font-semibold"><%= attrs["title"] %></p>
-  <% end %>
-  <div class="mt-1 text-sm"><%= body_html %></div>
-</aside>
+<div class="dossier-callout not-prose my-8" data-block="callout">
+  <%= render "components/alert",
+        title: attrs["title"].presence,
+        description: capture { concat body_html },
+        icon: content_tag(:svg, content_tag(:path, nil, d: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"),
+          class: "lucide", xmlns: "http://www.w3.org/2000/svg", width: 24, height: 24, viewbox: "0 0 24 24",
+          fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round") %>
+</div>

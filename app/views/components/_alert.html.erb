@@ -1,0 +1,18 @@
+<%
+  title = local_assigns[:title]
+  description = local_assigns[:description]
+  variant = local_assigns[:variant]
+  icon = local_assigns[:icon]
+  # The action region, aligned to the inline end of the alert.
+  footer = local_assigns[:footer]
+  extra = local_assigns[:class]
+%>
+<%# Icon, title, description and footer are all direct children: the CSS lays
+    the alert out as a grid over them, and selects `> h2` and `> section` — a
+    wrapper around them takes the title out of the grid and out of its rule. %>
+<div class="alert<%= extra ? " #{extra}" : "" %>" role="alert"<%= variant ? raw(%( data-variant="#{variant}")) : "" %>>
+  <%= icon %>
+  <% if title %><h2><%= title %></h2><% end %>
+  <% if description %><section><%= description %></section><% end %>
+  <% if footer %><footer><%= footer %></footer><% end %>
+</div>

@@ -1,0 +1,20 @@
+<%
+  variant = local_assigns[:variant]
+  size    = local_assigns[:size]
+  type    = local_assigns.fetch(:type, "button")
+  label   = local_assigns.fetch(:label, "Button")
+  href    = local_assigns[:href]
+  disabled = local_assigns.fetch(:disabled, false)
+  extra   = local_assigns[:class]
+  # An icon-only button (`size: "icon"`) has no text to name it, so without
+  # this it reaches the accessibility tree unnamed.
+  aria_label = local_assigns[:aria_label]
+  attrs   = +""
+  attrs << %( data-variant="#{variant}") if variant
+  attrs << %( data-size="#{size}") if size
+%>
+<% if href %>
+<a href="<%= href %>" class="btn<%= extra ? " #{extra}" : "" %>"<%= attrs.html_safe %><% if aria_label %> aria-label="<%= aria_label %>"<% end %>><%= label %></a>
+<% else %>
+<button type="<%= type %>" class="btn<%= extra ? " #{extra}" : "" %>"<%= attrs.html_safe %><% if aria_label %> aria-label="<%= aria_label %>"<% end %><%= disabled ? " disabled" : "" %>><%= label %></button>
+<% end %>

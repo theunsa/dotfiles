@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Dossier">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="color-scheme" content="light dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -17,14 +18,26 @@
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <%# Set before paint so there's no flash of the wrong theme; Basecoat's
+        dark variant keys off a `.dark` class on <html>, not the media query. %>
+    <script>
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
   </head>
 
-  <body>
+  <body class="bg-background text-foreground">
     <% if notice.present? %>
-      <p class="mx-auto max-w-2xl px-5 pt-4 text-sm" role="status"><%= notice %></p>
+      <div class="mx-auto max-w-2xl px-5 pt-4">
+        <%= render "components/alert", title: notice %>
+      </div>
     <% end %>
     <% if alert.present? %>
-      <p class="mx-auto max-w-2xl px-5 pt-4 text-sm" role="alert"><%= alert %></p>
+      <div class="mx-auto max-w-2xl px-5 pt-4">
+        <%= render "components/alert", variant: "destructive", title: alert %>
+      </div>
     <% end %>
     <%= yield %>
   </body>

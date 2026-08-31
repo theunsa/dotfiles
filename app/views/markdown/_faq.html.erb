@@ -1,9 +1,5 @@
-<%# Placeholder markup — restyle with the shadcn accordion partial when the UI corpus lands. %>
-<section class="dossier-faq not-prose my-8 divide-y rounded-lg border" data-block="faq">
-  <% (data["items"] || []).each do |item| %>
-    <details class="group p-4">
-      <summary class="cursor-pointer font-medium list-none"><%= item["label"] %></summary>
-      <div class="mt-2 text-sm"><%= renderer.inline_html(item["content"]) %></div>
-    </details>
-  <% end %>
-</section>
+<%= render "components/accordion", class: "dossier-faq not-prose my-8",
+      name: "faq-#{data.object_id}",
+      items: (data["items"] || []).map { |item|
+        { title: item["label"], content: renderer.inline_html(item["content"]) }
+      } %>

@@ -1,8 +1,10 @@
-<%# Placeholder markup — restyle with the shadcn card/button partials when the UI corpus lands. %>
 <% if dossier.whatsapp_url %>
-  <aside class="not-prose mt-12 rounded-lg border p-6 text-center">
-    <p class="font-semibold">Happy with Step 1?</p>
-    <%= link_to "WhatsApp me", dossier.whatsapp_url,
-          class: "mt-4 inline-block rounded-lg border px-6 py-3 font-semibold no-underline" %>
-  </aside>
+  <% card_body = capture do %>
+    <p class="font-semibold text-card-foreground">Happy with Step 1?</p>
+    <div class="mt-4 flex justify-center">
+      <%= render "components/button", label: "WhatsApp me", href: dossier.whatsapp_url,
+            size: "lg", class: "no-underline" %>
+    </div>
+  <% end %>
+  <%= render "components/card", class: "not-prose mt-12 text-center", body: card_body %>
 <% end %>

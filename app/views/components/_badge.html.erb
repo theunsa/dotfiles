@@ -1,0 +1,12 @@
+<%
+  variant = local_assigns[:variant]
+  label   = local_assigns.fetch(:label, "Badge")
+  href    = local_assigns[:href]
+  extra   = local_assigns[:class]
+  attrs   = variant ? %( data-variant="#{variant}") : ""
+%>
+<% if href %>
+<a href="<%= href %>" class="badge<%= extra ? " #{extra}" : "" %>"<%= attrs.html_safe %>><%= label %></a>
+<% else %>
+<span class="badge<%= extra ? " #{extra}" : "" %>"<%= attrs.html_safe %>><%= label %></span>
+<% end %>

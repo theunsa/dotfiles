@@ -1,0 +1,20 @@
+<%
+  # Each item: {title:, content:, open:, disabled:}.
+  items = local_assigns.fetch(:items, [])
+  # Native single-open, via the exclusive-accordion attribute.
+  name = local_assigns[:name]
+  # `data-multiple` is read by the optional accordion.js, which otherwise
+  # enforces single-open on a group with no `name:` — see NOTES.md.
+  multiple = local_assigns.fetch(:multiple, false)
+  extra = local_assigns[:class]
+  chevron = '<svg class="lucide lucide-chevron-down" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'.html_safe
+%>
+<section class="accordion<%= extra ? " #{extra}" : "" %>"<%= multiple ? raw(" data-multiple") : "" %>>
+  <% items.each do |item| %>
+    <details<%= item[:open] ? " open" : "" %><%= name ? raw(%( name="#{name}")) : "" %><%=
+      item[:disabled] ? raw(%( aria-disabled="true")) : "" %>>
+      <summary><%= item[:title] %><%= chevron %></summary>
+      <section><%= item[:content] %></section>
+    </details>
+  <% end %>
+</section>

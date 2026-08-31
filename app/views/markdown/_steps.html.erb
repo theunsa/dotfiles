@@ -1,22 +1,24 @@
-<%# Placeholder markup — restyle with the shadcn card partial when the UI corpus lands. %>
-<section class="dossier-steps not-prose my-8 space-y-4" data-block="steps">
+<section class="dossier-steps not-prose my-8 flex flex-col gap-4" data-block="steps">
   <% (data["items"] || []).each_with_index do |item, index| %>
-    <article class="rounded-lg border p-5">
-      <header class="flex items-baseline justify-between gap-4">
-        <h3 class="font-semibold">
-          <span class="text-sm opacity-60 mr-2">Step <%= index + 1 %></span>
-        <%= item["title"] %>
+    <% card_body = capture do %>
+      <div class="flex items-baseline gap-3">
+        <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+          <%= index + 1 %>
+        </span>
+        <h3 class="text-lg font-semibold tracking-tight text-card-foreground">
+          <span class="mr-2 text-sm font-medium text-muted-foreground">Step <%= index + 1 %></span><%= item["title"] %>
         </h3>
-        <% if item["price"].present? %>
-          <p class="font-medium whitespace-nowrap"><%= item["price"] %></p>
-        <% end %>
-      </header>
+      </div>
+      <% if item["price"].present? %>
+        <p class="mt-3 text-2xl font-bold tracking-tight text-primary"><%= item["price"] %></p>
+      <% end %>
       <% if item["body"].present? %>
-        <div class="mt-2 text-sm"><%= renderer.inline_html(item["body"]) %></div>
+        <p class="mt-3 leading-relaxed"><%= renderer.inline_html(item["body"]) %></p>
       <% end %>
       <% if item["note"].present? %>
-        <p class="mt-2 text-sm italic opacity-70"><%= item["note"] %></p>
+        <p class="mt-3 text-sm font-medium text-muted-foreground"><%= item["note"] %></p>
       <% end %>
-    </article>
+    <% end %>
+    <%= render "components/card", class: "border-l-4 border-l-primary", body: card_body %>
   <% end %>
 </section>

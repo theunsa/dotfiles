@@ -1,0 +1,17 @@
+<% content_for :title, "Passcode" %>
+<% content_for :head do %>
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<% end %>
+
+<%= render "shared/brand_bar" %>
+
+<main class="mx-auto max-w-sm px-5 py-16">
+  <h1 class="text-xl font-semibold">This dossier is protected</h1>
+  <p class="mt-2 text-sm opacity-70">Enter the passcode you received from <%= Rails.application.config.x.brand[:name] %>.</p>
+
+  <%= form_with url: dossier_unlock_path(slug: @dossier.slug), method: :post, class: "mt-6 space-y-4" do |f| %>
+    <%= f.password_field :passcode, autofocus: true, autocomplete: "off",
+          class: "w-full rounded-lg border px-4 py-3" %>
+    <%= f.submit "Open dossier", class: "w-full rounded-lg border px-4 py-3 font-semibold" %>
+  <% end %>
+</main>

@@ -1,0 +1,15 @@
+<%# Placeholder markup — restyle with the shadcn button partial when the UI corpus lands. %>
+<div class="dossier-accept not-prose my-8" data-block="accept">
+  <% if defined?(dossier) && dossier %>
+    <% label = attrs["label"].presence || "Accept Step 1" %>
+    <% if (acceptance = dossier.acceptances.order(:accepted_at).first) %>
+      <p class="rounded-lg border p-4 font-medium">
+        ✓ Accepted on <%= acceptance.accepted_at.strftime("%-d %B %Y") %>
+      </p>
+    <% else %>
+      <%= button_to label, dossier_acceptances_path(slug: dossier.slug),
+            params: { label: label },
+            class: "rounded-lg border px-5 py-3 font-semibold" %>
+    <% end %>
+  <% end %>
+</div>

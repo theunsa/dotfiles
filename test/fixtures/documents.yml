@@ -1,0 +1,20 @@
+acme_proposal:
+  dossier: acme
+  title: Getting your ticket chaos under control
+  slug: proposal
+  position: 1
+  body_markdown: |
+    ## The problem
+
+    Too many mailboxes.
+
+    ::accept{label="Accept Step 1"}
+    ::
+
+locked_proposal:
+  dossier: locked
+  title: Confidential proposal
+  slug: proposal
+  position: 1
+  body_markdown: |
+    ## Secret plans

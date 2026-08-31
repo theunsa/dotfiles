@@ -1,0 +1,29 @@
+<% content_for :title, @document&.title || @dossier.client_name %>
+<% content_for :head do %>
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<% end %>
+
+<%= render "shared/brand_bar" %>
+
+<article class="dossier-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10">
+  <% if @document %>
+    <h1 class="text-3xl font-bold"><%= @document.title %></h1>
+    <p class="mt-2 text-sm opacity-70">Prepared for <%= @dossier.client_name %></p>
+
+    <div class="mt-8">
+      <%= @document.body_html %>
+    </div>
+  <% else %>
+    <p>Nothing here yet.</p>
+  <% end %>
+
+  <%= render "dossiers/whatsapp_cta", dossier: @dossier %>
+</article>
+
+<% if @dossier.whatsapp_url %>
+  <%# Sticky thumb-reach CTA on phones only; the in-page card covers larger screens. %>
+  <div class="fixed inset-x-0 bottom-0 border-t bg-white/95 p-3 backdrop-blur sm:hidden">
+    <%= link_to "WhatsApp me", @dossier.whatsapp_url,
+          class: "block rounded-lg border px-5 py-3 text-center font-semibold no-underline" %>
+  </div>
+<% end %>

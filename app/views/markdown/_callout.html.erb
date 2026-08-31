@@ -1,0 +1,7 @@
+<%# Placeholder markup — restyle with the shadcn alert partial when the UI corpus lands. %>
+<aside class="dossier-callout not-prose my-8 rounded-lg border-l-4 border p-5" data-block="callout">
+  <% if attrs["title"].present? %>
+    <p class="font-semibold"><%= attrs["title"] %></p>
+  <% end %>
+  <div class="mt-1 text-sm"><%= body_html %></div>
+</aside>

@@ -1,0 +1,22 @@
+<%# Placeholder markup — restyle with the shadcn card partial when the UI corpus lands. %>
+<section class="dossier-steps not-prose my-8 space-y-4" data-block="steps">
+  <% (data["items"] || []).each_with_index do |item, index| %>
+    <article class="rounded-lg border p-5">
+      <header class="flex items-baseline justify-between gap-4">
+        <h3 class="font-semibold">
+          <span class="text-sm opacity-60 mr-2">Step <%= index + 1 %></span>
+        <%= item["title"] %>
+        </h3>
+        <% if item["price"].present? %>
+          <p class="font-medium whitespace-nowrap"><%= item["price"] %></p>
+        <% end %>
+      </header>
+      <% if item["body"].present? %>
+        <div class="mt-2 text-sm"><%= renderer.inline_html(item["body"]) %></div>
+      <% end %>
+      <% if item["note"].present? %>
+        <p class="mt-2 text-sm italic opacity-70"><%= item["note"] %></p>
+      <% end %>
+    </article>
+  <% end %>
+</section>

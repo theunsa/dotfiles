@@ -1,0 +1,53 @@
+<%= form_with model: [ :admin, dossier ], class: "mt-6 space-y-6" do |f| %>
+  <% if dossier.errors.any? %>
+    <div class="rounded-lg border border-red-300 p-4 text-sm text-red-700">
+      <ul><% dossier.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :client_name, class: "block text-sm font-medium" %>
+    <%= f.text_field :client_name, class: "mt-1 w-full rounded-lg border px-3 py-2" %>
+    <% if dossier.persisted? %>
+      <p class="mt-1 text-xs opacity-60">Slug: <code><%= dossier.slug %></code> (fixed — the link must not change)</p>
+    <% end %>
+  </div>
+
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div>
+      <%= f.label :whatsapp_number, "WhatsApp number (E.164)", class: "block text-sm font-medium" %>
+      <%= f.text_field :whatsapp_number, placeholder: "+27821234567", class: "mt-1 w-full rounded-lg border px-3 py-2" %>
+    </div>
+    <div>
+      <%= f.label :whatsapp_text, "WhatsApp prefill (optional)", class: "block text-sm font-medium" %>
+      <%= f.text_field :whatsapp_text, class: "mt-1 w-full rounded-lg border px-3 py-2" %>
+    </div>
+  </div>
+
+  <%= f.fields_for :documents do |doc| %>
+    <div>
+      <%= doc.label :title, "Page title", class: "block text-sm font-medium" %>
+      <%= doc.text_field :title, class: "mt-1 w-full rounded-lg border px-3 py-2" %>
+    </div>
+    <div>
+      <%= doc.label :body_markdown, "Markdown", class: "block text-sm font-medium" %>
+      <p class="mt-1 text-xs opacity-60">Supports ::steps, ::callout, ::faq and ::accept blocks — same syntax as the prototype.</p>
+      <%= doc.text_area :body_markdown, rows: 24, class: "mt-1 w-full rounded-lg border px-3 py-2 font-mono text-sm" %>
+    </div>
+  <% end %>
+
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div>
+      <%= f.label :passcode, "Passcode (leave blank to keep current)", class: "block text-sm font-medium" %>
+      <%= f.text_field :passcode, autocomplete: "off", class: "mt-1 w-full rounded-lg border px-3 py-2" %>
+      <% if dossier.passcode_protected? %>
+        <label class="mt-2 block text-sm"><%= check_box_tag "dossier[remove_passcode]", "1" %> Remove passcode</label>
+      <% end %>
+    </div>
+    <div class="flex items-end pb-2">
+      <label class="text-sm font-medium"><%= f.check_box :published %> Published</label>
+    </div>
+  </div>
+
+  <%= f.submit class: "rounded-lg border px-5 py-2 font-semibold" %>
+<% end %>

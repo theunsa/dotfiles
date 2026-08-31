@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+:root {
+  --ui-radius: 0.75rem;
+}
+
+/*
+  Mobile-first reading measure. Client pages are read on a 390px phone screen
+  held one-handed, so body text stays large and line length stays short.
+*/
+.dossier-prose {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+@media (min-width: 640px) {
+  .dossier-prose {
+    font-size: 1.125rem;
+  }
+}

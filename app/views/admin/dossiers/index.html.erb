@@ -1,0 +1,39 @@
+<% content_for :title, "Admin — Dossiers" %>
+<main class="mx-auto max-w-4xl px-5 py-10">
+  <header class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Dossiers</h1>
+    <div class="flex items-center gap-4 text-sm">
+      <%= link_to "New dossier", new_admin_dossier_path, class: "rounded-lg border px-4 py-2 font-semibold no-underline" %>
+      <%= button_to "Log out", session_path, method: :delete, class: "opacity-60" %>
+    </div>
+  </header>
+
+  <table class="mt-8 w-full text-left text-sm">
+    <thead>
+      <tr class="border-b">
+        <th class="py-2">Client</th>
+        <th>Views</th>
+        <th>Last viewed</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @dossiers.each do |dossier| %>
+        <tr class="border-b">
+          <td class="py-3"><%= link_to dossier.client_name, admin_dossier_path(dossier) %></td>
+          <td><%= dossier.visits.count %></td>
+          <td><%= dossier.last_viewed_at&.strftime("%-d %b %Y %H:%M") || "—" %></td>
+          <td>
+            <%= dossier.published? ? "Published" : "Draft" %><% if dossier.accepted? %> · Accepted ✓<% end %><% if dossier.passcode_protected? %> · 🔒<% end %>
+          </td>
+          <td class="text-right"><%= link_to "Open", dossier_path(slug: dossier.slug), class: "opacity-60" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @dossiers.empty? %>
+    <p class="mt-8 text-sm opacity-60">No dossiers yet — create the first one.</p>
+  <% end %>
+</main>

@@ -1,0 +1,17 @@
+acme:
+  client_name: Acme Body Corporate
+  slug: ab12-acme-body-corporate
+  whatsapp_number: "+27821234567"
+  published: true
+
+draft:
+  client_name: Draft Client
+  slug: cd34-draft-client
+  published: false
+
+locked:
+  client_name: Locked Client
+  slug: ef56-locked-client
+  # passcode is "sesame"
+  passcode_digest: <%= BCrypt::Password.create("sesame", cost: 4) %>
+  published: true

@@ -1,0 +1,6 @@
+<% content_for :title, "Admin — Edit #{@dossier.client_name}" %>
+<main class="mx-auto max-w-3xl px-5 py-10">
+  <p class="text-sm"><%= link_to "← #{@dossier.client_name}", admin_dossier_path(@dossier), class: "opacity-60" %></p>
+  <h1 class="mt-4 text-2xl font-semibold">Edit dossier</h1>
+  <%= render "form", dossier: @dossier %>
+</main>

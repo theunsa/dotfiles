@@ -30,8 +30,8 @@ class AddAccountToUsersAndDossiers < ActiveRecord::Migration[8.1]
 
     execute <<~SQL
       INSERT INTO accounts (name, slug, tagline, contact_email, created_at, updated_at)
-      VALUES (#{quote(name)}, 'default', #{quote(ENV["BRAND_TAGLINE"])},
-              #{quote(ENV["BRAND_CONTACT"])}, #{now}, #{now})
+      VALUES (#{quote(name)}, 'default', #{quote(ENV["BRAND_TAGLINE"].presence)},
+              #{quote(ENV["BRAND_CONTACT"].presence)}, #{now}, #{now})
     SQL
 
     id = select_value("SELECT id FROM accounts WHERE slug = 'default'").to_i

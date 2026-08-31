@@ -30,8 +30,19 @@
 /tmp/storage/*
 !/tmp/storage/.keep
 
-# Ignore assets.
-/node_modules/
+# Ignore the Nuxt design prototype. It is the reference for the public page's
+# look and for the markdown authoring format, and nothing in the app touches it
+# at runtime. Its node_modules alone is 414MB, which `COPY . .` would otherwise
+# bake into the final image and push to ghcr on every deploy.
+/nuxt-prototype/
+
+# Ignore local tooling and agent state.
+/.ruby-lsp/
+/.claude/
+
+# Ignore assets. Unanchored, so it also catches node_modules in a subdirectory —
+# the anchored form missed the prototype's copy entirely.
+node_modules/
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /public/assets

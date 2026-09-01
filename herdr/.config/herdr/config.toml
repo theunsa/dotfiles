@@ -129,12 +129,12 @@ agent_panel_sort = "priority"
 accent = "cyan"
 
 [ui.sidebar.agents]
-# Separate agent entries and keep their secondary details readable without
-# competing with the workspace name.
+# Separate agent entries and show the tab name as the useful secondary label;
+# the agent implementation (Claude, Codex, etc.) is intentionally omitted.
 row_gap = 1
 rows = [
-  ["state_icon", { token = "workspace", fg = "#e5e9f0", bold = true }, { token = "tab", fg = "#8fbcbb" }],
-  [{ token = "agent", fg = "#88c0d0" }],
+  ["state_icon", { token = "workspace", fg = "#e5e9f0", bold = true }],
+  [{ token = "tab", fg = "#b4c2d8", bold = false, dim = false }],
 ]
 
 [ui.sidebar.spaces]
@@ -143,7 +143,7 @@ rows = [
 row_gap = 1
 rows = [
   ["state_icon", { token = "workspace", fg = "#e5e9f0", bold = true }],
-  [{ token = "branch", fg = "#8a99b2" }, "git_status"],
+  [{ token = "branch", fg = "#b4c2d8", bold = false, dim = false }, "git_status"],
 ]
 
 [ui.toast]

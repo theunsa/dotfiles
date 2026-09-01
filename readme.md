@@ -172,8 +172,10 @@ across workspaces.
 | `d` / `q` | Detach and leave agents running |
 
 `Ctrl-H/J/K/L` moves seamlessly through Neovim splits and Herdr panes, just
-like `vim-tmux-navigator` does under tmux. The pinned Herdr navigation plugin
-is synchronized by `./dot install` and `./dot pull`.
+like `vim-tmux-navigator` does under tmux. In normal, insert, terminal, visual,
+select, operator, and command-line modes, it traverses Neovim splits first and
+only crosses into the neighboring Herdr pane at the edge. The pinned Herdr
+navigation plugin is synchronized by `./dot install` and `./dot pull`.
 
 `Ctrl-\` directly creates a left-right split without pressing the leader or
 Shift.

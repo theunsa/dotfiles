@@ -85,10 +85,17 @@ exists. What you actually need isn't a new product — it's someone with
 software experience who can make the tools you already have talk to each
 other. That's what this is.
 
-Odoo hands me the boring 80% — queue, contacts, documents, reports. I don't
-rebuild that, and you don't pay me to. What I build is the part that's
-actually yours: when Odoo doesn't work the way Uys Prop works, I write the
-module. I'm a development house, not a reseller clicking through a wizard.
+Odoo hands me the boring 80%, and the monthly fee isn't for a ticketing app —
+it's for the whole platform under it. Contacts with every owner, trustee and
+contractor's history. Documents — COCs, quotes, minutes — filed against the
+scheme or the ticket. A shared calendar for inspections and AGMs. Projects for
+work that isn't a ticket, like taking on a new scheme. Surveys, a knowledge
+base for your own procedures, reports by scheme and by contractor. All of it
+already there, switched on as you need it, no extra licence.
+
+What I build is the part that's actually yours: when Odoo doesn't work the
+way Uys Prop works, I write the module. I'm a development house, not a
+reseller clicking through a wizard.
 
 First on that list, once the queue is calm: the complaint → trustee approval →
 contractor quote → approval → inspection → payment loop. Every managing agent
@@ -107,18 +114,19 @@ items:
       this one.
     note: |
       This is all you commit to today — and it's a first-client price. At my
-      standard rate this scope is around R 21 000.
+      standard rate this scope is around R 25 000.
   - title: Go live
-    price: R [Y]–[Z] fixed
+    price: R 30 000 – 55 000
     body: |
       All twelve mailboxes flowing, your complaint forms live, teams and
       stages set up, your staff trained, owner data loaded and refreshing.
-      The price is fixed from the Step 1 roadmap, so you sign it knowing the
-      number.
+      The range is wide because the owner-data refresh depends on what
+      WeConnectU can export — Step 1 finds that out. The roadmap turns this
+      into one fixed number before you sign anything.
   - title: Ongoing
-    price: R 4 200 / month
+    price: R 3 899 / month
     body: |
-      Four hours of my time a month for fixes, questions and small changes,
+      Three hours of my time a month for fixes, questions and small changes,
       plus hosting, daily backups, updates and monitoring. Unlimited users,
       up to fifteen schemes. About what Zoho and JotForm take from you today
       — except this one gets used.
@@ -144,9 +152,9 @@ body: |
 rather tell you that now than miss a date later. Discovery is two to three
 weeks; each step gets a realistic window, not an optimistic one.
 
-**Support hours are capped.** Four a month, for bugs, questions and small
+**Support hours are capped.** Three a month, for bugs, questions and small
 tweaks. A new form, a new workflow, anything over two hours is a small
-project and gets its own price first. Extra hours are R 750 each. No
+project and gets its own price first. Extra hours are R 900 each. No
 surprise invoices.
 
 **One page per step.** Each step gets a one-page statement of work — scope,
@@ -176,7 +184,7 @@ items:
   - label: What happens when we take on more schemes?
     content: |
       Up to fifteen, the monthly fee doesn't change — a new scheme is a
-      once-off R 850 to plug its mailbox into the queue. Past fifteen we move
+      once-off R 1 000 to plug its mailbox into the queue. Past fifteen we move
       to the next tier, agreed before it happens, not after.
   - label: What if something happens to you?
     content: |

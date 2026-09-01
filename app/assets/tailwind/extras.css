@@ -184,3 +184,17 @@
   padding: 0.5rem 0.75rem 0.5rem 0;
   vertical-align: top;
 }
+
+/*
+ * A visit row's expandable detail. The table sets td to whitespace-nowrap so
+ * short cells never wrap; this cell holds a full user agent string, which has
+ * to. Safari draws its own disclosure triangle through Tailwind's list-none,
+ * so it is removed here too — the summary is the whole click target.
+ */
+.visit-detail {
+  white-space: normal;
+}
+
+.visit-detail > summary::-webkit-details-marker {
+  display: none;
+}

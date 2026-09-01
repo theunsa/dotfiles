@@ -2,7 +2,8 @@ acme:
   account: studio
   client_name: Acme Body Corporate
   slug: ab12-acme-body-corporate
-  whatsapp_number: "+27821234567"
+  cta_kind: whatsapp
+  cta_value: "+27821234567"
   published: true
 
 draft:

@@ -87,8 +87,9 @@ namespace :brief do
     brief = account.briefs.find_or_initialize_by(slug: folder_slug)
     brief.assign_attributes(
       client_name: front_matter["client"].presence || folder_slug,
-      whatsapp_number: front_matter["whatsapp"].to_s.gsub(/\s+/, "").presence,
-      whatsapp_text: front_matter["whatsappText"].presence,
+      cta_kind: front_matter["cta"].presence || (front_matter["whatsapp"].present? ? "whatsapp" : "none"),
+      cta_value: (front_matter["ctaValue"] || front_matter["whatsapp"]).to_s.gsub(/\s+/, "").presence,
+      cta_text: (front_matter["ctaText"] || front_matter["whatsappText"]).presence,
       published: false
     )
     brief.save!
@@ -97,6 +98,6 @@ namespace :brief do
     document.update!(title: front_matter["title"].presence || "Proposal",
                      body_markdown: LegacyBlockConverter.call(body))
 
-    puts "Imported #{args[:path]} → /d/#{brief.slug} (unpublished — review in admin, then publish)"
+    puts "Imported #{args[:path]} → /b/#{brief.slug} (unpublished — review in admin, then publish)"
   end
 end

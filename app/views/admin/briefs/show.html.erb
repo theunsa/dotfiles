@@ -18,7 +18,7 @@
       </dd>
     </div>
     <div><dt class="font-medium text-foreground">Passcode</dt><dd class="text-muted-foreground"><%= @brief.passcode_protected? ? "Set 🔒" : "None" %></dd></div>
-    <div><dt class="font-medium text-foreground">WhatsApp</dt><dd class="text-muted-foreground"><%= @brief.whatsapp_number.presence || "—" %></dd></div>
+    <div><dt class="font-medium text-foreground">Call to action</dt><dd class="text-muted-foreground"><%= @brief.cta? ? "#{@brief.cta_label} — #{@brief.cta_value}" : "None" %></dd></div>
   </dl>
 
   <section class="mt-10">
@@ -27,7 +27,8 @@
           class: "mt-2",
           head: [ "When", "Device" ],
           rows: @visits.map { |visit|
-            [ visit.viewed_at.strftime("%-d %b %Y %H:%M"), visit.user_agent.to_s.truncate(80) ]
+            [ { content: visit.viewed_at.strftime("%-d %b %Y %H:%M"), class: "align-top whitespace-nowrap" },
+              { content: render("admin/briefs/visit", visit: visit) } ]
           } %>
     <% if @visits.empty? %><p class="mt-2 text-sm text-muted-foreground">Not opened yet.</p><% end %>
   </section>

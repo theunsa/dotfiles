@@ -1,0 +1,21 @@
+<%# The visit row's device cell: a two-word summary that opens on click, so the
+    raw user agent and the visitor code are here rather than in a DB query. %>
+<details class="visit-detail">
+  <summary class="cursor-pointer list-none">
+    <span class="underline decoration-dotted underline-offset-4"><%= visit.description %></span>
+  </summary>
+  <dl class="mt-2 space-y-1 text-xs text-muted-foreground">
+    <div>
+      <dt class="inline font-medium text-foreground">Opened</dt>
+      <dd class="inline"><%= visit.viewed_at.strftime("%A %-d %B %Y at %H:%M") %></dd>
+    </div>
+    <div>
+      <dt class="inline font-medium text-foreground">Visitor</dt>
+      <dd class="inline"><code><%= visit.visitor_id || "—" %></code> — the same code means the same network, not the same person</dd>
+    </div>
+    <div>
+      <dt class="inline font-medium text-foreground">Browser</dt>
+      <dd class="inline break-all"><%= visit.user_agent.presence || "—" %></dd>
+    </div>
+  </dl>
+</details>

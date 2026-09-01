@@ -53,7 +53,7 @@ class Admin::BriefsController < Admin::BaseController
 
   def brief_params
     params.require(:brief).permit(
-      :client_name, :whatsapp_number, :whatsapp_text, :published, :passcode,
+      :client_name, :cta_kind, :cta_value, :cta_text, :published, :passcode,
       documents_attributes: %i[id title body_markdown]
     )
   end

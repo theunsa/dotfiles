@@ -21,13 +21,13 @@
     <p>Nothing here yet.</p>
   <% end %>
 
-  <%= render "briefs/whatsapp_cta", brief: @brief %>
+  <%= render "briefs/cta", brief: @brief %>
 </article>
 
-<% if @brief.whatsapp_url %>
+<% if @brief.cta_url %>
   <%# Sticky thumb-reach CTA on phones only; the in-page card covers larger screens. %>
   <div class="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden">
-    <%= render "components/button", label: "WhatsApp me", href: @brief.whatsapp_url,
+    <%= render "components/button", label: @brief.cta_label, href: @brief.cta_url,
           size: "lg", class: "w-full no-underline" %>
   </div>
 <% end %>

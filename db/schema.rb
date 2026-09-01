@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_120000) do
   create_table "accounts", force: :cascade do |t|
     t.string "contact_email"
     t.datetime "created_at", null: false
@@ -25,12 +25,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
     t.integer "account_id", null: false
     t.string "client_name"
     t.datetime "created_at", null: false
+    t.string "cta_kind", default: "none", null: false
+    t.string "cta_text"
+    t.string "cta_value"
     t.string "passcode_digest"
     t.boolean "published"
     t.string "slug"
     t.datetime "updated_at", null: false
-    t.string "whatsapp_number"
-    t.string "whatsapp_text"
     t.index ["account_id"], name: "index_briefs_on_account_id"
     t.index ["slug"], name: "index_briefs_on_slug", unique: true
   end

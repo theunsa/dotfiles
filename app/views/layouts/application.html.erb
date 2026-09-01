@@ -20,11 +20,17 @@
     <%= javascript_importmap_tags %>
 
     <%# Set before paint so there's no flash of the wrong theme; Basecoat's
-        dark variant keys off a `.dark` class on <html>, not the media query. %>
+        dark variant keys off a `.dark` class on <html>, not the media query.
+        A theme the reader picked in the brand bar wins over the device. %>
     <script>
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.classList.add("dark");
-      }
+      (function () {
+        var stored = null;
+        try { stored = localStorage.getItem("brief.theme"); } catch (e) {}
+        var dark = stored
+          ? stored === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", dark);
+      })();
     </script>
   </head>
 

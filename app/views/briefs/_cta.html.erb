@@ -1,8 +1,8 @@
-<% if brief.whatsapp_url %>
+<% if brief.cta_url %>
   <% card_body = capture do %>
     <p class="font-semibold text-card-foreground">Happy with Step 1?</p>
     <div class="mt-4 flex justify-center">
-      <%= render "components/button", label: "WhatsApp me", href: brief.whatsapp_url,
+      <%= render "components/button", label: brief.cta_label, href: brief.cta_url,
             size: "lg", class: "no-underline" %>
     </div>
   <% end %>

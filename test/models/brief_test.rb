@@ -18,21 +18,53 @@ class BriefTest < ActiveSupport::TestCase
     refute duplicate.valid?
   end
 
-  test "rejects a non-E.164 whatsapp number but allows blank" do
-    brief = accounts(:studio).briefs.new(client_name: "Acme", whatsapp_number: "0821234567")
+  test "rejects a non-E.164 number for whatsapp and phone but allows blank" do
+    brief = accounts(:studio).briefs.new(client_name: "Acme", cta_kind: "whatsapp", cta_value: "0821234567")
     refute brief.valid?
 
-    brief.whatsapp_number = ""
+    brief.cta_kind = "phone"
+    refute brief.valid?
+
+    brief.cta_value = ""
     brief.valid?
-    refute brief.errors.key?(:whatsapp_number)
+    refute brief.errors.key?(:cta_value)
   end
 
-  test "whatsapp_url is nil without a number and built correctly with one" do
-    no_number = briefs(:draft)
-    assert_nil no_number.whatsapp_url
+  test "rejects a non-address for an email cta" do
+    brief = accounts(:studio).briefs.new(client_name: "Acme", cta_kind: "email", cta_value: "+27821234567")
+    refute brief.valid?
 
-    with_number = briefs(:acme)
-    assert_includes with_number.whatsapp_url, "https://wa.me/27821234567?text="
+    brief.cta_value = "hi@example.com"
+    brief.valid?
+    refute brief.errors.key?(:cta_value)
+  end
+
+  test "rejects an unknown cta_kind" do
+    brief = accounts(:studio).briefs.new(client_name: "Acme", cta_kind: "carrier-pigeon")
+    refute brief.valid?
+  end
+
+  test "cta_url is nil without a value and per kind with one" do
+    assert_nil briefs(:draft).cta_url
+
+    brief = briefs(:acme)
+    assert_includes brief.cta_url, "https://wa.me/27821234567?text="
+    assert_equal "WhatsApp me", brief.cta_label
+
+    brief.update!(cta_kind: "phone")
+    assert_equal "tel:+27821234567", brief.cta_url
+    assert_equal "Call me", brief.cta_label
+
+    brief.update!(cta_kind: "email", cta_value: "hi@example.com", cta_text: "Step 1")
+    assert_equal "mailto:hi@example.com?subject=Step%201", brief.cta_url
+    assert_equal "Email me", brief.cta_label
+  end
+
+  # "None" is the off switch: the value stays on the record, the button does not.
+  test "cta_url is nil when the kind is none" do
+    brief = briefs(:acme)
+    brief.update!(cta_kind: "none")
+    assert_nil brief.cta_url
   end
 
   test "passcode_protected? and authenticate_passcode" do

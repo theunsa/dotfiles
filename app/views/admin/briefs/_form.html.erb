@@ -12,14 +12,33 @@
     <% end %>
   </div>
 
-  <div class="grid gap-6 sm:grid-cols-2">
+  <%# The reply button at the foot of the client's page. "None" ships no button
+      at all; the rest share one value field, relabelled by the cta-fields
+      controller. With JS off every label reads the generic wording below. %>
+  <div data-controller="cta-fields">
     <div>
-      <%= render "components/label", for: "brief_whatsapp_number", text: "WhatsApp number (E.164)" %>
-      <%= f.text_field :whatsapp_number, id: "brief_whatsapp_number", placeholder: "+27821234567", class: "input mt-1 w-full" %>
+      <%= render "components/label", for: "brief_cta_kind", text: "Call to action" %>
+      <%= f.select :cta_kind,
+            [ [ "None — no button", "none" ], [ "WhatsApp me", "whatsapp" ],
+              [ "Email me", "email" ], [ "Call me", "phone" ] ],
+            {}, id: "brief_cta_kind", class: "select mt-1 w-full",
+            data: { cta_fields_target: "kind", action: "cta-fields#update" } %>
     </div>
-    <div>
-      <%= render "components/label", for: "brief_whatsapp_text", text: "WhatsApp prefill (optional)" %>
-      <%= f.text_field :whatsapp_text, id: "brief_whatsapp_text", class: "input mt-1 w-full" %>
+
+    <div class="mt-6 grid gap-6 sm:grid-cols-2" data-cta-fields-target="fields">
+      <div>
+        <%= render "components/label", for: "brief_cta_value", text: "Number or address" %>
+        <%= f.text_field :cta_value, id: "brief_cta_value", placeholder: "+27821234567",
+              class: "input mt-1 w-full", data: { cta_fields_target: "value" } %>
+        <p class="mt-1 text-xs text-muted-foreground" data-cta-fields-target="hint">
+          A number with its country code (<code>+27821234567</code>), or an email address.
+        </p>
+      </div>
+      <div data-cta-fields-target="prefill">
+        <%= render "components/label", for: "brief_cta_text", text: "Prefill (optional)" %>
+        <%= f.text_field :cta_text, id: "brief_cta_text", class: "input mt-1 w-full" %>
+        <p class="mt-1 text-xs text-muted-foreground">Message body for WhatsApp, subject line for email.</p>
+      </div>
     </div>
   </div>
 

@@ -5,7 +5,7 @@ require "test_helper"
 class DraftPreviewTest < ActionDispatch::IntegrationTest
   setup do
     @draft = dossiers(:draft)
-    @draft.documents.create!(title: "Draft proposal", body_markdown: "## Not live yet\n\n```accept\nlabel: Accept Step 1\n```\n")
+    @draft.documents.create!(title: "Draft proposal", body_markdown: "## Not live yet\n")
   end
 
   test "anonymous visitors still get a 404" do
@@ -38,19 +38,4 @@ class DraftPreviewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a draft cannot be accepted, even by the author" do
-    sign_in_as users(:one)
-
-    assert_no_difference "Acceptance.count" do
-      post dossier_acceptances_url(slug: @draft.slug), params: { label: "Accept Step 1" }
-    end
-    assert_redirected_to dossier_url(slug: @draft.slug)
-  end
-
-  test "anonymous acceptance of a draft is a 404, not a redirect" do
-    assert_no_difference "Acceptance.count" do
-      post dossier_acceptances_url(slug: @draft.slug), params: { label: "Accept Step 1" }
-    end
-    assert_response :not_found
-  end
 end

@@ -3,11 +3,11 @@ require "test_helper"
 class LegacyBlockConverterTest < ActiveSupport::TestCase
   test "converts a directive with attributes into a fenced block" do
     converted = LegacyBlockConverter.call(<<~MD)
-      ::accept{label="Accept Step 1"}
+      ::callout{title="Heads up"}
       ::
     MD
 
-    assert_equal "```accept\nlabel: Accept Step 1\n```\n", converted
+    assert_equal "```callout\ntitle: Heads up\n```\n", converted
   end
 
   test "merges attributes, front matter and free text into one YAML block" do
@@ -52,7 +52,7 @@ class LegacyBlockConverterTest < ActiveSupport::TestCase
   end
 
   test "running it twice is a no-op" do
-    once = LegacyBlockConverter.call("::accept{label=\"Go\"}\n::\n")
+    once = LegacyBlockConverter.call("::callout{title=\"Go\"}\n::\n")
     assert_equal once, LegacyBlockConverter.call(once)
   end
 

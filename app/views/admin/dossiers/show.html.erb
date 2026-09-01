@@ -22,19 +22,6 @@
   </dl>
 
   <section class="mt-10">
-    <h2 class="text-lg font-semibold text-foreground">Acceptances</h2>
-    <% if @dossier.acceptances.any? %>
-      <ul class="mt-2 space-y-1 text-sm">
-        <% @dossier.acceptances.each do |acceptance| %>
-          <li>✓ <%= acceptance.label %> — <%= acceptance.accepted_at.strftime("%-d %b %Y %H:%M") %></li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="mt-2 text-sm text-muted-foreground">None yet.</p>
-    <% end %>
-  </section>
-
-  <section class="mt-10">
     <h2 class="text-lg font-semibold text-foreground">Visits (<%= @dossier.visits.count %>)</h2>
     <%= render "components/table",
           class: "mt-2",
@@ -53,7 +40,7 @@
           class: "btn",
           data: {
             variant: "destructive", size: "sm",
-            turbo_confirm: "Delete #{@dossier.client_name}? Its #{pluralize(@dossier.visits.count, "visit")} and #{pluralize(@dossier.acceptances.count, "acceptance")} go too. This cannot be undone."
+            turbo_confirm: "Delete #{@dossier.client_name}? Its #{pluralize(@dossier.visits.count, "visit")} go too. This cannot be undone."
           } %>
   </p>
 </main>

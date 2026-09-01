@@ -3,11 +3,10 @@ class Admin::DossiersController < Admin::BaseController
 
   def index
     @dossiers = dossiers.order(created_at: :desc)
-    # Three grouped queries instead of three per row, each held to this account.
+    # Two grouped queries instead of two per row, each held to this account.
     ids = @dossiers.select(:id)
     @visit_counts = Visit.where(dossier_id: ids).group(:dossier_id).count
     @last_viewed = Visit.where(dossier_id: ids).group(:dossier_id).maximum(:viewed_at)
-    @accepted_ids = Acceptance.where(dossier_id: ids).distinct.pluck(:dossier_id).to_set
   end
 
   def show

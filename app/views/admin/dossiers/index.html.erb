@@ -21,7 +21,6 @@
             safe_join([
               render("components/badge", label: dossier.published? ? "Published" : "Draft",
                 variant: dossier.published? ? nil : "secondary"),
-              (render("components/badge", label: "Accepted ✓", class: "ml-1") if @accepted_ids.include?(dossier.id)),
               (render("components/badge", label: "🔒", variant: "outline", class: "ml-1") if dossier.passcode_protected?)
             ].compact),
             link_to("Open", dossier_path(slug: dossier.slug), class: "text-muted-foreground")

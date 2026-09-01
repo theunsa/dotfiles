@@ -11,16 +11,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
-  create_table "acceptances", force: :cascade do |t|
-    t.datetime "accepted_at"
-    t.datetime "created_at", null: false
-    t.integer "dossier_id", null: false
-    t.string "label"
-    t.string "name"
-    t.datetime "updated_at", null: false
-    t.index ["dossier_id"], name: "index_acceptances_on_dossier_id"
-  end
-
   create_table "accounts", force: :cascade do |t|
     t.string "contact_email"
     t.datetime "created_at", null: false
@@ -85,7 +75,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
     t.index ["dossier_id"], name: "index_visits_on_dossier_id"
   end
 
-  add_foreign_key "acceptances", "dossiers"
   add_foreign_key "documents", "dossiers"
   add_foreign_key "dossiers", "accounts"
   add_foreign_key "sessions", "users"

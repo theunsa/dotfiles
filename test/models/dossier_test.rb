@@ -45,10 +45,4 @@ class DossierTest < ActiveSupport::TestCase
     refute locked.authenticate_passcode("wrong")
   end
 
-  test "accepted? reflects acceptances" do
-    dossier = dossiers(:acme)
-    refute dossier.accepted?
-    dossier.acceptances.create!(label: "Accept Step 1")
-    assert dossier.accepted?
-  end
 end

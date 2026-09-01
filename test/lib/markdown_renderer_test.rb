@@ -153,7 +153,7 @@ class MarkdownRendererTest < ActiveSupport::TestCase
     assert_equal MarkdownRenderer::KNOWN_BLOCKS.sort, MarkdownRenderer::SNIPPETS.keys.sort
 
     MarkdownRenderer::SNIPPETS.each do |name, snippet|
-      html = MarkdownRenderer.new(snippet[:body], context: { preview: true }).to_html
+      html = MarkdownRenderer.new(snippet[:body]).to_html
 
       assert_includes html, %(data-block="#{name}"), "#{name} snippet did not render as a #{name} block"
       refute_includes html, 'data-block="parse-error"', "#{name} snippet failed to parse"
@@ -162,15 +162,4 @@ class MarkdownRendererTest < ActiveSupport::TestCase
     end
   end
 
-  test "accept renders inert in preview so a proofread cannot record an acceptance" do
-    html = MarkdownRenderer.new(MarkdownRenderer::SNIPPETS["accept"][:body], context: { preview: true }).to_html
-
-    assert_includes html, "disabled"
-    refute_includes html, "<form"
-  end
-
-  test "accept_block? detects the accept block" do
-    assert MarkdownRenderer.new("```accept\nlabel: Go\n```").accept_block?
-    refute MarkdownRenderer.new("plain text").accept_block?
-  end
 end

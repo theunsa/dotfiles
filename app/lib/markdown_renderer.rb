@@ -1,6 +1,6 @@
 # Renders dossier markdown: GFM via Commonmarker, plus custom blocks written as
 # fenced code blocks whose language is a block name — ```steps / ```callout /
-# ```faq / ```accept — containing YAML, mapped to partials in app/views/markdown/.
+# ```faq — containing YAML, mapped to partials in app/views/markdown/.
 #
 # A fence is standard CommonMark, so a dossier body is a plain markdown file
 # everywhere: any other editor shows the blocks as highlighted YAML instead of
@@ -11,7 +11,7 @@ class MarkdownRenderer
   # Flush-left only, so an indented ``` inside a YAML block scalar (e.g. a code
   # sample in `body: |`) doesn't close the fence early.
   BLOCK_END = /\A```\s*\z/
-  KNOWN_BLOCKS = %w[steps callout faq accept].freeze
+  KNOWN_BLOCKS = %w[steps callout faq].freeze
 
   # Starter markdown for the admin editor's insert chips. Prefilled with real
   # content rather than empty skeletons — editing something down is quicker than
@@ -59,40 +59,21 @@ class MarkdownRenderer
             content: You do.
         ```
       MD
-    },
-    "accept" => {
-      label: "Accept",
-      placeholder: "Accept Step 1",
-      body: <<~MD
-        ```accept
-        label: Accept Step 1
-        ```
-      MD
     }
   }.freeze
   # Dates/times are ordinary things to write in block YAML; without them
   # permitted, Psych raises and the whole block's data silently disappears.
   YAML_CLASSES = [ Date, Time, DateTime ].freeze
 
-  # context: extra locals handed to block partials (e.g. dossier: for accept).
-  def initialize(source, context: {})
+  def initialize(source)
     @source = source.to_s
-    @context = context
   end
 
-  # `view` is the ActionView context of the request being served — pass it (from
-  # a template, that's `self`). Block partials that build forms need the real
-  # request: rendered through ApplicationController.render they sit outside it,
-  # `protect_against_forgery?` is false, and `form_with` quietly omits the CSRF
-  # token, so the accept block only submits when Turbo happens to supply the header.
-  # The fallback exists for unit tests and other non-request callers.
-  def to_html(view = nil)
+  def to_html
     segments.map do |seg|
-      seg[:type] == :markdown ? markdown_to_html(seg[:text]) : block_to_html(seg, view)
+      seg[:type] == :markdown ? markdown_to_html(seg[:text]) : block_to_html(seg)
     end.join("\n").html_safe
   end
-
-  def accept_block? = segments.any? { |s| s[:type] == :block && s[:name] == "accept" }
 
   # Helper for partials that carry nested markdown (FAQ answers, step bodies).
   def inline_html(text)
@@ -170,18 +151,17 @@ class MarkdownRenderer
       plugins: { syntax_highlighter: nil })
   end
 
-  def block_to_html(seg, view)
+  def block_to_html(seg)
     partial = seg[:error] ? "parse_error" : seg[:name]
 
-    locals = {
-      name: seg[:name],
-      block_index: seg[:index],
-      data: seg[:data],
-      error: seg[:error],
-      renderer: self
-    }.merge(@context)
-
-    renderer = view || ApplicationController
-    renderer.render(partial: "markdown/#{partial}", locals: locals)
+    ApplicationController.render(
+      partial: "markdown/#{partial}",
+      locals: {
+        name: seg[:name],
+        block_index: seg[:index],
+        data: seg[:data],
+        error: seg[:error],
+        renderer: self
+      })
   end
 end

@@ -16,14 +16,6 @@ class Admin::PreviewsControllerTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "<html", "preview fragment should not carry the layout"
   end
 
-  test "an accept block in the preview is not a working button" do
-    sign_in_as users(:one)
-    post admin_preview_url, params: { body_markdown: MarkdownRenderer::SNIPPETS["accept"][:body] }
-
-    assert_response :success
-    assert_select "button[disabled]"
-    assert_select "form", false
-  end
 
   test "blank markdown previews without blowing up" do
     sign_in_as users(:one)

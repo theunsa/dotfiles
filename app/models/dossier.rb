@@ -2,7 +2,6 @@ class Dossier < ApplicationRecord
   belongs_to :account
   has_many :documents, -> { order(:position) }, dependent: :destroy
   has_many :visits, dependent: :destroy
-  has_many :acceptances, dependent: :destroy
 
   accepts_nested_attributes_for :documents
 
@@ -33,9 +32,6 @@ class Dossier < ApplicationRecord
   end
 
   def last_viewed_at = visits.maximum(:viewed_at)
-
-  # No label: "anything accepted at all?" (admin list). With one: that step only.
-  def accepted?(label = nil) = label ? acceptances.exists?(label: label) : acceptances.exists?
 
   private
 

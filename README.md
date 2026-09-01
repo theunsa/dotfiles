@@ -64,9 +64,9 @@ impossible — all to buy isolation that a scoped query already gives. It also
 keeps the door open: row-based scoping is database-agnostic, so if SQLite is
 ever outgrown, only the adapter changes.
 
-Only `users` and `dossiers` carry `account_id`. Documents, visits and acceptances
-hang off a dossier, so scoping the dossier scopes them too; a second copy of the
-tenant key would only be one more thing that can drift.
+Only `users` and `dossiers` carry `account_id`. Documents and visits hang off a
+dossier, so scoping the dossier scopes them too; a second copy of the tenant key
+would only be one more thing that can drift.
 
 Where the tenant comes from:
 
@@ -116,7 +116,7 @@ body: Every step is priced **before** it starts.
 ```
 ````
 
-Blocks: `steps`, `callout`, `faq`, `accept`. Because a fence is standard
+Blocks: `steps`, `callout`, `faq`. Because a fence is standard
 CommonMark, the document survives any other markdown tool — elsewhere the
 blocks just show as highlighted YAML. Any other fence language (` ```ruby `)
 renders as an ordinary code block. A block whose YAML won't parse renders a
@@ -124,14 +124,13 @@ visible error box, never nothing.
 
 The editor is a plain textarea with a live preview beside it:
 
-- **Insert chips** (Steps / Callout / FAQ / Accept) drop a filled-in starter block
+- **Insert chips** (Steps / Callout / FAQ) drop a filled-in starter block
   at the cursor and select its example text so you can type straight over it.
   Snippets live in `MarkdownRenderer::SNIPPETS`, beside the parser that reads
   them, and a test asserts each one still renders as the block it claims to be.
 - **Live preview** renders the unsaved markdown (debounced, side by side on wide
   screens) through the same `MarkdownRenderer` the client's page uses, so it
-  can't drift from the real thing. An accept button previews as disabled — a
-  live one would record an acceptance the client never made.
+  can't drift from the real thing.
 
 Both are progressive enhancement: with JavaScript off the textarea still works,
 the chips just do nothing and no preview appears.

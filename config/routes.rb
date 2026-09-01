@@ -12,7 +12,6 @@ Rails.application.routes.draw do
     get "", to: "dossiers#show", as: :dossier
     get "unlock", to: "unlocks#new", as: :dossier_unlock
     post "unlock", to: "unlocks#create"
-    post "acceptances", to: "acceptances#create", as: :dossier_acceptances
   end
 
   namespace :admin do

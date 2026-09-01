@@ -22,14 +22,12 @@ class DestructiveConfirmTest < ActionDispatch::IntegrationTest
   test "the confirm names what is destroyed" do
     dossier = dossiers(:acme)
     dossier.visits.create!(viewed_at: Time.current)
-    dossier.acceptances.create!(label: "Accept Step 1")
 
     get admin_dossier_url(dossier)
     confirm = css_select("form[action='#{admin_dossier_path(dossier)}'] button").first["data-turbo-confirm"]
 
     assert_includes confirm, dossier.client_name
     assert_includes confirm, "1 visit"
-    assert_includes confirm, "1 acceptance"
     assert_includes confirm, "cannot be undone"
   end
 

@@ -47,6 +47,12 @@ Decision revisited with the author (2026-08-31), while the app was still local:
 | Database | **SQLite, confirmed** | The earlier reasoning ("every self-hoster runs their own instance") no longer holds, but the conclusion does: one box, mostly reads, dozens-to-hundreds of tenants is nowhere near SQLite's limits, and Rails 8 is tuned for it. Move to Postgres when there is more than one app server, heavy concurrent writes, or a customer who requires a managed database — not before. |
 | Slug uniqueness | **Global, not per-account** | `/d/:slug` is one shared URL space so a client needs only the link. The slug is already unguessable, and the dossier resolves its own tenant. |
 
+Decision taken with the author (2026-09-01):
+
+| Decision | Choice | Why |
+|---|---|---|
+| Accept button | **Dropped** (model, `::accept` block, routes, admin UI removed) | The product's job is beating the boring email: presenting an idea, solution, roadmap or proposal beautifully and accessibly. Approval happens where the conversation already lives — a WhatsApp reply, an email, a call. Recording acceptance in-app made the page a contract and pulled the tool off its goal. Mentions of `::accept` and Acceptance below are historical. |
+
 ## Stack
 
 - **Rails 8.x** (latest stable), Ruby 3.4+

@@ -98,6 +98,13 @@ defaults for future clients.
 - The retainer buys the platform, not a ticketing app: contacts, DMS,
   calendar, projects, surveys, knowledge base, reporting — all Community/OCA,
   no licence. The brief says so explicitly.
+- **Hosted in the EU** (Hetzner), stated as a fact in the brief rather than
+  offered as a choice — the client has no basis to decide it. Lawful under
+  POPIA s72: transfer is permitted to a country with comparable protection,
+  and GDPR is the standard example. SA hosting is offered as a priced
+  alternative if he asks, not as an open question. Never claim SA hosting
+  while running on EU metal — it is the one line in the brief a client can
+  check.
 - Enterprise is not sold per app: it is one per-user subscription for the
   whole instance. A single Enterprise feature cannot be quoted as a one-off.
   If the client asks for something Enterprise-shaped (Sign, Studio, Planning,
@@ -112,7 +119,7 @@ defaults for future clients.
 
 | Item | Est. |
 |---|---|
-| VPS 4 vCPU / 8 GB (Hetzner ≈ R250, local ≈ R500) | R250–500 |
+| VPS 4 vCPU / 8 GB, **EU host** (Hetzner) | R250–350 |
 | Offsite backups (storage box / B2) | R50–100 |
 | Domain, DNS, SSL (Cloudflare + LE) | ~R20 |
 | Outbound email (SES/Postmark) | R0–300 |

@@ -65,7 +65,11 @@ to. So the unit and owner details sit right on the ticket.
   stays your system of record, and nothing I build can corrupt it.
 
 Owner details are personal information, so the helpdesk is treated as POPIA
-territory: only your staff can see it, and it's hosted in a place we agree on.
+territory: only your staff can see it, and it's backed up daily. It's hosted
+in the EU, under GDPR. POPIA lets data leave the country as long as it lands
+somewhere with privacy law as strict as ours, and GDPR clears that bar
+comfortably. If you'd rather it sat on South African soil, say so and I'll
+price that instead.
 
 ## No per-user pricing
 

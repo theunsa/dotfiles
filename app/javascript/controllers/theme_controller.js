@@ -17,6 +17,7 @@ export default class extends Controller {
 
   toggle() {
     const dark = !this.dark
+    this.crossfade()
     document.documentElement.classList.toggle("dark", dark)
     try {
       localStorage.setItem(this.constructor.KEY, dark ? "dark" : "light")
@@ -24,6 +25,21 @@ export default class extends Controller {
       // Private browsing can refuse writes; the switch still works for this page.
     }
     this.reflect()
+  }
+
+  // Every token swaps at once, which lands as a hard cut. The transition is
+  // switched on for the length of the swap and then off again, so scrolling and
+  // hovering elsewhere never pay for a rule that exists for this one moment.
+  crossfade() {
+    const root = document.documentElement
+    root.classList.add("theme-switching")
+    clearTimeout(this.crossfadeTimer)
+    this.crossfadeTimer = setTimeout(() => root.classList.remove("theme-switching"), 260)
+  }
+
+  disconnect() {
+    clearTimeout(this.crossfadeTimer)
+    document.documentElement.classList.remove("theme-switching")
   }
 
   reflect() {

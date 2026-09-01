@@ -9,12 +9,15 @@
 
 <%= render "shared/brand_bar" %>
 
-<article class="brief-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10 text-foreground">
+<%# `reveal` stages the blocks inside as they scroll into view; the header
+    below stages itself in CSS, so the title is never waiting on JS. %>
+<article class="brief-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10 text-foreground"
+         data-controller="reveal">
   <% if @document %>
-    <h1 class="text-3xl font-bold tracking-tight"><%= @document.title %></h1>
-    <p class="mt-2 text-sm text-muted-foreground">Prepared for <%= @brief.client_name %></p>
+    <h1 class="brief-enter text-3xl font-bold tracking-tight"><%= @document.title %></h1>
+    <p class="brief-enter mt-2 text-sm text-muted-foreground" data-enter="2">Prepared for <%= @brief.client_name %></p>
 
-    <div class="mt-8">
+    <div class="brief-enter mt-8" data-enter="3">
       <%= @document.body_html %>
     </div>
   <% else %>
@@ -26,7 +29,8 @@
 
 <% if @brief.cta_url %>
   <%# Sticky thumb-reach CTA on phones only; the in-page card covers larger screens. %>
-  <div class="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden">
+  <div class="brief-sticky-cta fixed inset-x-0 bottom-0 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden"
+       data-controller="sticky-cta">
     <%= render "components/button", label: @brief.cta_label, href: @brief.cta_url,
           size: "lg", class: "w-full no-underline" %>
   </div>

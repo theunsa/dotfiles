@@ -1,0 +1,168 @@
+/*
+ * motion.css — the brief's motion vocabulary.
+ *
+ * A brief is a document a client reads on a phone to decide whether to spend
+ * money, not a landing page. So body copy never animates: only the *blocks*
+ * (callout, steps, faq, cta) get a beat of arrival, and the page header gets a
+ * single entry stagger that never repeats.
+ *
+ * Everything that hides content is scoped to `html[data-motion="on"]`, a flag
+ * the layout's pre-paint script sets and then drops again if Stimulus fails to
+ * boot. A client must never be shown a blank proposal because JS 404'd.
+ */
+
+/* A reader who asked for less motion gets none of it. The pre-paint script
+   already withholds data-motion for them; this also neutralises the vendored
+   transitions Basecoat puts on buttons, inputs and the accordion chevron. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------- entry --- */
+
+@keyframes brief-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/*
+ * Title, subtitle and first block, one after the other. A CSS animation with
+ * `both` always runs to completion once the stylesheet is there, so this one
+ * needs no JS and no failsafe — unlike the scroll reveals below.
+ */
+.brief-enter {
+  animation: brief-enter 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.brief-enter[data-enter="2"] {
+  animation-delay: 70ms;
+}
+
+.brief-enter[data-enter="3"] {
+  animation-delay: 140ms;
+}
+
+/* --------------------------------------------------------------- reveal --- */
+
+/*
+ * Blocks rise 10px as they come into view. `.brief-steps` is excluded because
+ * it stages its own cards instead — a numbered list reads better arriving one
+ * step at a time than as a single slab.
+ */
+html[data-motion="on"] .brief-prose [data-block]:not(.brief-steps),
+html[data-motion="on"] .brief-steps > .card {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 320ms ease-out,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html[data-motion="on"] .brief-prose [data-block][data-revealed]:not(.brief-steps),
+html[data-motion="on"] .brief-steps[data-revealed] > .card {
+  opacity: 1;
+  transform: none;
+}
+
+html[data-motion="on"] .brief-steps > .card:nth-child(2) {
+  transition-delay: 70ms;
+}
+
+html[data-motion="on"] .brief-steps > .card:nth-child(3) {
+  transition-delay: 140ms;
+}
+
+html[data-motion="on"] .brief-steps > .card:nth-child(n + 4) {
+  transition-delay: 210ms;
+}
+
+/* ----------------------------------------------------------- sticky cta --- */
+
+/*
+ * The phone CTA arrives once the reader is into the document, and steps aside
+ * again when the in-page CTA card is on screen — two of the same button at
+ * once reads as nagging. `pointer-events` is dropped while it is off-screen so
+ * the hidden bar cannot swallow taps at the bottom edge.
+ */
+html[data-motion="on"] .brief-sticky-cta {
+  opacity: 0;
+  transform: translateY(110%);
+  pointer-events: none;
+  transition:
+    opacity 300ms ease-out,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html[data-motion="on"] .brief-sticky-cta[data-visible] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* ---------------------------------------------------- micro-interaction --- */
+
+/* The one button the whole document is for gets a hover lift, on pointers
+   that actually hover. */
+@media (hover: hover) {
+  .brief-cta .btn:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Basecoat gives .btn `transition-all`, so colour and ring already move; what
+   is missing is the press. Scale only — no shadow, nothing to repaint. It sits
+   after the hover lift deliberately: the two have equal specificity, and a
+   press the reader is making now should beat a hover they started earlier. */
+.btn:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: scale(0.97);
+}
+
+/*
+ * FAQ panels slide instead of snapping. `interpolate-size` is what makes the
+ * `auto` height animatable at all; where the pair is unsupported the details
+ * element simply opens instantly, which is the behaviour we have today.
+ */
+@supports selector(::details-content) and (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  .accordion > details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 260ms allow-discrete;
+  }
+
+  .accordion > details[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* ---------------------------------------------------------------- theme --- */
+
+/*
+ * Flipping the theme swaps every token at once, which without this lands as a
+ * hard cut. The transition is switched on for the length of the swap only, so
+ * no colour change anywhere else in the app pays for it.
+ */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease,
+    fill 220ms ease;
+}

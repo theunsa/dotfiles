@@ -6,5 +6,10 @@
             size: "lg", class: "no-underline" %>
     </div>
   <% end %>
-  <%= render "components/card", class: "not-prose mt-12 text-center", body: card_body %>
+  <%# data-block puts the card in the reveal controller's set; data-cta-anchor
+      is what the sticky bar watches, so it can stand down while this is on
+      screen rather than offering the same button twice. %>
+  <div class="brief-cta" data-block="cta" data-cta-anchor>
+    <%= render "components/card", class: "not-prose mt-12 text-center", body: card_body %>
+  </div>
 <% end %>

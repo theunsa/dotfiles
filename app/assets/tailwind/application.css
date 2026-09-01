@@ -1,10 +1,12 @@
 /*
  * app.css import chain, copied from rails-shadcn-ui's css/app.css: Basecoat
  * ships the token defaults and component recipes; tokens.css overrides those
- * values with brief's theme; extras.css adds what Basecoat does not cover.
+ * values with brief's theme; extras.css adds what Basecoat does not cover,
+ * and motion.css holds every animation the brief uses.
  * See app/views/components/SOURCE.md for where the copy came from.
  */
 @import "tailwindcss";
 @import "../../../vendor/basecoat/css/basecoat-luma.css";
 @import "./tokens.css";
 @import "./extras.css";
+@import "./motion.css";

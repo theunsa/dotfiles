@@ -30,6 +30,23 @@
           ? stored === "dark"
           : window.matchMedia("(prefers-color-scheme: dark)").matches;
         document.documentElement.classList.toggle("dark", dark);
+
+        // Motion is opt-in and decided before first paint, so a block that
+        // animates in never flashes on screen and back out first. Every rule
+        // that *hides* something keys off this flag, which means JS failing to
+        // boot would leave the client staring at a blank proposal — hence the
+        // failsafe: Stimulus stamps motionReady on connect, and if it hasn't
+        // within two seconds the flag is dropped and the page renders plain.
+        try {
+          if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            document.documentElement.dataset.motion = "on";
+            setTimeout(function () {
+              if (!document.documentElement.dataset.motionReady) {
+                delete document.documentElement.dataset.motion;
+              }
+            }, 2000);
+          }
+        } catch (e) {}
       })();
     </script>
   </head>

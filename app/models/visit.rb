@@ -1,10 +1,10 @@
 class Visit < ApplicationRecord
-  belongs_to :dossier
+  belongs_to :brief
 
   # POPIA: never store a raw IP — a salted hash is enough to tell visitors apart.
-  def self.record(dossier, request)
+  def self.record(brief, request)
     create!(
-      dossier: dossier,
+      brief: brief,
       viewed_at: Time.current,
       user_agent: request.user_agent.to_s.first(255),
       ip_hash: hash_ip(request.remote_ip)

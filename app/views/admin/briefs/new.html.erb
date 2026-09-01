@@ -1,0 +1,6 @@
+<% content_for :title, "Admin — New brief" %>
+<main class="mx-auto max-w-3xl px-5 py-10">
+  <p class="text-sm"><%= link_to "← Briefs", admin_root_path, class: "text-muted-foreground" %></p>
+  <h1 class="mt-4 text-2xl font-semibold text-foreground">New brief</h1>
+  <%= render "form", brief: @brief %>
+</main>

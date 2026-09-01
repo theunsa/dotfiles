@@ -21,18 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
     t.index ["slug"], name: "index_accounts_on_slug", unique: true
   end
 
-  create_table "documents", force: :cascade do |t|
-    t.text "body_markdown"
-    t.datetime "created_at", null: false
-    t.integer "dossier_id", null: false
-    t.integer "position"
-    t.string "slug"
-    t.string "title"
-    t.datetime "updated_at", null: false
-    t.index ["dossier_id"], name: "index_documents_on_dossier_id"
-  end
-
-  create_table "dossiers", force: :cascade do |t|
+  create_table "briefs", force: :cascade do |t|
     t.integer "account_id", null: false
     t.string "client_name"
     t.datetime "created_at", null: false
@@ -42,8 +31,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
     t.datetime "updated_at", null: false
     t.string "whatsapp_number"
     t.string "whatsapp_text"
-    t.index ["account_id"], name: "index_dossiers_on_account_id"
-    t.index ["slug"], name: "index_dossiers_on_slug", unique: true
+    t.index ["account_id"], name: "index_briefs_on_account_id"
+    t.index ["slug"], name: "index_briefs_on_slug", unique: true
+  end
+
+  create_table "documents", force: :cascade do |t|
+    t.text "body_markdown"
+    t.integer "brief_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "position"
+    t.string "slug"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["brief_id"], name: "index_documents_on_brief_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -66,18 +66,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_090100) do
   end
 
   create_table "visits", force: :cascade do |t|
+    t.integer "brief_id", null: false
     t.datetime "created_at", null: false
-    t.integer "dossier_id", null: false
     t.string "ip_hash"
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.datetime "viewed_at"
-    t.index ["dossier_id"], name: "index_visits_on_dossier_id"
+    t.index ["brief_id"], name: "index_visits_on_brief_id"
   end
 
-  add_foreign_key "documents", "dossiers"
-  add_foreign_key "dossiers", "accounts"
+  add_foreign_key "briefs", "accounts"
+  add_foreign_key "documents", "briefs"
   add_foreign_key "sessions", "users"
   add_foreign_key "users", "accounts"
-  add_foreign_key "visits", "dossiers"
+  add_foreign_key "visits", "briefs"
 end

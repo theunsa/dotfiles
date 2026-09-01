@@ -1,5 +1,5 @@
 acme_proposal:
-  dossier: acme
+  brief: acme
   title: Getting your ticket chaos under control
   slug: proposal
   position: 1
@@ -13,7 +13,7 @@ acme_proposal:
     ```
 
 locked_proposal:
-  dossier: locked
+  brief: locked
   title: Confidential proposal
   slug: proposal
   position: 1

@@ -1,11 +1,11 @@
-# A tenant: one customer of this app, with their own users and dossiers.
+# A tenant: one customer of this app, with their own users and briefs.
 #
 # Tenancy is row-based — every account lives in the same SQLite database and is
 # separated by account_id, not by a database file per customer. See
 # docs/PLAN.md for why.
 class Account < ApplicationRecord
   has_many :users, dependent: :destroy
-  has_many :dossiers, dependent: :destroy
+  has_many :briefs, dependent: :destroy
 
   normalizes :contact_email, with: ->(e) { e.strip.downcase }
 

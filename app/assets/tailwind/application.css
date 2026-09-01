@@ -1,7 +1,7 @@
 /*
  * app.css import chain, copied from rails-shadcn-ui's css/app.css: Basecoat
  * ships the token defaults and component recipes; tokens.css overrides those
- * values with dossier's theme; extras.css adds what Basecoat does not cover.
+ * values with brief's theme; extras.css adds what Basecoat does not cover.
  * See app/views/components/SOURCE.md for where the copy came from.
  */
 @import "tailwindcss";

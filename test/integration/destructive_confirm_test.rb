@@ -3,16 +3,16 @@ require "test_helper"
 # button_to with a block wraps its content in its own <button>, so rendering the
 # button component inside one produced nested buttons. The parser hoists those
 # apart, and the button you actually click ends up without the data-turbo-confirm
-# — deleting a dossier with no prompt at all. Assert the shape, not just the
+# — deleting a brief with no prompt at all. Assert the shape, not just the
 # attribute: the attribute was present the whole time, on the wrong element.
 class DestructiveConfirmTest < ActionDispatch::IntegrationTest
   setup { sign_in_as users(:one) }
 
   test "the delete button is a single button carrying the confirm" do
-    get admin_dossier_url(dossiers(:acme))
+    get admin_brief_url(briefs(:acme))
     assert_response :success
 
-    button = css_select("form[action='#{admin_dossier_path(dossiers(:acme))}'] button")
+    button = css_select("form[action='#{admin_brief_path(briefs(:acme))}'] button")
     assert_equal 1, button.size, "expected exactly one button in the delete form"
     assert_empty button.first.css("button"), "delete button must not contain another button"
     assert button.first["data-turbo-confirm"].present?, "the clickable button carries no confirm"
@@ -20,13 +20,13 @@ class DestructiveConfirmTest < ActionDispatch::IntegrationTest
   end
 
   test "the confirm names what is destroyed" do
-    dossier = dossiers(:acme)
-    dossier.visits.create!(viewed_at: Time.current)
+    brief = briefs(:acme)
+    brief.visits.create!(viewed_at: Time.current)
 
-    get admin_dossier_url(dossier)
-    confirm = css_select("form[action='#{admin_dossier_path(dossier)}'] button").first["data-turbo-confirm"]
+    get admin_brief_url(brief)
+    confirm = css_select("form[action='#{admin_brief_path(brief)}'] button").first["data-turbo-confirm"]
 
-    assert_includes confirm, dossier.client_name
+    assert_includes confirm, brief.client_name
     assert_includes confirm, "1 visit"
     assert_includes confirm, "cannot be undone"
   end
@@ -44,7 +44,7 @@ class DestructiveConfirmTest < ActionDispatch::IntegrationTest
     assert_select "dialog.alert-dialog[data-controller=confirm-dialog]"
 
     sign_out
-    get dossier_url(slug: dossiers(:acme).slug)
+    get brief_url(slug: briefs(:acme).slug)
     assert_response :success
     assert_select "dialog.alert-dialog", false, "the client's page should carry no admin chrome"
   end

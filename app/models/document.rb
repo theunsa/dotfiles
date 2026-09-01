@@ -1,5 +1,5 @@
 class Document < ApplicationRecord
-  belongs_to :dossier
+  belongs_to :brief
 
   validates :title, presence: true
   validates :body_markdown, presence: true
@@ -13,7 +13,7 @@ class Document < ApplicationRecord
   private
 
   def set_defaults
-    self.position ||= (dossier&.documents&.maximum(:position) || 0) + 1
+    self.position ||= (brief&.documents&.maximum(:position) || 0) + 1
     self.slug = title.to_s.parameterize if slug.blank? && title.present?
   end
 end

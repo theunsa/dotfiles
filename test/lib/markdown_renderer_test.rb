@@ -7,7 +7,7 @@ class MarkdownRendererTest < ActiveSupport::TestCase
     assert_includes html, "<em>text</em>"
   end
 
-  # Dossier source is wrapped at ~80 columns; those breaks must not survive into
+  # Brief source is wrapped at ~80 columns; those breaks must not survive into
   # the client's page, where they would read as ragged half-lines on a phone.
   test "wrapped source reflows instead of keeping its line breaks" do
     html = MarkdownRenderer.new("A sentence that was\nwrapped in the editor.").to_html
@@ -89,7 +89,7 @@ class MarkdownRendererTest < ActiveSupport::TestCase
     assert_includes html, "puts 1"
     refute_includes html, "data-block"
     # Highlighting is off, so the markup carries no baked-in colour scheme for
-    # .dossier-prose to fight over.
+    # .brief-prose to fight over.
     refute_includes html, "background-color"
   end
 

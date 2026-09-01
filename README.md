@@ -1,14 +1,14 @@
-# Dossier
+# Brief
 
 Self-hosted client spaces: proposals, roadmaps and phase progress as a single
-shareable link (`/d/<client-slug>`), sent via WhatsApp, opened on a phone.
+shareable link (`/b/<client-slug>`), sent via WhatsApp, opened on a phone.
 
 A **Rails 8 + SQLite** app at this repo's root — see **`docs/PLAN.md`** for the
 plan and the decisions behind it.
 
 - `nuxt-prototype/` — the validated static prototype (design reference; its
   README documents how it works)
-- `docs/first-client-proposal-draft.md` — content for the first client dossier
+- `docs/first-client-proposal-draft.md` — content for the first client brief
 
 ## Running it
 
@@ -31,7 +31,7 @@ external services. Users are made on the box.
 Create a user, or recover a forgotten password:
 
 ```sh
-bin/rails 'dossier:user[you@example.com,account-slug]'   # prompts for the password twice
+bin/rails 'brief:user[you@example.com,account-slug]'   # prompts for the password twice
 ```
 
 The account may be left off while there is only one on the box; with more than
@@ -52,9 +52,9 @@ so it's one sign-in per device.
 
 Two levels, easy to confuse:
 
-- A **Dossier** is one *client's* space — the page you send someone.
+- A **Brief** is one *client's* space — the page you send someone.
 - An **Account** is one *customer of this app*: another consultant, with their
-  own users and their own dossiers, sharing the same instance.
+  own users and their own briefs, sharing the same instance.
 
 Tenancy is **row-based**: one SQLite database for everyone, separated by
 `account_id`, not a database file per customer. A file per tenant would mean N
@@ -64,21 +64,21 @@ impossible — all to buy isolation that a scoped query already gives. It also
 keeps the door open: row-based scoping is database-agnostic, so if SQLite is
 ever outgrown, only the adapter changes.
 
-Only `users` and `dossiers` carry `account_id`. Documents and visits hang off a
-dossier, so scoping the dossier scopes them too; a second copy of the tenant key
+Only `users` and `briefs` carry `account_id`. Documents and visits hang off a
+brief, so scoping the brief scopes them too; a second copy of the tenant key
 would only be one more thing that can drift.
 
 Where the tenant comes from:
 
 - **Admin** — from the signed-in user (`Current.account`). Every admin
-  controller reaches records through `Admin::BaseController#dossiers`, so a query
+  controller reaches records through `Admin::BaseController#briefs`, so a query
   that forgets the tenant is a `NoMethodError`, not a leak. Another account's
   slug 404s.
-- **Public `/d/:slug`** — from the dossier itself. Slugs are globally unique and
+- **Public `/b/:slug`** — from the brief itself. Slugs are globally unique and
   unguessable, so a client needs only the link, never the account it belongs to.
-  The dossier then decides whose brand the page wears.
+  The brief then decides whose brand the page wears.
 
-A user signed in to one account gets no privileges over another's dossiers: no
+A user signed in to one account gets no privileges over another's briefs: no
 draft preview, no passcode bypass, and their views count as visits.
 
 Each account brands its own pages (`name`, `tagline`, `contact_email`); anything
@@ -86,8 +86,8 @@ left blank falls back to the instance-wide `BRAND_*` values, which are also what
 the landing page shows.
 
 ```sh
-bin/rails 'dossier:account[Acme Consulting]'                 # new tenant
-bin/rails 'dossier:user[them@acme.com,acme-consulting]'       # its first user
+bin/rails 'brief:account[Acme Consulting]'                 # new tenant
+bin/rails 'brief:user[them@acme.com,acme-consulting]'       # its first user
 ```
 
 There is still no sign-up page — accounts are created on the box, on purpose.
@@ -103,9 +103,9 @@ There is still no sign-up page — accounts are created on the box, on purpose.
 Changing `SECRET_KEY_BASE` re-salts `Visit#ip_hash`, so old visits stop
 correlating with new ones. Counts and timestamps are unaffected.
 
-## Writing a dossier
+## Writing a brief
 
-A dossier body is one markdown document. Plain GFM (headings, lists, tables,
+A brief body is one markdown document. Plain GFM (headings, lists, tables,
 code, quotes) renders as prose; the special sections are fenced code blocks
 whose language is a block name, holding YAML:
 
@@ -138,13 +138,13 @@ the chips just do nothing and no preview appears.
 ## Importing prototype content
 
 ```sh
-bin/rails 'dossier:import[nuxt-prototype/content/d/ji4n-managing-agent/index.md,account-slug]'
+bin/rails 'brief:import[nuxt-prototype/content/d/ji4n-managing-agent/index.md,account-slug]'
 ```
 
 The account may be left off while there is only one on the box.
 
-Imports as an **unpublished** dossier — review it in `/admin`, then publish.
-Unpublished dossiers 404 publicly. The prototype's MDC directives
+Imports as an **unpublished** brief — review it in `/admin`, then publish.
+Unpublished briefs 404 publicly. The prototype's MDC directives
 (`::callout{…}` … `::`) are rewritten to the fenced YAML blocks above on the
 way in.
 

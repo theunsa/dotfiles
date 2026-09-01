@@ -1,28 +1,28 @@
-<% content_for :title, "Admin — #{@dossier.client_name}" %>
+<% content_for :title, "Admin — #{@brief.client_name}" %>
 <main class="mx-auto max-w-3xl px-5 py-10">
-  <p class="text-sm"><%= link_to "← Dossiers", admin_root_path, class: "text-muted-foreground" %></p>
+  <p class="text-sm"><%= link_to "← Briefs", admin_root_path, class: "text-muted-foreground" %></p>
 
   <header class="mt-4 flex items-center justify-between">
-    <h1 class="text-2xl font-semibold text-foreground"><%= @dossier.client_name %></h1>
-    <%= render "components/button", label: "Edit", href: edit_admin_dossier_path(@dossier), variant: "outline" %>
+    <h1 class="text-2xl font-semibold text-foreground"><%= @brief.client_name %></h1>
+    <%= render "components/button", label: "Edit", href: edit_admin_brief_path(@brief), variant: "outline" %>
   </header>
 
   <dl class="mt-6 space-y-2 text-sm">
     <div>
       <dt class="font-medium text-foreground">Public link</dt>
       <dd class="flex flex-wrap items-center gap-2">
-        <code id="public-link" class="text-muted-foreground"><%= dossier_url(slug: @dossier.slug) %></code>
+        <code id="public-link" class="text-muted-foreground"><%= brief_url(slug: @brief.slug) %></code>
         <%= render "components/button", label: "Copy", variant: "outline", size: "xs",
               class: "onclick-copy", type: "button" %>
-        <% unless @dossier.published? %><%= render "components/badge", label: "draft — 404s publicly", variant: "secondary" %><% end %>
+        <% unless @brief.published? %><%= render "components/badge", label: "draft — 404s publicly", variant: "secondary" %><% end %>
       </dd>
     </div>
-    <div><dt class="font-medium text-foreground">Passcode</dt><dd class="text-muted-foreground"><%= @dossier.passcode_protected? ? "Set 🔒" : "None" %></dd></div>
-    <div><dt class="font-medium text-foreground">WhatsApp</dt><dd class="text-muted-foreground"><%= @dossier.whatsapp_number.presence || "—" %></dd></div>
+    <div><dt class="font-medium text-foreground">Passcode</dt><dd class="text-muted-foreground"><%= @brief.passcode_protected? ? "Set 🔒" : "None" %></dd></div>
+    <div><dt class="font-medium text-foreground">WhatsApp</dt><dd class="text-muted-foreground"><%= @brief.whatsapp_number.presence || "—" %></dd></div>
   </dl>
 
   <section class="mt-10">
-    <h2 class="text-lg font-semibold text-foreground">Visits (<%= @dossier.visits.count %>)</h2>
+    <h2 class="text-lg font-semibold text-foreground">Visits (<%= @brief.visits.count %>)</h2>
     <%= render "components/table",
           class: "mt-2",
           head: [ "When", "Device" ],
@@ -36,11 +36,11 @@
     <%# Styled directly rather than through components/button: button_to with a
         block nests a <button> inside its own <button>, which the parser hoists
         apart — leaving the button you actually click without the confirm. %>
-    <%= button_to "Delete dossier", admin_dossier_path(@dossier), method: :delete,
+    <%= button_to "Delete brief", admin_brief_path(@brief), method: :delete,
           class: "btn",
           data: {
             variant: "destructive", size: "sm",
-            turbo_confirm: "Delete #{@dossier.client_name}? Its #{pluralize(@dossier.visits.count, "visit")} go too. This cannot be undone."
+            turbo_confirm: "Delete #{@brief.client_name}? Its #{pluralize(@brief.visits.count, "visit")} go too. This cannot be undone."
           } %>
   </p>
 </main>

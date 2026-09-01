@@ -1,14 +1,14 @@
 # Name of your application. Used to uniquely configure containers.
-service: dossier
+service: brief
 
 # Name of the container image (use your-user/app-name on external registries).
-image: theunsa/dossier
+image: theunsa/brief
 
 # Deploy to these servers.
 #
 # `opstal`, not `bok`: bok's 80/443 still belong to dokploy-traefik, so no Kamal
 # app can run there until Dokploy is removed. opstal is already bootstrapped and
-# already runs kamal-proxy. Dossier is SQLite-only — it uses none of opstal's
+# already runs kamal-proxy. Brief is SQLite-only — it uses none of opstal's
 # shared PostgreSQL or Browserless — so all it costs that host is one container
 # and one volume. Moving it to bok later is a stop, an rsync of the volume, this
 # hostname, and a DNS record.
@@ -39,7 +39,7 @@ servers:
 # answered. Re-proxying afterwards requires SSL/TLS mode "Full (strict)".
 proxy:
   ssl: true
-  host: dossier.albertec.co.za
+  host: brief.albertec.co.za
 
 # Where you keep your container images.
 #
@@ -94,7 +94,7 @@ aliases:
 # It is deliberately not covered by infra's backup accessories, which dump
 # PostgreSQL only. Backups are this repo's own problem (rsync, later).
 volumes:
-  - "dossier_storage:/rails/storage"
+  - "brief_storage:/rails/storage"
 
 # Bridge fingerprinted assets, like JS and CSS, between versions to avoid
 # hitting 404 on in-flight requests. Combines all files from new and old

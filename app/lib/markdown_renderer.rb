@@ -1,8 +1,8 @@
-# Renders dossier markdown: GFM via Commonmarker, plus custom blocks written as
+# Renders brief markdown: GFM via Commonmarker, plus custom blocks written as
 # fenced code blocks whose language is a block name — ```steps / ```callout /
 # ```faq — containing YAML, mapped to partials in app/views/markdown/.
 #
-# A fence is standard CommonMark, so a dossier body is a plain markdown file
+# A fence is standard CommonMark, so a brief body is a plain markdown file
 # everywhere: any other editor shows the blocks as highlighted YAML instead of
 # mangling them, and any other fence language (```ruby …) passes through to
 # Commonmarker untouched and renders as ordinary code.
@@ -142,7 +142,7 @@ class MarkdownRenderer
     #
     # syntax_highlighter: nil — Commonmarker's bundled themes are fixed colour
     # schemes that inline a dark background, which fights the light UI and
-    # ignores the reader's theme. Plain markup instead, styled by .dossier-prose.
+    # ignores the reader's theme. Plain markup instead, styled by .brief-prose.
     Commonmarker.to_html(text,
       options: {
         render: { unsafe: false, hardbreaks: false },

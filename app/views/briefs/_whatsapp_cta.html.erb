@@ -1,8 +1,8 @@
-<% if dossier.whatsapp_url %>
+<% if brief.whatsapp_url %>
   <% card_body = capture do %>
     <p class="font-semibold text-card-foreground">Happy with Step 1?</p>
     <div class="mt-4 flex justify-center">
-      <%= render "components/button", label: "WhatsApp me", href: dossier.whatsapp_url,
+      <%= render "components/button", label: "WhatsApp me", href: brief.whatsapp_url,
             size: "lg", class: "no-underline" %>
     </div>
   <% end %>

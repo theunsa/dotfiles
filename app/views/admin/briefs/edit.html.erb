@@ -1,0 +1,6 @@
+<% content_for :title, "Admin — Edit #{@brief.client_name}" %>
+<main class="mx-auto max-w-3xl px-5 py-10">
+  <p class="text-sm"><%= link_to "← #{@brief.client_name}", admin_brief_path(@brief), class: "text-muted-foreground" %></p>
+  <h1 class="mt-4 text-2xl font-semibold text-foreground">Edit brief</h1>
+  <%= render "form", brief: @brief %>
+</main>

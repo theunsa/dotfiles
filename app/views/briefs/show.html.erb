@@ -1,18 +1,18 @@
-<% content_for :title, @document&.title || @dossier.client_name %>
+<% content_for :title, @document&.title || @brief.client_name %>
 <% content_for :head do %>
   <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <% end %>
 
 <% if previewing_draft? %>
-  <%= render "dossiers/draft_banner", dossier: @dossier %>
+  <%= render "briefs/draft_banner", brief: @brief %>
 <% end %>
 
 <%= render "shared/brand_bar" %>
 
-<article class="dossier-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10 text-foreground">
+<article class="brief-prose mx-auto max-w-2xl px-5 py-10 pb-28 sm:pb-10 text-foreground">
   <% if @document %>
     <h1 class="text-3xl font-bold tracking-tight"><%= @document.title %></h1>
-    <p class="mt-2 text-sm text-muted-foreground">Prepared for <%= @dossier.client_name %></p>
+    <p class="mt-2 text-sm text-muted-foreground">Prepared for <%= @brief.client_name %></p>
 
     <div class="mt-8">
       <%= @document.body_html %>
@@ -21,13 +21,13 @@
     <p>Nothing here yet.</p>
   <% end %>
 
-  <%= render "dossiers/whatsapp_cta", dossier: @dossier %>
+  <%= render "briefs/whatsapp_cta", brief: @brief %>
 </article>
 
-<% if @dossier.whatsapp_url %>
+<% if @brief.whatsapp_url %>
   <%# Sticky thumb-reach CTA on phones only; the in-page card covers larger screens. %>
   <div class="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 p-3 backdrop-blur sm:hidden">
-    <%= render "components/button", label: "WhatsApp me", href: @dossier.whatsapp_url,
+    <%= render "components/button", label: "WhatsApp me", href: @brief.whatsapp_url,
           size: "lg", class: "w-full no-underline" %>
   </div>
 <% end %>

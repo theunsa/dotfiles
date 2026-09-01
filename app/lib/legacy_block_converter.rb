@@ -9,7 +9,7 @@
 # Attributes and front matter merge into one YAML hash; free text after the
 # front matter becomes the block's `body:` key.
 #
-# Used by `rake dossier:import` for prototype files and by the data migration
+# Used by `rake brief:import` for prototype files and by the data migration
 # that converted the documents written before the syntax changed. Text with no
 # directives passes through untouched, so running it twice is harmless.
 class LegacyBlockConverter

@@ -3,5 +3,5 @@
 class Admin::BaseController < ApplicationController
   private
 
-  def dossiers = current_account.dossiers
+  def briefs = current_account.briefs
 end

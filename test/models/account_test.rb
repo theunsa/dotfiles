@@ -17,12 +17,12 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal "Rival Consulting", accounts(:rival).brand[:name]
   end
 
-  test "destroying an account takes its users and dossiers with it" do
+  test "destroying an account takes its users and briefs with it" do
     account = accounts(:rival)
     users = account.users.count
-    dossiers = account.dossiers.count
+    briefs = account.briefs.count
     assert_difference "User.count", -users do
-      assert_difference "Dossier.count", -dossiers do
+      assert_difference "Brief.count", -briefs do
         account.destroy!
       end
     end

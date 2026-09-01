@@ -1,25 +1,25 @@
-<%= form_with model: [ :admin, dossier ], class: "mt-6 space-y-6" do |f| %>
-  <% if dossier.errors.any? %>
-    <%= render "components/alert", variant: "destructive", title: "#{pluralize(dossier.errors.count, "error")} prohibited this dossier from being saved:",
-          description: safe_join(dossier.errors.full_messages.map { |msg| content_tag(:p, msg) }) %>
+<%= form_with model: [ :admin, brief ], class: "mt-6 space-y-6" do |f| %>
+  <% if brief.errors.any? %>
+    <%= render "components/alert", variant: "destructive", title: "#{pluralize(brief.errors.count, "error")} prohibited this brief from being saved:",
+          description: safe_join(brief.errors.full_messages.map { |msg| content_tag(:p, msg) }) %>
   <% end %>
 
   <div>
-    <%= render "components/label", for: "dossier_client_name", text: "Client name" %>
-    <%= f.text_field :client_name, id: "dossier_client_name", class: "input mt-1 w-full" %>
-    <% if dossier.persisted? %>
-      <p class="mt-1 text-xs text-muted-foreground">Slug: <code><%= dossier.slug %></code> (fixed — the link must not change)</p>
+    <%= render "components/label", for: "brief_client_name", text: "Client name" %>
+    <%= f.text_field :client_name, id: "brief_client_name", class: "input mt-1 w-full" %>
+    <% if brief.persisted? %>
+      <p class="mt-1 text-xs text-muted-foreground">Slug: <code><%= brief.slug %></code> (fixed — the link must not change)</p>
     <% end %>
   </div>
 
   <div class="grid gap-6 sm:grid-cols-2">
     <div>
-      <%= render "components/label", for: "dossier_whatsapp_number", text: "WhatsApp number (E.164)" %>
-      <%= f.text_field :whatsapp_number, id: "dossier_whatsapp_number", placeholder: "+27821234567", class: "input mt-1 w-full" %>
+      <%= render "components/label", for: "brief_whatsapp_number", text: "WhatsApp number (E.164)" %>
+      <%= f.text_field :whatsapp_number, id: "brief_whatsapp_number", placeholder: "+27821234567", class: "input mt-1 w-full" %>
     </div>
     <div>
-      <%= render "components/label", for: "dossier_whatsapp_text", text: "WhatsApp prefill (optional)" %>
-      <%= f.text_field :whatsapp_text, id: "dossier_whatsapp_text", class: "input mt-1 w-full" %>
+      <%= render "components/label", for: "brief_whatsapp_text", text: "WhatsApp prefill (optional)" %>
+      <%= f.text_field :whatsapp_text, id: "brief_whatsapp_text", class: "input mt-1 w-full" %>
     </div>
   </div>
 
@@ -88,11 +88,11 @@
 
   <div class="grid gap-6 sm:grid-cols-2">
     <div>
-      <%= render "components/label", for: "dossier_passcode", text: "Passcode (leave blank to keep current)" %>
-      <%= f.text_field :passcode, id: "dossier_passcode", autocomplete: "off", class: "input mt-1 w-full" %>
-      <% if dossier.passcode_protected? %>
+      <%= render "components/label", for: "brief_passcode", text: "Passcode (leave blank to keep current)" %>
+      <%= f.text_field :passcode, id: "brief_passcode", autocomplete: "off", class: "input mt-1 w-full" %>
+      <% if brief.passcode_protected? %>
         <label class="mt-2 flex items-center gap-2 text-sm">
-          <%= check_box_tag "dossier[remove_passcode]", "1" %> Remove passcode
+          <%= check_box_tag "brief[remove_passcode]", "1" %> Remove passcode
         </label>
       <% end %>
     </div>
@@ -103,5 +103,5 @@
     </div>
   </div>
 
-  <%= render "components/button", label: dossier.persisted? ? "Save changes" : "Create dossier", type: "submit", size: "lg" %>
+  <%= render "components/button", label: brief.persisted? ? "Save changes" : "Create brief", type: "submit", size: "lg" %>
 <% end %>

@@ -79,9 +79,9 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks. Tenancy is
-  # row-based and path-based (/d/:slug), so one hostname serves every account and
+  # row-based and path-based (/b/:slug), so one hostname serves every account and
   # no subdomain pattern is needed here.
-  config.hosts = [ "dossier.albertec.co.za" ]
+  config.hosts = [ "brief.albertec.co.za" ]
 
   # Skip DNS rebinding protection for the default health check endpoint, which
   # kamal-proxy requests by container IP rather than by hostname.

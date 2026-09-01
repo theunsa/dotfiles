@@ -1,0 +1,33 @@
+<% content_for :title, "Admin — Briefs" %>
+<main class="mx-auto max-w-4xl px-5 py-10">
+  <header class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-foreground">Briefs</h1>
+    <div class="flex items-center gap-3">
+      <%= render "components/button", label: "New brief", href: new_admin_brief_path %>
+      <%# Not via components/button — see the note on the delete button in show. %>
+      <%= button_to "Log out", session_path, method: :delete,
+            class: "btn", data: { variant: "ghost" } %>
+    </div>
+  </header>
+
+  <%= render "components/table",
+        class: "mt-8",
+        head: [ "Client", "Views", "Last viewed", "Status", "" ],
+        rows: @briefs.map { |brief|
+          [
+            link_to(brief.client_name, admin_brief_path(brief), class: "font-medium text-foreground"),
+            @visit_counts.fetch(brief.id, 0),
+            @last_viewed[brief.id]&.strftime("%-d %b %Y %H:%M") || "—",
+            safe_join([
+              render("components/badge", label: brief.published? ? "Published" : "Draft",
+                variant: brief.published? ? nil : "secondary"),
+              (render("components/badge", label: "🔒", variant: "outline", class: "ml-1") if brief.passcode_protected?)
+            ].compact),
+            link_to("Open", brief_path(slug: brief.slug), class: "text-muted-foreground")
+          ]
+        } %>
+
+  <% if @briefs.empty? %>
+    <p class="mt-8 text-sm text-muted-foreground">No briefs yet — create the first one.</p>
+  <% end %>
+</main>

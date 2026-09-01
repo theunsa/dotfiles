@@ -1,6 +1,6 @@
-class CreateDossiers < ActiveRecord::Migration[8.1]
+class CreateBriefs < ActiveRecord::Migration[8.1]
   def change
-    create_table :dossiers do |t|
+    create_table :briefs do |t|
       t.string :client_name
       t.string :slug
       t.string :whatsapp_number
@@ -10,6 +10,6 @@ class CreateDossiers < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :dossiers, :slug, unique: true
+    add_index :briefs, :slug, unique: true
   end
 end

@@ -14,8 +14,25 @@ return {
       ["<C-l>"] = { window = "l", herdr = "right", tmux = "Right" },
     }
 
+    local function focus_multiplexer(direction)
+      if vim.env.HERDR_PANE_ID and vim.env.HERDR_PANE_ID ~= "" then
+        local herdr = vim.env.HERDR_BIN_PATH or "herdr"
+        vim.fn.system({
+          herdr,
+          "pane",
+          "focus",
+          "--direction",
+          direction.herdr,
+          "--pane",
+          vim.env.HERDR_PANE_ID,
+        })
+      elseif vim.env.TMUX and vim.env.TMUX ~= "" then
+        vim.cmd("TmuxNavigate" .. direction.tmux)
+      end
+    end
+
     for key, direction in pairs(directions) do
-      vim.keymap.set("n", key, function()
+      local function navigate()
         local previous_window = vim.api.nvim_get_current_win()
         vim.cmd("wincmd " .. direction.window)
 
@@ -23,21 +40,19 @@ return {
           return
         end
 
-        if vim.env.HERDR_PANE_ID and vim.env.HERDR_PANE_ID ~= "" then
-          local herdr = vim.env.HERDR_BIN_PATH or "herdr"
-          vim.fn.system({
-            herdr,
-            "pane",
-            "focus",
-            "--direction",
-            direction.herdr,
-            "--pane",
-            vim.env.HERDR_PANE_ID,
-          })
-        elseif vim.env.TMUX and vim.env.TMUX ~= "" then
-          vim.cmd("TmuxNavigate" .. direction.tmux)
-        end
-      end, { silent = true, noremap = true, desc = "Navigate " .. direction.herdr .. " (Neovim/multiplexer)" })
+        focus_multiplexer(direction)
+      end
+
+      -- Herdr forwards the chord to Neovim whenever Neovim owns the pane. Use
+      -- the same inner-split-first decision in every interactive editor mode,
+      -- so entering insert/visual/terminal mode never turns Neovim into a trap.
+      -- Lua callbacks execute like <Cmd> mappings and therefore do not force a
+      -- mode change merely to run the navigation command.
+      vim.keymap.set({ "n", "i", "x", "s", "o", "t", "c" }, key, navigate, {
+        silent = true,
+        noremap = true,
+        desc = "Navigate " .. direction.herdr .. " (Neovim/multiplexer)",
+      })
     end
 
     vim.keymap.set("n", "<C-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>", {

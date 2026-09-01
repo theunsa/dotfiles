@@ -1,3 +1,19 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Brief">
+  <title>Brief</title>
+  <!-- The mark is the object itself: a brief. A sheet with a turned corner on a
+       tile of the theme's amber (primary), so icon and app read as one. -->
+  <rect width="512" height="512" rx="112" fill="#b45309"/>
+
+  <!-- The sheet. Three rounded corners; the fourth is cut on the diagonal, so at
+       favicon size the silhouette still reads as a page and not a plain square. -->
+  <path fill="#fffbeb"
+        d="M154 96h150l84 84v206a30 30 0 0 1-30 30H154a30 30 0 0 1-30-30V126a30 30 0 0 1 30-30z"/>
+  <!-- The turned-over corner, in a lighter shade of the tile so the fold has depth. -->
+  <path fill="#eecfa1" d="M304 96l84 84h-84z"/>
+
+  <!-- A title and two lines of body: enough to say "document", few enough to
+       survive being drawn 16 pixels wide. -->
+  <rect x="164" y="226" width="132" height="30" rx="15" fill="#b45309"/>
+  <rect x="164" y="288" width="224" height="24" rx="12" fill="#b45309" opacity=".32"/>
+  <rect x="164" y="334" width="160" height="24" rx="12" fill="#b45309" opacity=".32"/>
 </svg>

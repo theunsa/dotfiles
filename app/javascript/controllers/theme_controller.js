@@ -47,6 +47,11 @@ export default class extends Controller {
       "aria-label",
       this.dark ? "Switch to light theme" : "Switch to dark theme"
     )
+
+    // The browser chrome is tinted to match the page background; the layout sets
+    // it before first paint, and this keeps it honest after a switch.
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (meta) meta.content = this.dark ? "#0c0a09" : "#ffffff"
   }
 
   get dark() {

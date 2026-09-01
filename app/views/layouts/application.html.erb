@@ -7,14 +7,19 @@
     <meta name="application-name" content="Brief">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="color-scheme" content="light dark">
+    <%# Tints the mobile browser chrome to match the page. Kept in step with the
+        reader's own light/dark choice by the pre-paint script and the theme
+        controller, so an override doesn't leave the address bar the wrong colour. %>
+    <meta name="theme-color" content="#ffffff">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="manifest" href="/manifest.json">
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -30,6 +35,8 @@
           ? stored === "dark"
           : window.matchMedia("(prefers-color-scheme: dark)").matches;
         document.documentElement.classList.toggle("dark", dark);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.content = dark ? "#0c0a09" : "#ffffff";
 
         // Motion is opt-in and decided before first paint, so a block that
         // animates in never flashes on screen and back out first. Every rule

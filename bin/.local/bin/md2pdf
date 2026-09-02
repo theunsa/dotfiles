@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# md2pdf - render Markdown to PDF.
+#
+# Two engines:
+#   typst  (default) - fast, no browser, good typography, ignores CSS
+#   html             - pandoc -> HTML -> headless Chrome, honours a CSS file
+#
+# Usage:
+#   md2pdf notes.md                    -> notes.pdf
+#   md2pdf notes.md out.pdf
+#   cat notes.md | md2pdf - out.pdf
+#   md2pdf sow.md --css sow.css        -> html engine with that stylesheet
+#   md2pdf notes.md --css              -> html engine with the default stylesheet
+#   md2pdf notes.md --open             -> open the result when done
+#   md2pdf notes.md --html             -> keep the intermediate .html next to the pdf
+#
+# Extra pandoc arguments can be passed after --, e.g.
+#   md2pdf notes.md -- --toc -V fontsize=11pt
+set -euo pipefail
+
+DEFAULT_CSS="${MD2PDF_CSS:-$HOME/.config/md2pdf/default.css}"
+CHROME="${MD2PDF_CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
+
+die() { echo "md2pdf: $*" >&2; exit 1; }
+
+usage() {
+  sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+  exit 0
+}
+
+command -v pandoc >/dev/null || die "pandoc not found (brew install pandoc)"
+
+input=""
+output=""
+css=""
+engine="typst"
+do_open=0
+keep_html=0
+pandoc_extra=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help) usage ;;
+    --css)
+      engine="html"
+      if [[ ${2-} && ${2:0:1} != "-" ]]; then css="$2"; shift; else css="$DEFAULT_CSS"; fi
+      ;;
+    --open) do_open=1 ;;
+    --html) keep_html=1 ;;
+    --) shift; pandoc_extra=("$@"); break ;;
+    -) input="-" ;;
+    -*) die "unknown option: $1 (use -- to pass pandoc flags)" ;;
+    *)
+      if [[ -z "$input" ]]; then input="$1"
+      elif [[ -z "$output" ]]; then output="$1"
+      else die "unexpected argument: $1"; fi
+      ;;
+  esac
+  shift
+done
+
+[[ -n "$input" ]] || usage
+
+if [[ "$input" == "-" ]]; then
+  src="$(mktemp -t md2pdf).md"
+  cat > "$src"
+  trap 'rm -f "$src"' EXIT
+  : "${output:=out.pdf}"
+else
+  [[ -f "$input" ]] || die "no such file: $input"
+  src="$input"
+  : "${output:=${input%.*}.pdf}"
+fi
+
+if [[ "$engine" == "typst" ]]; then
+  command -v typst >/dev/null || die "typst not found (brew install typst)"
+  pandoc "$src" \
+    --pdf-engine=typst \
+    -V papersize=a4 \
+    -V margin-x=20mm -V margin-y=18mm \
+    ${pandoc_extra[@]+"${pandoc_extra[@]}"} \
+    -o "$output"
+else
+  [[ -f "$css" ]] || die "stylesheet not found: $css"
+  [[ -x "$CHROME" ]] || die "Chrome not found at $CHROME (set MD2PDF_CHROME)"
+  if (( keep_html )); then
+    html="${output%.pdf}.html"
+  else
+    html="$(mktemp -t md2pdf).html"
+    trap 'rm -f "$html"' EXIT
+  fi
+  pandoc "$src" \
+    --standalone \
+    --embed-resources \
+    --css "$css" \
+    --metadata pagetitle="$(basename "${input%.*}")" \
+    ${pandoc_extra[@]+"${pandoc_extra[@]}"} \
+    -o "$html"
+  "$CHROME" \
+    --headless \
+    --disable-gpu \
+    --no-pdf-header-footer \
+    --print-to-pdf="$output" \
+    "file://$(cd "$(dirname "$html")" && pwd)/$(basename "$html")" \
+    >/dev/null 2>&1
+fi
+
+[[ -f "$output" ]] || die "render produced no output"
+echo "$output"
+(( do_open )) && open "$output"
+exit 0

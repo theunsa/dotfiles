@@ -10,7 +10,7 @@ TPM_DIR="$TMUX_PLUGIN_DIR/tpm"
 TPM_VERSION="v3.1.0"
 HERDR_NAV_REF="820d48f5d9c9a7dece6a4bebfa3982ec30bbfbb7"
 STOW_PACKAGES=(
-  agents borders claude codex config ghostty git hammerspoon herdr nvim sesh starship tmux yazi zsh
+  agents bin borders claude codex config ghostty git hammerspoon herdr nvim sesh starship tmux yazi zsh
 )
 
 # --- Helpers ---

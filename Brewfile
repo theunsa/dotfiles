@@ -36,6 +36,10 @@ brew "sesh"
 brew "tmux"
 brew "yazi"
 
+# Document rendering (md2pdf)
+brew "pandoc"
+brew "typst"
+
 # Terminal utilities and diagnostics
 brew "btop"
 brew "htop"

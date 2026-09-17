@@ -38,7 +38,7 @@ focus_pane_left = "prefix+h"
 focus_pane_down = "prefix+j"
 focus_pane_up = "prefix+k"
 focus_pane_right = "prefix+l"
-split_vertical = "ctrl+\\"
+split_vertical = ["prefix+\\", "ctrl+\\"]
 split_horizontal = "prefix+minus"
 close_pane = "prefix+x"
 zoom = "prefix+z"
@@ -125,7 +125,7 @@ pane_gaps = false
 show_agent_labels_on_pane_borders = true
 hide_tab_bar_when_single_tab = false
 tab_bar_position = "bottom"
-agent_panel_sort = "priority"
+agent_panel_sort = "spaces"
 accent = "cyan"
 
 [ui.sidebar.agents]

@@ -160,7 +160,7 @@ across workspaces.
 |---|---|
 | `h/j/k/l` | Move between panes |
 | `H/J/K/L` | Resize the current pane by five cells |
-| `-` | Split top-bottom |
+| `\` / `-` | Split left-right / top-bottom |
 | `c` | New tab |
 | `1…9` | Switch tabs |
 | `g` / `s` | Open the agent and workspace finder |
@@ -176,6 +176,8 @@ like `vim-tmux-navigator` does under tmux. In normal, insert, terminal, visual,
 select, operator, and command-line modes, it traverses Neovim splits first and
 only crosses into the neighboring Herdr pane at the edge. The pinned Herdr
 navigation plugin is synchronized by `./dot install` and `./dot pull`.
+The editor mappings live in `lua/config/keymaps.lua` so they load after
+LazyVim's default window mappings.
 
 `Ctrl-\` directly creates a left-right split without pressing the leader or
 Shift.
@@ -190,7 +192,8 @@ conversations after a server restart.
 |---|---|
 | `Ctrl-R` | Search history with Atuin |
 | `Up` | Previous Zsh command |
-| `Tab` | Accept the grey suggestion, or open completion |
+| `Tab` | Complete the current command/path (directories after `cd`) |
+| `Right` at end of line | Accept the grey history suggestion |
 
 Useful commands:
 

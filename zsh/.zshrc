@@ -17,6 +17,16 @@ compinit
 # Atuin owns Ctrl-R search; Up retains normal one-command-at-a-time history.
 (( $+commands[atuin] )) && eval "$(atuin init zsh --disable-up-arrow)"
 
+# Tab completes the current command/path, even when a history suggestion is
+# visible. Right-arrow at the end of the line still accepts that suggestion.
+if (( $+widgets[fzf-completion] )); then
+  bindkey -M emacs '^I' fzf-completion
+  bindkey -M viins '^I' fzf-completion
+else
+  bindkey -M emacs '^I' expand-or-complete
+  bindkey -M viins '^I' expand-or-complete
+fi
+
 # Share command history across shells and tmux panes.
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=10000
@@ -239,21 +249,6 @@ if [[ "$PLATFORM" == "Darwin" ]] && (( $+commands[brew] )); then
   _brew_prefix="$(brew --prefix)"
   [[ -r "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
     source "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-
-  # Tab accepts visible autosuggestion text; without a suggestion it retains
-  # fzf's completion UI (or falls back to ordinary Zsh completion).
-  _tab_accept_or_complete() {
-    if [[ -n "$POSTDISPLAY" ]]; then
-      zle autosuggest-accept
-    elif (( $+widgets[fzf-completion] )); then
-      zle fzf-completion
-    else
-      zle expand-or-complete
-    fi
-  }
-  zle -N _tab_accept_or_complete
-  bindkey -M emacs '^I' _tab_accept_or_complete
-  bindkey -M viins '^I' _tab_accept_or_complete
 
   [[ -r "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
     source "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"

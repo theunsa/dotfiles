@@ -27,7 +27,7 @@ else
   bindkey -M viins '^I' expand-or-complete
 fi
 
-# Share command history across shells and tmux panes.
+# Share command history across shells and Herdr panes.
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
@@ -68,25 +68,6 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias d="docker"
 alias g="git"
-alias ta='tmux attach || tmux new -s Work'
-
-function t() {
-  local target
-
-  if [[ $# -gt 0 ]]; then
-    target="$1"
-  else
-    target="$(sesh list | fzf)"
-  fi
-
-  [[ -z "$target" ]] && return
-
-  if sesh list -c | command grep -Fxq -- "$target"; then
-    sesh connect "$target"
-  else
-    sesh connect -c "$HOME/.config/sesh/default-layout.sh" "$target"
-  fi
-}
 
 function v() {
   if [[ $# -eq 0 ]]; then
@@ -206,11 +187,12 @@ _ask() {
 }
 alias ask='noglob _ask'
 
-# Stop Zsh from complaining if ?? doesn't match a file
-setopt nonomatch
-??() {
+# `?? question` asks Claude. noglob keeps `?` and `*` literal without
+# disabling Zsh's no-match errors for every other command.
+_claude_ask() {
   claude -p "$*"
 }
+alias '??'='noglob _claude_ask'
 
 [[ -r "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
@@ -246,7 +228,7 @@ export TERM
 
 # These must be sourced last so highlighting sees all widgets and aliases.
 if [[ "$PLATFORM" == "Darwin" ]] && (( $+commands[brew] )); then
-  _brew_prefix="$(brew --prefix)"
+  _brew_prefix="${HOMEBREW_PREFIX:-$(brew --prefix)}"
   [[ -r "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
     source "$_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 

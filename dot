@@ -5,12 +5,9 @@ DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_BIN="$HOME/.local/bin"
 AGE_KEY_DIR="$HOME/.config/age"
 AGE_KEY_FILE="$AGE_KEY_DIR/keys.txt"
-TMUX_PLUGIN_DIR="$HOME/.local/share/tmux/plugins"
-TPM_DIR="$TMUX_PLUGIN_DIR/tpm"
-TPM_VERSION="v3.1.0"
 HERDR_NAV_REF="820d48f5d9c9a7dece6a4bebfa3982ec30bbfbb7"
 STOW_PACKAGES=(
-  agents bin borders claude codex config ghostty git hammerspoon herdr nvim sesh starship tmux yazi zsh
+  agents bin borders claude codex config ghostty git hammerspoon herdr nvim starship yazi zsh
 )
 
 # --- Helpers ---
@@ -111,7 +108,7 @@ install_tools() {
   elif command -v apt >/dev/null 2>&1; then
     # Debian/Ubuntu
     sudo apt update
-    sudo apt install -y neovim tmux zsh
+    sudo apt install -y neovim zsh
 
     # Starship
     if ! command -v starship >/dev/null 2>&1; then
@@ -141,62 +138,12 @@ install_tools() {
 
   elif command -v pacman >/dev/null 2>&1; then
     # Arch Linux
-    sudo pacman -S --noconfirm neovim tmux zsh starship eza zoxide
+    sudo pacman -S --noconfirm neovim zsh starship eza zoxide
 
     warn "ghostty and mise should be installed manually on Arch"
   fi
 
   ok "Essential tools installed."
-}
-
-install_tpm() {
-  local plugin_dir="$TPM_DIR"
-  local plugin_parent
-  plugin_parent=$(dirname "$plugin_dir")
-
-  mkdir -p "$plugin_parent"
-
-  if [[ -d "$plugin_dir/.git" ]]; then
-    info "Updating tmux-plugins/tpm to $TPM_VERSION..."
-    git -C "$plugin_dir" fetch --tags --force origin
-    git -C "$plugin_dir" checkout "$TPM_VERSION"
-    ok "tpm ready in $plugin_dir"
-    return
-  fi
-
-  if [[ -e "$plugin_dir" ]]; then
-    warn "$plugin_dir exists but is not a git repo. Skipping tpm install."
-    return
-  fi
-
-  info "Installing tmux-plugins/tpm $TPM_VERSION..."
-  git clone --branch "$TPM_VERSION" --depth 1 https://github.com/tmux-plugins/tpm.git "$plugin_dir"
-  ok "tpm installed to $plugin_dir"
-}
-
-sync_tmux_plugins() {
-  local tpm_install="$TPM_DIR/bin/install_plugins"
-
-  if ! command -v tmux >/dev/null 2>&1; then
-    warn "tmux is not installed yet. Skipping tmux plugin sync."
-    return
-  fi
-
-  if [[ ! -f "$HOME/.tmux.conf" ]]; then
-    warn "~/.tmux.conf is missing. Skipping tmux plugin sync."
-    return
-  fi
-
-  if [[ ! -x "$tpm_install" ]]; then
-    warn "TPM install script not found at $tpm_install. Skipping tmux plugin sync."
-    return
-  fi
-
-  info "Installing/updating tmux plugins via TPM..."
-  mkdir -p "$TMUX_PLUGIN_DIR"
-  tmux start-server \; set-environment -g TMUX_PLUGIN_MANAGER_PATH "$TMUX_PLUGIN_DIR/" >/dev/null 2>&1
-  "$tpm_install"
-  ok "tmux plugins synchronized."
 }
 
 sync_herdr_integrations() {
@@ -388,7 +335,7 @@ git_commit_push() {
 
 doctor() {
   local failed=0
-  local commands=(git stow zsh tmux herdr nvim starship fzf rg fd mise sesh yazi gitleaks passage)
+  local commands=(git stow zsh herdr nvim starship fzf rg fd mise yazi gitleaks passage)
 
   info "Checking dotfiles dependencies and links..."
   if is_macos; then
@@ -460,11 +407,9 @@ install)
   install_stow
   install_age
   install_passage
-  install_tpm
 
   # Link dotfiles
   stow_dotfiles
-  sync_tmux_plugins
   sync_herdr_integrations
   sync_herdr_plugins
   sync_runtimes
@@ -493,9 +438,7 @@ pull)
   git -C "$DOTFILES" pull --rebase --autostash
   install_tools
   install_stow
-  install_tpm
   stow_dotfiles
-  sync_tmux_plugins
   sync_herdr_integrations
   sync_herdr_plugins
   sync_runtimes
@@ -524,8 +467,13 @@ doctor)
   ;;
 
 push)
+  # Optional commit message: ./dot push [-m] "message"
+  shift
+  [[ "${1:-}" == "-m" || "${1:-}" == "--message" ]] && shift
+  message="${*:-update dotfiles}"
+
   # Push dotfiles
-  git_commit_push "$DOTFILES" "update dotfiles"
+  git_commit_push "$DOTFILES" "$message"
 
   # Push passage store (if it exists and has changes)
   if [[ -d "$HOME/.passage/store/.git" ]]; then
@@ -536,12 +484,12 @@ push)
   ;;
 
 *)
-  echo "Usage: $0 [install|pull|push|audit|doctor]"
+  echo "Usage: $0 [install|pull|push [-m] [message]|audit|doctor]"
   echo ""
   echo "Commands:"
   echo "  install  - Install dependencies, link dotfiles, setup passage"
   echo "  pull     - Pull latest dotfiles and re-link"
-  echo "  push     - Commit and push dotfiles changes"
+  echo "  push     - Commit and push dotfiles changes (default message: update dotfiles)"
   echo "  audit    - Check tracked/staged dotfiles for secrets and large files"
   echo "  doctor   - Verify packages, commands, links, and secret hygiene"
   exit 1

@@ -21,3 +21,14 @@
 	helper = !gh auth git-credential
 [init]
 	defaultBranch = master
+[push]
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[rerere]
+	enabled = true
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[merge]
+	conflictstyle = zdiff3

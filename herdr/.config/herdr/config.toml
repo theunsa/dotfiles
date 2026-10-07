@@ -1,5 +1,5 @@
-# Keep Herdr close to the tmux workflow in this repository while exposing its
-# agent-aware workspace and notification features.
+# Herdr is the terminal multiplexer: tmux-style keys plus its agent-aware
+# workspace and notification features.
 onboarding = false
 
 [theme]
@@ -44,20 +44,20 @@ close_pane = "prefix+x"
 zoom = "prefix+z"
 resize_mode = "prefix+shift+r"
 
-# Typecraft's leader+g agent/workspace finder, with leader+s as the sesh-like
+# Typecraft's leader+g agent/workspace finder, with leader+s as an
 # alias. Leader+b collapses or fully hides the agent sidebar.
 goto = ["prefix+g", "prefix+s"]
 workspace_picker = "prefix+w"
 toggle_sidebar = "prefix+b"
 
-# Uppercase H/J/K/L resize in the tmux config, so disable Herdr's default swap
-# actions on those keys before assigning the commands below.
+# Uppercase H/J/K/L resize panes (tmux muscle memory), so disable Herdr's
+# default swap actions on those keys before assigning the commands below.
 swap_pane_left = ""
 swap_pane_down = ""
 swap_pane_up = ""
 swap_pane_right = ""
 
-# Match vim-tmux-navigator: Ctrl-H/J/K/L moves through Neovim splits first,
+# Ctrl-H/J/K/L moves through Neovim splits first,
 # then crosses the edge into the adjacent Herdr pane. In non-Vim panes the
 # same keys focus Herdr panes directly.
 [[keys.command]]

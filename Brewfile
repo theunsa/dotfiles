@@ -32,8 +32,6 @@ brew "lazygit"
 brew "neovim"
 brew "oxfmt"
 brew "oxlint"
-brew "sesh"
-brew "tmux"
 brew "yazi"
 
 # Document rendering (md2pdf)

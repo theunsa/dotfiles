@@ -2,8 +2,8 @@
 
 My keyboard-first macOS setup for development.
 
-It uses native macOS Desktops, Hammerspoon shortcuts, Ghostty, tmux, sesh,
-LazyVim, and mise. There is no tiling window manager or custom menu bar.
+It uses native macOS Desktops, Hammerspoon shortcuts, Ghostty, Herdr, LazyVim,
+and mise. There is no tiling window manager or custom menu bar.
 
 These are personal, opinionated dotfiles rather than a universal installer. They
 are useful to browse and copy from, but fork and customise them before installing
@@ -21,7 +21,6 @@ managed dotfile. Back up your current dotfiles first.
 At minimum, review these personal settings in your fork:
 
 - `git/.gitconfig`: Git name, email, and credential helper
-- `sesh/.config/sesh/sesh.toml`: project names and paths
 - `zsh/.zshrc`: name, work paths, aliases, and secret names
 - `hammerspoon/.hammerspoon/init.lua`: application shortcuts
 - `claude/.claude/settings.json`: local paths and permissions
@@ -49,6 +48,7 @@ Security → Accessibility**.
 ./dot doctor     # check the setup
 ./dot audit      # check for secrets and oversized files
 ./dot push       # audit, commit all local changes, and push
+./dot push -m "tweak herdr keys"   # same, with your own commit message
 ```
 
 Packages live in the root `Brewfile`. Language versions live in
@@ -97,64 +97,11 @@ them separately or change their bundle IDs in the Hammerspoon configuration.
 
 Raycast is still there for anything that does not deserve a permanent shortcut.
 
-## Start work
-
-Use `t` to open or switch projects:
-
-```bash
-t                    # choose with sesh and fzf
-t ~/Projects/my-app  # open any directory
-```
-
-The standard layout is simple: LazyVim on top, two shells below, and lazygit in
-a second window.
-
-My configured sessions:
-
-| Session | What opens |
-|---|---|
-| `dev` | Standard layout in the current directory |
-| `batapp2` | Standard layout in Batapp |
-| `marula-flow` | Standard layout without the lazygit window |
-| `marula-smooth` | Standard layout in Marula Smooth |
-| `remi` | Standard layout in Remi |
-| `pl` | Avoda UI and Platform together |
-
-`pl` opens LazyVim in Avoda UI, with UI and Platform shells below it. Its second
-window opens LazyVim in Avoda Platform.
-
-These named sessions are examples tied to my project directories. Replace or
-remove them in `~/.config/sesh/sesh.toml`; the generic `dev` session and
-`t /path/to/project` work with any directory.
-
-Sesh does not rebuild a session that is already running. Kill that tmux session
-first when you want a changed layout to take effect.
-
-Tmux restores the last saved set of sessions when it starts. After removing old
-sessions, press `Ctrl-A Ctrl-S` to save the clean set.
-
-## Use tmux
-
-The prefix is `Ctrl-A` and window numbers start at zero.
-
-| After `Ctrl-A` | Action |
-|---|---|
-| `h/j/k/l` | Move between panes |
-| `H/J/K/L` | Resize the current pane |
-| `\` / `-` | Split left-right / top-bottom |
-| `%` / `"` | Native tmux aliases for the same splits |
-| `c` | New window |
-| `s` | Sesh switcher |
-| `r` | Reload tmux config |
-| `[` | Enter copy mode |
-
-In copy mode, press `v` to select and `y` to copy to the macOS clipboard.
-
 ## Use Herdr
 
-Run `herdr` from a project directory. Herdr uses the same `Ctrl-A` prefix and
-the familiar tmux navigation keys, while its sidebar tracks Codex and Claude
-across workspaces.
+Run `herdr` from a project directory. Herdr uses a `Ctrl-A` prefix with
+tmux-style navigation keys, while its sidebar tracks Codex and Claude across
+workspaces.
 
 | After `Ctrl-A` | Action |
 |---|---|
@@ -171,10 +118,10 @@ across workspaces.
 | `z` | Zoom the current pane |
 | `d` / `q` | Detach and leave agents running |
 
-`Ctrl-H/J/K/L` moves seamlessly through Neovim splits and Herdr panes, just
-like `vim-tmux-navigator` does under tmux. In normal, insert, terminal, visual,
-select, operator, and command-line modes, it traverses Neovim splits first and
-only crosses into the neighboring Herdr pane at the edge. The pinned Herdr
+`Ctrl-H/J/K/L` moves seamlessly through Neovim splits and Herdr panes. In
+normal, insert, terminal, visual, select, operator, and command-line modes, it
+traverses Neovim splits first and only crosses into the neighboring Herdr pane
+at the edge. The pinned Herdr
 navigation plugin is synchronized by `./dot install` and `./dot pull`.
 The editor mappings live in `lua/config/keymaps.lua` so they load after
 LazyVim's default window mappings.
@@ -257,5 +204,5 @@ secrets.
 
 ## Linux
 
-The shell, tmux, and editor configs are portable. The full installer is built
+The shell and editor configs are portable. The full installer is built
 for macOS; Linux setup is best effort.

@@ -165,10 +165,25 @@ for desktop = 1, 5 do
         end
       end
 
+      -- moveWindowToSpace uses a private API that can report success on
+      -- recent macOS releases without moving anything, so confirm the result.
       local moved, moveError = spaces.moveWindowToSpace(window, targetSpace)
-      if not moved then
-        hs.alert.show(moveError or ("Could not move window to Desktop " .. desktop))
+      local landed = false
+      for _, currentSpace in ipairs(spaces.windowSpaces(window) or {}) do
+        if currentSpace == targetSpace then
+          landed = true
+          break
+        end
       end
+
+      if not (moved and landed) then
+        hs.alert.show(moveError or ("Could not move window to Desktop " .. desktop))
+        return
+      end
+
+      -- JankyBorders misses private Space moves and leaves the old border
+      -- behind. Its launchd job has KeepAlive, so a kill is a clean redraw.
+      hs.task.new("/usr/bin/killall", nil, { "borders" }):start()
     end)
   end)
 end

@@ -3,13 +3,13 @@
 -- Keep these here: mappings installed by an eager plugin's config are later
 -- overwritten by LazyVim's default Ctrl-H/J/K/L window mappings.
 local directions = {
-  ["<C-h>"] = { window = "h", herdr = "left", tmux = "Left" },
-  ["<C-j>"] = { window = "j", herdr = "down", tmux = "Down" },
-  ["<C-k>"] = { window = "k", herdr = "up", tmux = "Up" },
-  ["<C-l>"] = { window = "l", herdr = "right", tmux = "Right" },
+  ["<C-h>"] = { window = "h", herdr = "left" },
+  ["<C-j>"] = { window = "j", herdr = "down" },
+  ["<C-k>"] = { window = "k", herdr = "up" },
+  ["<C-l>"] = { window = "l", herdr = "right" },
 }
 
-local function focus_multiplexer(direction)
+local function focus_herdr(direction)
   if vim.env.HERDR_PANE_ID and vim.env.HERDR_PANE_ID ~= "" then
     local herdr = vim.env.HERDR_BIN_PATH or "herdr"
     vim.fn.system({
@@ -21,8 +21,6 @@ local function focus_multiplexer(direction)
       "--pane",
       vim.env.HERDR_PANE_ID,
     })
-  elseif vim.env.TMUX and vim.env.TMUX ~= "" then
-    vim.cmd("TmuxNavigate" .. direction.tmux)
   end
 end
 
@@ -32,20 +30,15 @@ for key, direction in pairs(directions) do
     vim.cmd("wincmd " .. direction.window)
 
     if vim.api.nvim_get_current_win() == previous_window then
-      focus_multiplexer(direction)
+      focus_herdr(direction)
     end
   end
 
-  -- Traverse editor splits first, then cross into Herdr/tmux at the edge.
+  -- Traverse editor splits first, then cross into Herdr at the edge.
   -- Lua callbacks preserve the current editor mode when running navigation.
   vim.keymap.set({ "n", "i", "x", "s", "o", "t", "c" }, key, navigate, {
     silent = true,
     noremap = true,
-    desc = "Navigate " .. direction.herdr .. " (Neovim/multiplexer)",
+    desc = "Navigate " .. direction.herdr .. " (Neovim/Herdr)",
   })
 end
-
-vim.keymap.set("n", "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", {
-  silent = true,
-  desc = "Navigate to previous tmux pane",
-})

@@ -31,7 +31,9 @@ help = "prefix+?"
 detach = ["prefix+d", "prefix+q"]
 reload_config = "prefix+r"
 new_tab = ["prefix+c", "prefix+shift+c"]
-switch_tab = "prefix+1..9"
+# Zero-based tab jumps live in the [[keys.command]] entries below; Herdr's
+# indexed bindings only accept 1..9, so the built-in action is disabled.
+switch_tab = ""
 close_tab = "prefix+shift+x"
 copy_mode = "prefix+["
 focus_pane_left = "prefix+h"
@@ -107,6 +109,68 @@ key = "prefix+shift+l"
 type = "shell"
 command = '"$HERDR_BIN_PATH" pane resize --current --direction right --amount 5'
 description = "resize pane right"
+
+# Prefix+0..9 jumps to the tab at that zero-based position in the active
+# workspace (0 is the first tab), like tmux with base-index 0.
+[[keys.command]]
+key = "prefix+0"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '1p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 0"
+
+[[keys.command]]
+key = "prefix+1"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '2p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 1"
+
+[[keys.command]]
+key = "prefix+2"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '3p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 2"
+
+[[keys.command]]
+key = "prefix+3"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '4p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 3"
+
+[[keys.command]]
+key = "prefix+4"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '5p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 4"
+
+[[keys.command]]
+key = "prefix+5"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '6p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 5"
+
+[[keys.command]]
+key = "prefix+6"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '7p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 6"
+
+[[keys.command]]
+key = "prefix+7"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '8p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 7"
+
+[[keys.command]]
+key = "prefix+8"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '9p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 8"
+
+[[keys.command]]
+key = "prefix+9"
+type = "shell"
+command = '''id=$("$HERDR_BIN_PATH" tab list --workspace "$HERDR_ACTIVE_WORKSPACE_ID" | grep -o '"tab_id":"[^"]*"' | sed -n '10p' | cut -d'"' -f4); [ -n "$id" ] && "$HERDR_BIN_PATH" tab focus "$id"'''
+description = "switch to tab 9"
 
 [ui]
 sidebar_width = 26

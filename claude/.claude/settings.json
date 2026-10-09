@@ -83,11 +83,13 @@
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 1754080152265
-  },
   "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(kamal deploy:*) in this repo — remote-server state changes are to be prepared and shown, never executed, per ~/.claude/CLAUDE.md",
+      "Bash(kamal accessory boot:*), Bash(kamal accessory reboot:*) in this repo",
+      "Bash(kamal app exec:*) with write operations in this repo"
+    ],
     "environment": [
       "### Org-wide",
       "**Organization**: None configured",
@@ -114,12 +116,10 @@
       "**Trusted repo**: /Users/theuns/Projects/albertec/batapp (origin github.com:theunsa/batapp.git), private — confidential material is fine here, but secrets and sensitive data are never cleared in by visibility alone",
       "**Org-specific CLIs**: None configured — personal CLIs observed in shell history (passage, herdr, atlas, sesh, mise) but no org affiliation evidenced",
       "routine under /Users/theuns/Projects/albertec/batapp/ is this project's normal working scope"
-    ],
-    "soft_deny": [
-      "$defaults",
-      "Bash(kamal deploy:*) in this repo — remote-server state changes are to be prepared and shown, never executed, per ~/.claude/CLAUDE.md",
-      "Bash(kamal accessory boot:*), Bash(kamal accessory reboot:*) in this repo",
-      "Bash(kamal app exec:*) with write operations in this repo"
     ]
+  },
+  "voiceEnabled": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1754080152265
   }
 }

@@ -1,9 +1,6 @@
 # Homebrew is the declarative package source for macOS. Keep sections grouped
 # by responsibility; `brew bundle` remains idempotent and never removes extras.
 
-# Taps
-tap "felixkratz/formulae"
-
 # Shell and core CLI
 brew "age"
 brew "bat"
@@ -52,8 +49,8 @@ brew "resvg"
 brew "sevenzip"
 
 # macOS desktop
-brew "felixkratz/formulae/borders"
 cask "ghostty"
+cask "google-chrome"
 cask "hammerspoon"
 # Preserve an existing direct-download installation; install it on fresh Macs.
 cask "raycast" unless File.directory?("/Applications/Raycast.app")

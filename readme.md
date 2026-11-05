@@ -60,40 +60,41 @@ remote. Review `git status` first if you do not want every local change included
 ## Move around macOS
 
 Create five Desktops in Mission Control. In **System Settings → Keyboard →
-Keyboard Shortcuts → Mission Control**, enable `Control-1` through `Control-5`.
+Keyboard Shortcuts → Mission Control**, set "Switch to Desktop 1–5"
+to `Option-1` through `Option-5`.
 
-Hammerspoon gives them shorter shortcuts:
+Main shortcuts:
 
 | Keys | Action |
 |---|---|
-| `Ctrl-1…5` | Go to Desktop 1–5 |
+| `Alt-1…5` | Go to Desktop 1–5 |
 | `Alt-H/J/K/L` | Focus the window left/down/up/right |
 | `Alt-T` | Ghostty |
-| `Alt-B` | Vivaldi |
+| `Alt-B` | Chrome |
 | `Alt-A` | Codex |
-| `Alt-D` | Docker |
 | `Alt-P` | Preview |
-| `Alt-E` | Finder |
+| `Alt-F` | Finder |
 | `Alt-Enter` | Focus or launch Ghostty |
 | `Alt-/` | Show all Hammerspoon shortcuts |
 
 Assign apps to Desktops once from **Dock icon → Options → Assign To → This
-Desktop**. A useful starting point is Ghostty on 1, Vivaldi on 2, Codex on 3,
-Docker on 4, and Preview/Finder on 5.
+Desktop**. A useful starting point is Ghostty on 1, Chrome on 2, Codex on 3,
+and Preview/Finder on 5.
 
-Vivaldi and Docker are optional and are not installed by the `Brewfile`. Install
-them separately or change their bundle IDs in the Hammerspoon configuration.
+Alt-H/J/K/L briefly outlines the window that receives focus. There is no
+persistent border tool. Alt-E, Alt-I, Alt-U, Alt-N and Alt-` stay free because
+macOS uses them as accent keys (é ê ë ñ è).
 
 ### Place windows
 
 | Keys | Action |
 |---|---|
-| `Ctrl-Alt-H/L` | Left/right half; repeat for one-third or two-thirds |
-| `Ctrl-Alt-J/K` | Bottom/top half |
-| `Ctrl-Alt-Y/U/B/N` | Four corners |
-| `Ctrl-Alt-C/F` | Centre/fill |
-| `Ctrl-Alt-M` | Move the window to the next monitor |
-| `Ctrl-Alt-Shift-1…5` | Send the window to Desktop 1–5 |
+| `Alt-Shift-H/L` | Left/right half; repeat for one-third or two-thirds |
+| `Alt-Shift-J/K` | Bottom/top half |
+| `Alt-Shift-U/I/N/M` | Four corners |
+| `Alt-Shift-C/F` | Centre/fill |
+| `Alt-Shift-O` | Move the window to the other monitor |
+| `Alt-Shift-1…5` | Send the window to Desktop 1–5 |
 
 Raycast is still there for anything that does not deserve a permanent shortcut.
 

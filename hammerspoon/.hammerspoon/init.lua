@@ -25,30 +25,64 @@ local function withFocusedWindow(callback)
   end
 end
 
--- Directional focus within the currently visible native Space.
-local focus = {
-  h = hs.window.filter.focusWest,
-  j = hs.window.filter.focusSouth,
-  k = hs.window.filter.focusNorth,
-  l = hs.window.filter.focusEast,
-}
+-- Briefly outline the window that receives focus. Unlike a persistent border
+-- tool, nothing stays on screen or hooks WindowServer between key presses.
+local flash
+local function flashWindow(window)
+  if flash then
+    flash:delete()
+  end
 
-for key, callback in pairs(focus) do
-  bind({ "alt" }, key, callback, true)
+  local current = hs.canvas.new(window:frame())
+  current:appendElements({
+    type = "rectangle",
+    action = "stroke",
+    strokeColor = { hex = "#88c0d0" },
+    strokeWidth = 6,
+    roundedRectRadii = { xRadius = 10, yRadius = 10 },
+  })
+  current:level(hs.canvas.windowLevels.overlay)
+  current:show()
+  flash = current
+
+  hs.timer.doAfter(0.3, function()
+    if flash == current then
+      current:delete()
+      flash = nil
+    end
+  end)
 end
 
--- Native window placement. Ctrl-Alt keeps Alt-H/J/K/L dedicated to focus.
+-- Directional focus within the currently visible native Space. This mirrors
+-- hs.window.filter.focusWest and friends, but keeps the target to flash it.
+local focusWindows = hs.window.filter.defaultCurrentSpace
+local focus = { h = "West", j = "South", k = "North", l = "East" }
+
+for key, direction in pairs(focus) do
+  bind({ "alt" }, key, function()
+    for _, window in ipairs(focusWindows["windowsTo" .. direction](focusWindows, nil, nil, true) or {}) do
+      if window:focus() then
+        flashWindow(window)
+        return
+      end
+    end
+  end, true)
+end
+
+-- Native window placement. Alt focuses a window; Alt-Shift moves it, the same
+-- split as Omarchy/i3/AeroSpace (Super goes there, Super-Shift takes it along).
 local units = {
   j = hs.geometry.unitrect(0, 0.5, 1, 0.5),
   k = hs.geometry.unitrect(0, 0, 1, 0.5),
-  y = hs.geometry.unitrect(0, 0, 0.5, 0.5),
-  u = hs.geometry.unitrect(0.5, 0, 0.5, 0.5),
-  b = hs.geometry.unitrect(0, 0.5, 0.5, 0.5),
-  n = hs.geometry.unitrect(0.5, 0.5, 0.5, 0.5),
+  -- Quarters: U I / N M form a square under the right hand's home position.
+  u = hs.geometry.unitrect(0, 0, 0.5, 0.5),
+  i = hs.geometry.unitrect(0.5, 0, 0.5, 0.5),
+  n = hs.geometry.unitrect(0, 0.5, 0.5, 0.5),
+  m = hs.geometry.unitrect(0.5, 0.5, 0.5, 0.5),
 }
 
 for key, unit in pairs(units) do
-  bind({ "ctrl", "alt" }, key, function()
+  bind({ "alt", "shift" }, key, function()
     withFocusedWindow(function(window)
       window:moveToUnit(unit)
     end)
@@ -88,7 +122,7 @@ local function approximatelyEqual(left, right)
 end
 
 for key, cycle in pairs(horizontalCycles) do
-  bind({ "ctrl", "alt" }, key, function()
+  bind({ "alt", "shift" }, key, function()
     withFocusedWindow(function(window)
       local current = currentUnit(window)
       local target = cycle[1]
@@ -105,20 +139,20 @@ for key, cycle in pairs(horizontalCycles) do
   end)
 end
 
-bind({ "ctrl", "alt" }, "c", function()
+bind({ "alt", "shift" }, "c", function()
   withFocusedWindow(function(window)
     window:centerOnScreen(nil, true)
   end)
 end)
 
-bind({ "ctrl", "alt" }, "f", function()
+bind({ "alt", "shift" }, "f", function()
   withFocusedWindow(function(window)
     window:maximize()
   end)
 end)
 
 -- Move a window to another monitor while retaining its relative frame.
-bind({ "ctrl", "alt" }, "m", function()
+bind({ "alt", "shift" }, "o", function()
   withFocusedWindow(function(window)
     local nextScreen = window:screen():next()
     if nextScreen ~= window:screen() then
@@ -127,7 +161,8 @@ bind({ "ctrl", "alt" }, "m", function()
   end)
 end)
 
--- Native Mission Control owns Ctrl-1…5 for switching Desktops.
+-- Native Mission Control owns Alt-1…5 for switching Desktops (set them in
+-- System Settings → Keyboard → Keyboard Shortcuts → Mission Control).
 
 -- Send the focused window to Desktop 1…5 without following it. Full-screen
 -- application spaces are excluded so the numbers match ordinary Desktops.
@@ -149,7 +184,7 @@ local function userSpacesForScreen(screen)
 end
 
 for desktop = 1, 5 do
-  bind({ "ctrl", "alt", "shift" }, tostring(desktop), function()
+  bind({ "alt", "shift" }, tostring(desktop), function()
     withFocusedWindow(function(window)
       local desktopSpaces, errorMessage = userSpacesForScreen(window:screen())
       local targetSpace = desktopSpaces and desktopSpaces[desktop]
@@ -178,25 +213,20 @@ for desktop = 1, 5 do
 
       if not (moved and landed) then
         hs.alert.show(moveError or ("Could not move window to Desktop " .. desktop))
-        return
       end
-
-      -- JankyBorders misses private Space moves and leaves the old border
-      -- behind. Its launchd job has KeepAlive, so a kill is a clean redraw.
-      hs.task.new("/usr/bin/killall", nil, { "borders" }):start()
     end)
   end)
 end
 
 -- Launch or focus common applications. Native app-to-Desktop assignments
 -- make macOS switch to the appropriate Space when the app is activated.
+-- Keep Alt-E/I/U/N/` free: macOS uses them as accent keys (é ê ë ñ è).
 local applications = {
   t = "com.mitchellh.ghostty",
-  b = "com.vivaldi.Vivaldi",
+  b = "com.google.Chrome",
   a = "com.openai.codex",
-  d = "com.electron.dockerdesktop",
   p = "com.apple.Preview",
-  e = "com.apple.finder",
+  f = "com.apple.finder",
 }
 
 for key, bundleID in pairs(applications) do
@@ -210,16 +240,16 @@ bind({ "alt" }, "return", function()
 end)
 
 local keymap = [[
-Alt-H/J/K/L       focus left/down/up/right
-Ctrl-1…5          switch native Desktop
-Alt-T/B/A/D/P/E   Ghostty/browser/Codex/Docker/Preview/Finder
-Alt-Enter         focus or launch Ghostty
-Ctrl-Alt-H/L      left/right; repeat for halves or thirds
-Ctrl-Alt-J/K      bottom/top half
-Ctrl-Alt-Y/U/B/N  screen quarters
-Ctrl-Alt-C/F      centre/fill
-Ctrl-Alt-M        move window to next monitor
-Ctrl-Alt-Shift-1…5 send window to Desktop
+Alt-H/J/K/L        focus left/down/up/right
+Alt-1…5            switch native Desktop
+Alt-T/B/A/P/F      Ghostty/Chrome/Codex/Preview/Finder
+Alt-Enter          focus or launch Ghostty
+Alt-Shift-H/L      left/right; repeat for halves or thirds
+Alt-Shift-J/K      bottom/top half
+Alt-Shift-U/I/N/M  screen quarters
+Alt-Shift-C/F      centre/fill
+Alt-Shift-O        move window to other monitor
+Alt-Shift-1…5      send window to Desktop
 ]]
 
 bind({ "alt" }, "/", function()

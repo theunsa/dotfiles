@@ -223,7 +223,6 @@ end
 -- Keep Alt-E/I/U/N/` free: macOS uses them as accent keys (é ê ë ñ è).
 local applications = {
   t = "com.mitchellh.ghostty",
-  b = "com.google.Chrome",
   a = "com.openai.codex",
   p = "com.apple.Preview",
   f = "com.apple.finder",
@@ -235,6 +234,131 @@ for key, bundleID in pairs(applications) do
   end)
 end
 
+-- Chrome profiles. Alt-B opens a short-lived mode: 1/2/3 jumps to that
+-- profile's most recent window (opening one if none exists), B goes to the
+-- last Chrome window, and P/N step through the profiles (repeatable). The mode
+-- ends after a choice, on Esc, or after two idle seconds.
+-- Chrome window titles end with "– <profile>" or "(<profile>)".
+local chromeProfiles = {
+  { name = "Theuns", directory = "Profile 12" },
+  { name = "Albertec", directory = "Default" },
+  { name = "Plumb Line", directory = "Profile 19" },
+}
+-- A long-lived filter also tracks Chrome windows on other Desktops.
+local chromeWindows = hs.window.filter.new(false):setAppFilter("Google Chrome", {})
+
+local function chromeProfileIndex(window)
+  local title = window and window:title() or ""
+  for index, profile in ipairs(chromeProfiles) do
+    for _, suffix in ipairs({ "– " .. profile.name, "(" .. profile.name .. ")" }) do
+      if title:sub(-#suffix) == suffix then
+        return index
+      end
+    end
+  end
+end
+
+-- Chrome's Profiles menu focuses the profile's last window on any Desktop, or
+-- opens one. Menu items read "<profile>" or "<account> (<profile>)".
+local function selectChromeProfileMenu(chrome, name)
+  for _, menu in ipairs(chrome:getMenuItems() or {}) do
+    if menu.AXTitle == "Profiles" then
+      for _, item in ipairs(menu.AXChildren and menu.AXChildren[1] or {}) do
+        local title = item.AXTitle or ""
+        if title == name or title:sub(-(#name + 2)) == "(" .. name .. ")" then
+          return chrome:selectMenuItem({ "Profiles", title })
+        end
+      end
+    end
+  end
+end
+
+local chromeCurrent
+local function focusChromeProfile(index)
+  chromeCurrent = index
+  local profile = chromeProfiles[index]
+
+  -- Fast path: a window Hammerspoon already knows about.
+  for _, window in ipairs(chromeWindows:getWindows(hs.window.filter.sortByFocusedLast)) do
+    if chromeProfileIndex(window) == index then
+      window:focus()
+      return
+    end
+  end
+
+  -- Hammerspoon only learns windows on other Desktops once they have been
+  -- visible since it loaded, so let Chrome find (or create) the window.
+  local chrome = hs.application.get("com.google.Chrome")
+  if chrome and selectChromeProfileMenu(chrome, profile.name) then
+    return
+  end
+
+  local directory = "--profile-directory=" .. profile.directory
+  hs.task.new("/usr/bin/open", nil, { "-na", "Google Chrome", "--args", directory }):start()
+end
+
+local function stepChromeProfile(step)
+  local current = chromeCurrent or chromeProfileIndex(hs.window.focusedWindow())
+  if not current then
+    current = step > 0 and 0 or 1
+  end
+  focusChromeProfile((current - 1 + step) % #chromeProfiles + 1)
+end
+
+local chromeMode = hs.hotkey.modal.new({ "alt" }, "b")
+local chromeModeTimeout = hs.timer.delayed.new(2, function()
+  chromeMode:exit()
+end)
+local chromeModeAlert
+
+function chromeMode:entered()
+  chromeCurrent = nil
+  local labels = {}
+  for index, profile in ipairs(chromeProfiles) do
+    table.insert(labels, index .. " " .. profile.name)
+  end
+  chromeModeAlert = hs.alert.show("Chrome:  " .. table.concat(labels, "   ") .. "   B last   P/N step", 2)
+  chromeModeTimeout:start()
+end
+
+function chromeMode:exited()
+  chromeModeTimeout:stop()
+  if chromeModeAlert then
+    hs.alert.closeSpecific(chromeModeAlert)
+    chromeModeAlert = nil
+  end
+end
+
+local function chromeAction(callback, stayInMode)
+  return function()
+    callback()
+    if stayInMode then
+      chromeModeTimeout:start()
+    else
+      chromeMode:exit()
+    end
+  end
+end
+
+for index in ipairs(chromeProfiles) do
+  chromeMode:bind({}, tostring(index), chromeAction(function()
+    focusChromeProfile(index)
+  end))
+end
+
+chromeMode:bind({}, "b", chromeAction(function()
+  hs.application.launchOrFocusByBundleID("com.google.Chrome")
+end))
+chromeMode:bind({}, "n", chromeAction(function()
+  stepChromeProfile(1)
+end, true))
+chromeMode:bind({}, "p", chromeAction(function()
+  stepChromeProfile(-1)
+end, true))
+chromeMode:bind({}, "escape", function()
+  chromeMode:exit()
+end)
+
 bind({ "alt" }, "return", function()
   hs.application.launchOrFocusByBundleID("com.mitchellh.ghostty")
 end)
@@ -242,7 +366,9 @@ end)
 local keymap = [[
 Alt-H/J/K/L        focus left/down/up/right
 Alt-1…5            switch native Desktop
-Alt-T/B/A/P/F      Ghostty/Chrome/Codex/Preview/Finder
+Alt-T/A/P/F        Ghostty/Codex/Preview/Finder
+Alt-B then 1/2/3   Chrome: Theuns/Albertec/Plumb Line
+Alt-B then B, P/N  Chrome: last window, prev/next profile
 Alt-Enter          focus or launch Ghostty
 Alt-Shift-H/L      left/right; repeat for halves or thirds
 Alt-Shift-J/K      bottom/top half

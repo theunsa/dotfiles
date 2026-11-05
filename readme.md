@@ -70,7 +70,8 @@ Main shortcuts:
 | `Alt-1…5` | Go to Desktop 1–5 |
 | `Alt-H/J/K/L` | Focus the window left/down/up/right |
 | `Alt-T` | Ghostty |
-| `Alt-B` | Chrome |
+| `Alt-B`, then `1`/`2`/`3` | Chrome profile Theuns/Albertec/Plumb Line |
+| `Alt-B`, then `B` or `P`/`N` | Last Chrome window, or previous/next profile |
 | `Alt-A` | Codex |
 | `Alt-P` | Preview |
 | `Alt-F` | Finder |

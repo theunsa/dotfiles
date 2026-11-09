@@ -164,56 +164,58 @@ end)
 -- Native Mission Control owns Alt-1…5 for switching Desktops (set them in
 -- System Settings → Keyboard → Keyboard Shortcuts → Mission Control).
 
--- Send the focused window to Desktop 1…5 without following it. Full-screen
--- application spaces are excluded so the numbers match ordinary Desktops.
-local function userSpacesForScreen(screen)
+-- Send the focused window to Desktop 1…5 and follow it. macOS 26 ignores the
+-- private API behind hs.spaces.moveWindowToSpace (it reports success but the
+-- window stays put), so do what a person would: hold the title bar just right
+-- of the zoom button, press the Mission Control shortcut (Alt-N), let go.
+local function userSpaces(screen)
   local result = {}
-  local screenSpaces, errorMessage = spaces.spacesForScreen(screen)
-
-  if not screenSpaces then
-    return nil, errorMessage
-  end
-
-  for _, spaceID in ipairs(screenSpaces) do
+  for _, spaceID in ipairs(spaces.spacesForScreen(screen) or {}) do
     if spaces.spaceType(spaceID) == "user" then
       table.insert(result, spaceID)
     end
   end
-
   return result
+end
+
+local mouseEvent = hs.eventtap.event.newMouseEvent
+local mouseTypes = hs.eventtap.event.types
+
+local function sendToDesktop(window, desktop)
+  local targetSpace = userSpaces(window:screen())[desktop]
+  if not targetSpace then
+    hs.alert.show("Desktop " .. desktop .. " does not exist")
+    return
+  end
+  if hs.fnutils.contains(spaces.windowSpaces(window) or {}, targetSpace) then
+    return
+  end
+
+  local zoom = window:zoomButtonRect()
+  if not zoom then
+    hs.alert.show("This window has no title bar to grab")
+    return
+  end
+
+  local grab = { x = zoom.x + zoom.w + 6, y = zoom.y + zoom.h / 2 }
+  local mouse = hs.mouse.absolutePosition()
+
+  mouseEvent(mouseTypes.leftMouseDown, grab):post()
+  mouseEvent(mouseTypes.leftMouseDragged, grab):post()
+  hs.timer.doAfter(0.05, function()
+    hs.eventtap.keyStroke({ "alt" }, tostring(desktop), 0)
+    hs.timer.doAfter(0.4, function()
+      mouseEvent(mouseTypes.leftMouseUp, grab):post()
+      hs.mouse.absolutePosition(mouse)
+      window:focus()
+    end)
+  end)
 end
 
 for desktop = 1, 5 do
   bind({ "alt", "shift" }, tostring(desktop), function()
     withFocusedWindow(function(window)
-      local desktopSpaces, errorMessage = userSpacesForScreen(window:screen())
-      local targetSpace = desktopSpaces and desktopSpaces[desktop]
-
-      if not targetSpace then
-        hs.alert.show(errorMessage or ("Desktop " .. desktop .. " is not available on this display"))
-        return
-      end
-
-      for _, currentSpace in ipairs(spaces.windowSpaces(window) or {}) do
-        if currentSpace == targetSpace then
-          return
-        end
-      end
-
-      -- moveWindowToSpace uses a private API that can report success on
-      -- recent macOS releases without moving anything, so confirm the result.
-      local moved, moveError = spaces.moveWindowToSpace(window, targetSpace)
-      local landed = false
-      for _, currentSpace in ipairs(spaces.windowSpaces(window) or {}) do
-        if currentSpace == targetSpace then
-          landed = true
-          break
-        end
-      end
-
-      if not (moved and landed) then
-        hs.alert.show(moveError or ("Could not move window to Desktop " .. desktop))
-      end
+      sendToDesktop(window, desktop)
     end)
   end)
 end
@@ -375,7 +377,7 @@ Alt-Shift-J/K      bottom/top half
 Alt-Shift-U/I/N/M  screen quarters
 Alt-Shift-C/F      centre/fill
 Alt-Shift-O        move window to other monitor
-Alt-Shift-1…5      send window to Desktop
+Alt-Shift-1…5      take window to Desktop
 ]]
 
 bind({ "alt" }, "/", function()

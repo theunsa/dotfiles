@@ -95,7 +95,7 @@ macOS uses them as accent keys (é ê ë ñ è).
 | `Alt-Shift-U/I/N/M` | Four corners |
 | `Alt-Shift-C/F` | Centre/fill |
 | `Alt-Shift-O` | Move the window to the other monitor |
-| `Alt-Shift-1…5` | Send the window to Desktop 1–5 |
+| `Alt-Shift-1…5` | Take the window to Desktop 1–5 (you follow it) |
 
 Raycast is still there for anything that does not deserve a permanent shortcut.
 

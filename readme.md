@@ -23,7 +23,13 @@ At minimum, review these personal settings in your fork:
 - `git/.gitconfig`: Git name, email, and credential helper
 - `zsh/.zshrc`: name, work paths, aliases, and secret names
 - `hammerspoon/.hammerspoon/init.lua`: application shortcuts
-- `claude/.claude/settings.json`: local paths and permissions
+- `dot`: `CLAUDE_REPO`, the private repository that holds the Claude Code config
+
+Claude Code config (`~/.claude/CLAUDE.md`, `settings.json`, skills, commands, hooks)
+is not in this repository. It lives in a separate private repository that `./dot install`
+clones into `claude/`, which this repository ignores. `./dot pull`, `./dot push`,
+`./dot audit` and `./dot doctor` cover both. Set `DOT_CLAUDE_REPO` to use your own, or
+leave it: when the clone fails the installer carries on without Claude config.
 
 ## Get running
 

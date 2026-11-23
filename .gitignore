@@ -72,3 +72,6 @@ transcription-history.jsonl
 *.img
 *.qcow2
 *.lance
+
+# Private Claude config: own repo (dotfiles-claude), cloned here by ./dot
+/claude/

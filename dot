@@ -9,6 +9,9 @@ HERDR_NAV_REF="820d48f5d9c9a7dece6a4bebfa3982ec30bbfbb7"
 STOW_PACKAGES=(
   agents bin claude codex config ghostty git hammerspoon herdr nvim starship yazi zsh
 )
+# The claude package is its own private repo, cloned into this folder and ignored by this one.
+CLAUDE_DIR="$DOTFILES/claude"
+CLAUDE_REPO="${DOT_CLAUDE_REPO:-git@github.com:theunsa/dotfiles-claude.git}"
 
 # --- Helpers ---
 info() { echo "[*] $*"; }
@@ -237,6 +240,32 @@ init_passage() {
   ok "passage initialized."
 }
 
+sync_claude_config() {
+  if [[ -d "$CLAUDE_DIR/.git" ]]; then
+    if git -C "$CLAUDE_DIR" rev-parse '@{upstream}' >/dev/null 2>&1; then
+      info "Syncing private Claude config..."
+      git -C "$CLAUDE_DIR" pull --rebase --autostash
+      ok "Private Claude config synced."
+    else
+      warn "Private Claude config has no upstream remote. Skipping its pull."
+    fi
+    return
+  fi
+
+  if [[ -n "$(ls -A "$CLAUDE_DIR" 2>/dev/null)" ]]; then
+    warn "$CLAUDE_DIR exists but is not a git repo. Leaving it alone."
+    return
+  fi
+
+  info "Cloning private Claude config from $CLAUDE_REPO..."
+  if git clone "$CLAUDE_REPO" "$CLAUDE_DIR"; then
+    ok "Private Claude config cloned."
+  else
+    warn "Could not clone $CLAUDE_REPO. Continuing without Claude config."
+    mkdir -p "$CLAUDE_DIR"
+  fi
+}
+
 stow_dotfiles() {
   info "Linking dotfiles from $DOTFILES"
   cd "$DOTFILES"
@@ -254,12 +283,13 @@ stow_dotfiles() {
 }
 
 audit_dotfiles() {
+  local dir="${1:-$DOTFILES}"
   local max_bytes="${DOT_AUDIT_MAX_BYTES:-262144}"
   local failed=0
   local secret_pattern='[s]k-[a-z0-9_-]{20,}|gh[p]_[a-z0-9_]{20,}|[g]ithub_pat_|AKIA[0-9A-Z]{16}|[B]EGIN .* PRIVATE KEY'
 
-  cd "$DOTFILES"
-  info "Auditing dotfiles for large files and secrets..."
+  cd "$dir"
+  info "Auditing $(basename "$dir") for large files and secrets..."
 
   while IFS= read -r -d '' file; do
     [[ -f "$file" ]] || continue
@@ -304,8 +334,8 @@ git_commit_push() {
 
   # Commit any uncommitted changes
   if [[ -n "$(git status --porcelain)" ]]; then
-    if [[ "$dir" == "$DOTFILES" ]]; then
-      audit_dotfiles
+    if [[ "$dir" == "$DOTFILES" || "$dir" == "$CLAUDE_DIR" ]]; then
+      audit_dotfiles "$dir"
     fi
     git add -A
     git commit -m "$msg"
@@ -384,6 +414,12 @@ doctor() {
   fi
 
   audit_dotfiles || failed=1
+  if [[ -d "$CLAUDE_DIR/.git" ]]; then
+    audit_dotfiles "$CLAUDE_DIR" || failed=1
+  else
+    warn "Private Claude config is not cloned at $CLAUDE_DIR"
+    failed=1
+  fi
   (( failed == 0 )) || return 1
   ok "Dotfiles environment is healthy."
 }
@@ -406,6 +442,7 @@ install)
   install_passage
 
   # Link dotfiles
+  sync_claude_config
   stow_dotfiles
   sync_herdr_integrations
   sync_herdr_plugins
@@ -433,6 +470,7 @@ install)
 pull)
   # Pull dotfiles
   git -C "$DOTFILES" pull --rebase --autostash
+  sync_claude_config
   install_tools
   install_stow
   stow_dotfiles
@@ -457,6 +495,9 @@ pull)
 
 audit)
   audit_dotfiles
+  if [[ -d "$CLAUDE_DIR/.git" ]]; then
+    audit_dotfiles "$CLAUDE_DIR"
+  fi
   ;;
 
 doctor)
@@ -471,6 +512,11 @@ push)
 
   # Push dotfiles
   git_commit_push "$DOTFILES" "$message"
+
+  # Push private Claude config (its own repo inside this folder)
+  if [[ -d "$CLAUDE_DIR/.git" ]]; then
+    git_commit_push "$CLAUDE_DIR" "$message"
+  fi
 
   # Push passage store (if it exists and has changes)
   if [[ -d "$HOME/.passage/store/.git" ]]; then

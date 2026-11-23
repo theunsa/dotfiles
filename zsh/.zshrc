@@ -78,7 +78,6 @@ function v() {
 }
 
 alias vi="nvim"
-alias vi-a="CLAUDE_CONFIG_DIR=~/.claude-albertec nvim"
 alias ls="eza"
 alias ll="eza -la"
 alias yz="yazi"
@@ -133,7 +132,6 @@ function y() {
 alias claude-yolo="claude --dangerously-skip-permissions"
 alias haiku="claude --print --model=haiku"
 alias sonnet="claude --print --model=sonnet"
-alias claude-a="CLAUDE_CONFIG_DIR=~/.claude-albertec claude --dangerously-skip-permissions"
 
 # ask — quick questions via Gemini Flash-Lite (free tier)
 export ASK_MODEL="${ASK_MODEL:-gemini-3.1-flash-lite}"
